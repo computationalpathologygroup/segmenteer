@@ -7,10 +7,10 @@ from segmenteer.core.utils import (
 )
 
 __all__ = [
-    'Segmenter',
-    'SegmentationResult',
-    'mask_to_geojson',
-    'geojson_to_mask',
-    'downsample_image',
-    'scale_geojson_coordinates',
+    "Segmenter",
+    "SegmentationResult",
+    "mask_to_geojson",
+    "geojson_to_mask",
+    "downsample_image",
+    "scale_geojson_coordinates",
 ]

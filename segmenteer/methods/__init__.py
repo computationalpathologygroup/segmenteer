@@ -2,9 +2,9 @@ from segmenteer.methods.threshold import OtsuSegmenter, LiSegmenter, YenSegmente
 from segmenteer.methods.morphological import MorphologicalSegmenter, WatershedSegmenter
 
 __all__ = [
-    'OtsuSegmenter',
-    'LiSegmenter',
-    'YenSegmenter',
-    'MorphologicalSegmenter',
-    'WatershedSegmenter',
+    "OtsuSegmenter",
+    "LiSegmenter",
+    "YenSegmenter",
+    "MorphologicalSegmenter",
+    "WatershedSegmenter",
 ]

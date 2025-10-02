@@ -6,8 +6,8 @@ from segmenteer.visualization.thumbnails import (
 )
 
 __all__ = [
-    'create_thumbnail',
-    'create_heatmap_overlay',
-    'save_thumbnail',
-    'save_heatmap_thumbnail',
+    "create_thumbnail",
+    "create_heatmap_overlay",
+    "save_thumbnail",
+    "save_heatmap_thumbnail",
 ]

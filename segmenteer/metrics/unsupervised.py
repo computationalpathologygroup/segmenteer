@@ -19,9 +19,11 @@ class UnsupervisedMetrics:
     coverage_ratio: float
 
 
-def compute_unsupervised_metrics(geojson_data: dict, image_area: float) -> UnsupervisedMetrics:
-    features = geojson_data.get('features', [])
-    
+def compute_unsupervised_metrics(
+    geojson_data: dict, image_area: float
+) -> UnsupervisedMetrics:
+    features = geojson_data.get("features", [])
+
     if len(features) == 0:
         return UnsupervisedMetrics(
             num_objects=0,
@@ -37,33 +39,33 @@ def compute_unsupervised_metrics(geojson_data: dict, image_area: float) -> Unsup
             mean_solidity=0.0,
             coverage_ratio=0.0,
         )
-    
+
     areas = []
     perimeters = []
     compactnesses = []
     solidities = []
-    
+
     for feature in features:
         try:
-            geom = shape(feature['geometry'])
-            
+            geom = shape(feature["geometry"])
+
             area = geom.area
             perimeter = geom.length
-            
+
             areas.append(area)
             perimeters.append(perimeter)
-            
+
             if perimeter > 0:
-                compactness = (4 * np.pi * area) / (perimeter ** 2)
+                compactness = (4 * np.pi * area) / (perimeter**2)
                 compactnesses.append(compactness)
-            
+
             convex_hull = geom.convex_hull
             if convex_hull.area > 0:
                 solidity = area / convex_hull.area
                 solidities.append(solidity)
         except:
             continue
-    
+
     if len(areas) == 0:
         return UnsupervisedMetrics(
             num_objects=0,
@@ -79,10 +81,10 @@ def compute_unsupervised_metrics(geojson_data: dict, image_area: float) -> Unsup
             mean_solidity=0.0,
             coverage_ratio=0.0,
         )
-    
+
     areas_arr = np.array(areas)
     perimeters_arr = np.array(perimeters)
-    
+
     return UnsupervisedMetrics(
         num_objects=len(areas),
         total_area=float(np.sum(areas_arr)),
