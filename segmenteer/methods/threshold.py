@@ -1,8 +1,20 @@
+import warnings
+from functools import partial
+from typing import Callable
+
 import numpy as np
+import numpy.typing as npt
 from skimage.filters import threshold_otsu, threshold_li, threshold_yen
+from skimage.filters.rank import entropy
 from skimage.color import rgb2gray
+from skimage.morphology import disk
+from skimage.util import apply_parallel
 from segmenteer.core.utils import mask_to_geojson
 
+class DaskWarning(UserWarning):
+    pass
+
+warnings.simplefilter('once', DaskWarning)
 
 class OtsuSegmenter:
     def __init__(self, min_area: int = 10):
@@ -59,3 +71,90 @@ class YenSegmenter:
         threshold = threshold_yen(gray)
         mask = gray > threshold
         return mask_to_geojson(mask, self.min_area)
+
+
+class EntropyMaskerSegmenter:
+    """Unofficial implementation of the EntropyMasker algorithm [1] to extract foreground from histopathology images.
+
+    Parameters
+    ----------
+    min_area : int, default=10
+        Minimum area of a polygon to be included in the output.
+    footprint : np.ndarray, default=`skimage.morphology.disk(9)`
+        Footprint to use with `skimage.filters.rank.entropy`.
+    to_gray_func : Callable, default=`np.max(..., axis=2)`
+        Function to convert a RGB image to grayscale.
+
+    References
+    ----------
+    [1] https://doi.org/10.1038/s41598-023-29638-1
+    """
+    def __init__(
+            self,
+            min_area: int = 10,
+            footprint: npt.NDArray | None = None,
+            to_gray_func: Callable = partial(np.max, axis=2),
+        ):
+        self.min_area = min_area
+        self.footprint = footprint
+        self.to_gray_func = to_gray_func
+
+    @property
+    def name(self) -> str:
+        return "entropy_masker"
+
+    def segment(self, image: np.ndarray) -> dict:
+        if image.ndim == 3:
+            gray = self.to_gray_func(image)
+        else:
+            gray = image
+
+        mask = entropy_masker(gray, self.footprint)
+        return mask_to_geojson(mask, self.min_area)
+
+
+def entropy_masker(
+    image: npt.NDArray,
+    footprint: npt.NDArray[np.int_] | None = None,
+) -> npt.NDArray[np.bool_]:
+    """
+    Extract foreground from background in histopathological images using an Otsu threshold on local entropy.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        2D grayscale image.
+    footprint : np.ndarray, default=`skimage.morphology.disk(5)`
+        Footprint to use with `skimage.filters.rank.entropy`.
+    keep_pixels_with_min_value : float, default=None
+        Keep pixels with values greater than or equal to `keep_pixels_with_min_value`.
+
+    Returns
+    -------
+    np.ndarray
+        Tissue mask
+
+    References
+    ----------
+    .. [1] https://doi.org/10.1038/s41598-023-29638-1
+    """
+    if footprint is None:
+        footprint = disk(9)
+
+    try:
+        ent = apply_parallel(
+            entropy,
+            image,
+            dtype=image.dtype,
+            extra_arguments=(footprint,),
+        )
+    except RuntimeError as e:
+        warnings.warn(
+            f"skimage.filters.rank.entropy in using skimage.util.apply_parallel failed with RuntimeError: {e}. "
+            "Falling back to sequential processing. This will be slower. Run pip install segmenteer[entropymasker] for faster processing.",
+            DaskWarning,
+        )
+        ent = entropy(image, footprint)
+    threshold: float = threshold_otsu(ent)
+    mask: npt.NDArray[np.bool_] = ent >= threshold
+    return mask

@@ -10,6 +10,7 @@ from segmenteer.methods import (
     OtsuSegmenter,
     LiSegmenter,
     YenSegmenter,
+    EntropyMaskerSegmenter,
     MorphologicalSegmenter,
     WatershedSegmenter,
 )
@@ -55,6 +56,7 @@ __all__ = [
     "OtsuSegmenter",
     "LiSegmenter",
     "YenSegmenter",
+    "EntropyMaskerSegmenter",
     "MorphologicalSegmenter",
     "WatershedSegmenter",
     "SupervisedMetrics",
