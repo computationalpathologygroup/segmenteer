@@ -126,9 +126,6 @@ def entropy_masker(
         2D grayscale image.
     footprint : np.ndarray, default=`skimage.morphology.disk(9)`
         Footprint to use with `skimage.filters.rank.entropy`.
-    keep_pixels_with_min_value : float, default=None
-        Keep pixels with values greater than or equal to `keep_pixels_with_min_value`.
-
     Returns
     -------
     np.ndarray
