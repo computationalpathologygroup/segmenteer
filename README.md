@@ -1,6 +1,6 @@
 # segmenteer
 
-Currently under development.
+<small>Currently under development.</small>
 
 Supported now:
 - Unsupervised classical segmentation methods
