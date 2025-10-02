@@ -1,0 +1,27 @@
+[project]
+name = "segmenteer"
+version = "0.0.1"
+description = "segmentation benchmarking library"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "scikit-image>=0.20.0",
+    "pillow>=10.0.0",
+    "tifffile>=2023.0.0",
+    "imagecodecs>=2023.0.0",
+    "shapely>=2.0.0",
+    "geojson>=3.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["segmenteer"]
