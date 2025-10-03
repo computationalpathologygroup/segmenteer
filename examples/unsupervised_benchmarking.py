@@ -26,6 +26,7 @@ def main():
         seg.LiSegmenter(),
         seg.YenSegmenter(),
         seg.MorphologicalSegmenter(disk_size=3),
+        seg.EntropyMaskerSegmenter(),
     ]
 
     runner = seg.BenchmarkRunner()
