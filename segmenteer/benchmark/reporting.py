@@ -1,10 +1,11 @@
 from pathlib import Path
+from typing import List, Union
 import json
 from dataclasses import asdict
 from segmenteer.benchmark.runner import BenchmarkResult
 
 
-def export_results_json(results: list[BenchmarkResult], output_path: str | Path):
+def export_results_json(results: List[BenchmarkResult], output_path: Union[str, Path]):
     output_path = Path(output_path)
 
     data = []
@@ -25,7 +26,7 @@ def export_results_json(results: list[BenchmarkResult], output_path: str | Path)
         json.dump(data, f, indent=2)
 
 
-def export_results_csv(results: list[BenchmarkResult], output_path: str | Path):
+def export_results_csv(results: List[BenchmarkResult], output_path: Union[str, Path]):
     output_path = Path(output_path)
 
     lines = []

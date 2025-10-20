@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Union
 import numpy as np
 from PIL import Image
 from segmenteer.core.utils import geojson_to_mask
@@ -49,7 +50,9 @@ def create_heatmap_overlay(
     return overlay
 
 
-def save_thumbnail(image: np.ndarray, output_path: str | Path, max_size: int = 1024):
+def save_thumbnail(
+    image: np.ndarray, output_path: Union[str, Path], max_size: int = 1024
+):
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -67,7 +70,7 @@ def save_thumbnail(image: np.ndarray, output_path: str | Path, max_size: int = 1
 def save_heatmap_thumbnail(
     image: np.ndarray,
     geojson_data: dict,
-    output_path: str | Path,
+    output_path: Union[str, Path],
     max_size: int = 1024,
     alpha: float = 0.4,
 ):
