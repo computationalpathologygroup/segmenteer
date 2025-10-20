@@ -22,6 +22,19 @@ dev = [
 entropymasker = [
     "dask>=2025.9.1",
 ]
+dl = [
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
+    "transformers>=4.35.0",
+    "huggingface_hub>=0.19.0",
+]
+all = [
+    "dask>=2025.9.1",
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
+    "transformers>=4.35.0",
+    "huggingface_hub>=0.19.0",
+]
 
 [build-system]
 requires = ["hatchling"]

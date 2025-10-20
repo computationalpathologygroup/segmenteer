@@ -1,27 +1,21 @@
-"""Segmentation methods organized by approach type."""
+"""Classical image processing methods for segmentation."""
 
-from segmenteer.methods.classical import (
+from segmenteer.methods.classical.threshold import (
     OtsuSegmenter,
     LiSegmenter,
     YenSegmenter,
     EntropyMaskerSegmenter,
+)
+from segmenteer.methods.classical.morphological import (
     MorphologicalSegmenter,
     WatershedSegmenter,
 )
 
-# Import submodules for easier access
-from segmenteer.methods import classical, ml, dl
-
 __all__ = [
-    # Classical methods
     "OtsuSegmenter",
     "LiSegmenter",
     "YenSegmenter",
     "EntropyMaskerSegmenter",
     "MorphologicalSegmenter",
     "WatershedSegmenter",
-    # Submodules
-    "classical",
-    "ml",
-    "dl",
 ]

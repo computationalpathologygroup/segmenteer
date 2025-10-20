@@ -1,6 +1,6 @@
 import warnings
 from functools import partial
-from typing import Callable
+from typing import Callable, Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -11,10 +11,13 @@ from skimage.morphology import disk
 from skimage.util import apply_parallel
 from segmenteer.core.utils import mask_to_geojson
 
+
 class DaskWarning(UserWarning):
     pass
 
-warnings.simplefilter('once', DaskWarning)
+
+warnings.simplefilter("once", DaskWarning)
+
 
 class OtsuSegmenter:
     def __init__(self, min_area: int = 10):
@@ -89,12 +92,13 @@ class EntropyMaskerSegmenter:
     ----------
     [1] https://doi.org/10.1038/s41598-023-29638-1
     """
+
     def __init__(
-            self,
-            min_area: int = 10,
-            footprint: npt.NDArray | None = None,
-            to_gray_func: Callable = partial(np.max, axis=2),
-        ):
+        self,
+        min_area: int = 10,
+        footprint: Optional[npt.NDArray] = None,
+        to_gray_func: Callable = partial(np.max, axis=2),
+    ):
         self.min_area = min_area
         self.footprint = footprint
         self.to_gray_func = to_gray_func
@@ -115,7 +119,7 @@ class EntropyMaskerSegmenter:
 
 def entropy_masker(
     image: npt.NDArray,
-    footprint: npt.NDArray[np.int_] | None = None,
+    footprint: Optional[npt.NDArray[np.int_]] = None,
 ) -> npt.NDArray[np.bool_]:
     """
     Extract foreground from background in histopathological images using an Otsu threshold on local entropy.
