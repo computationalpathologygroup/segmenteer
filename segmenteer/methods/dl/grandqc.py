@@ -1,112 +1,32 @@
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
+from pathlib import Path
 from PIL import Image
 from torchvision import transforms
 from segmenteer.core.utils import mask_to_geojson
 
 
-class ConvBlock(nn.Module):
-    def __init__(self, in_channels: int, out_channels: int):
-        super().__init__()
-        self.conv = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, 3, padding=1),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(out_channels, out_channels, 3, padding=1),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(inplace=True),
-        )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.conv(x)
-
-
-class UNetPlusPlus(nn.Module):
-    def __init__(
-        self,
-        in_channels: int = 3,
-        num_classes: int = 1,
-        deep_supervision: bool = False,
-    ):
-        super().__init__()
-        self.deep_supervision = deep_supervision
-
-        nb_filter = [32, 64, 128, 256, 512]
-
-        self.pool = nn.MaxPool2d(2, 2)
-        self.up = nn.Upsample(scale_factor=2, mode="bilinear", align_corners=True)
-
-        self.conv0_0 = ConvBlock(in_channels, nb_filter[0])
-        self.conv1_0 = ConvBlock(nb_filter[0], nb_filter[1])
-        self.conv2_0 = ConvBlock(nb_filter[1], nb_filter[2])
-        self.conv3_0 = ConvBlock(nb_filter[2], nb_filter[3])
-        self.conv4_0 = ConvBlock(nb_filter[3], nb_filter[4])
-
-        self.conv0_1 = ConvBlock(nb_filter[0] + nb_filter[1], nb_filter[0])
-        self.conv1_1 = ConvBlock(nb_filter[1] + nb_filter[2], nb_filter[1])
-        self.conv2_1 = ConvBlock(nb_filter[2] + nb_filter[3], nb_filter[2])
-        self.conv3_1 = ConvBlock(nb_filter[3] + nb_filter[4], nb_filter[3])
-
-        self.conv0_2 = ConvBlock(nb_filter[0] * 2 + nb_filter[1], nb_filter[0])
-        self.conv1_2 = ConvBlock(nb_filter[1] * 2 + nb_filter[2], nb_filter[1])
-        self.conv2_2 = ConvBlock(nb_filter[2] * 2 + nb_filter[3], nb_filter[2])
-
-        self.conv0_3 = ConvBlock(nb_filter[0] * 3 + nb_filter[1], nb_filter[0])
-        self.conv1_3 = ConvBlock(nb_filter[1] * 3 + nb_filter[2], nb_filter[1])
-
-        self.conv0_4 = ConvBlock(nb_filter[0] * 4 + nb_filter[1], nb_filter[0])
-
-        if self.deep_supervision:
-            self.final1 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-            self.final2 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-            self.final3 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-            self.final4 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-        else:
-            self.final = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-
-    def forward(self, input: torch.Tensor) -> torch.Tensor:
-        x0_0 = self.conv0_0(input)
-        x1_0 = self.conv1_0(self.pool(x0_0))
-        x0_1 = self.conv0_1(torch.cat([x0_0, self.up(x1_0)], 1))
-
-        x2_0 = self.conv2_0(self.pool(x1_0))
-        x1_1 = self.conv1_1(torch.cat([x1_0, self.up(x2_0)], 1))
-        x0_2 = self.conv0_2(torch.cat([x0_0, x0_1, self.up(x1_1)], 1))
-
-        x3_0 = self.conv3_0(self.pool(x2_0))
-        x2_1 = self.conv2_1(torch.cat([x2_0, self.up(x3_0)], 1))
-        x1_2 = self.conv1_2(torch.cat([x1_0, x1_1, self.up(x2_1)], 1))
-        x0_3 = self.conv0_3(torch.cat([x0_0, x0_1, x0_2, self.up(x1_2)], 1))
-
-        x4_0 = self.conv4_0(self.pool(x3_0))
-        x3_1 = self.conv3_1(torch.cat([x3_0, self.up(x4_0)], 1))
-        x2_2 = self.conv2_2(torch.cat([x2_0, x2_1, self.up(x3_1)], 1))
-        x1_3 = self.conv1_3(torch.cat([x1_0, x1_1, x1_2, self.up(x2_2)], 1))
-        x0_4 = self.conv0_4(torch.cat([x0_0, x0_1, x0_2, x0_3, self.up(x1_3)], 1))
-
-        if self.deep_supervision:
-            output1 = self.final1(x0_1)
-            output2 = self.final2(x0_2)
-            output3 = self.final3(x0_3)
-            output4 = self.final4(x0_4)
-            return [output1, output2, output3, output4]
-        else:
-            output = self.final(x0_4)
-            return output
+def get_model_cache_dir() -> Path:
+    cache_dir = Path(__file__).parent.parent.parent.parent / "models" / "grandqc"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    return cache_dir
 
 
 class GrandQCSegmenter:
     def __init__(
         self,
-        model_name: str = "MahmoodLab/grandqc-tissue-seg",
+        model_repo: str = "MahmoodLab/hest-tissue-seg",
+        model_file: str = "GrandQC_MPP1_state_dict.pth",
+        checkpoint_path: str | None = None,
         device: str | None = None,
         confidence_threshold: float = 0.5,
         min_area: int = 10,
         input_size: int = 512,
     ):
-        self.model_name = model_name
+        self.model_repo = model_repo
+        self.model_file = model_file
+        self.checkpoint_path = checkpoint_path
         self.confidence_threshold = confidence_threshold
         self.min_area = min_area
         self.input_size = input_size
@@ -117,33 +37,74 @@ class GrandQCSegmenter:
             self.device = torch.device(device)
 
         self._model = None
+        self._transform = None
         self._load_model()
 
     def _load_model(self):
         try:
-            from huggingface_hub import hf_hub_download
+            import segmentation_models_pytorch as smp
         except ImportError:
             raise ImportError(
-                "huggingface_hub is required for GrandQC segmenter. "
-                "Install with: pip install huggingface_hub"
+                "segmentation_models_pytorch is required for GrandQC. "
+                "Install with: pip install segmentation-models-pytorch"
             )
 
-        self._model = UNetPlusPlus(in_channels=3, num_classes=1, deep_supervision=False)
+        self._model = smp.UnetPlusPlus(
+            encoder_name="efficientnet-b0",
+            encoder_weights=None,
+            in_channels=3,
+            classes=1,
+            activation=None,
+        )
 
-        try:
-            checkpoint_path = hf_hub_download(
-                repo_id=self.model_name, filename="pytorch_model.bin"
-            )
-            state_dict = torch.load(checkpoint_path, map_location=self.device)
-            self._model.load_state_dict(state_dict)
-        except Exception as e:
-            print(
-                f"Warning: Could not load pretrained weights from {self.model_name}. "
-                f"Using randomly initialized weights. Error: {e}"
-            )
+        if self.checkpoint_path:
+            checkpoint_file = Path(self.checkpoint_path)
+        else:
+            checkpoint_file = get_model_cache_dir() / self.model_file
+
+        if checkpoint_file.exists():
+            try:
+                state_dict = torch.load(
+                    checkpoint_file, map_location=self.device, weights_only=True
+                )
+                self._model.load_state_dict(state_dict)
+                print(f"Loaded GrandQC weights from {checkpoint_file}")
+            except Exception as e:
+                print(
+                    f"Warning: Could not load checkpoint from {checkpoint_file}. Error: {e}"
+                )
+        else:
+            try:
+                from huggingface_hub import hf_hub_download
+                
+                print(f"Downloading GrandQC model from {self.model_repo}/{self.model_file}...")
+                downloaded_path = hf_hub_download(
+                    repo_id=self.model_repo,
+                    filename=self.model_file,
+                    cache_dir=get_model_cache_dir()
+                )
+                state_dict = torch.load(downloaded_path, map_location=self.device, weights_only=True)
+                self._model.load_state_dict(state_dict)
+                print(f"Loaded GrandQC model from HuggingFace")
+            except Exception as e:
+                print(
+                    f"Warning: Could not download model from HuggingFace. "
+                    f"Error: {e}"
+                )
+                raise
 
         self._model = self._model.to(self.device)
         self._model.eval()
+
+        self._transform = transforms.Compose(
+            [
+                transforms.Resize((self.input_size, self.input_size)),
+                transforms.ToTensor(),
+                transforms.Normalize(
+                    mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
+                ),
+            ]
+        )
 
     @property
     def name(self) -> str:
@@ -154,35 +115,25 @@ class GrandQCSegmenter:
             image = (image * 255).astype(np.uint8)
 
         pil_image = Image.fromarray(image)
-
-        transform = transforms.Compose(
-            [
-                transforms.Resize((self.input_size, self.input_size)),
-                transforms.ToTensor(),
-                transforms.Normalize(
-                    mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
-                ),
-            ]
-        )
-
-        tensor = transform(pil_image)
+        tensor = self._transform(pil_image)
         return tensor.unsqueeze(0).to(self.device)
 
     def _postprocess_output(
         self, outputs: torch.Tensor, original_shape: tuple
     ) -> np.ndarray:
-        logits = outputs.squeeze(0)
-
         upsampled_logits = F.interpolate(
-            logits.unsqueeze(0),
+            outputs,
             size=original_shape[:2],
             mode="bilinear",
             align_corners=False,
         )
 
         probs = torch.sigmoid(upsampled_logits)
-        mask = (probs > self.confidence_threshold).squeeze().cpu().numpy()
-
+        mask = (probs > self.confidence_threshold).cpu().numpy()
+        
+        while mask.ndim > 2:
+            mask = mask.squeeze(0)
+        
         return mask.astype(bool)
 
     def segment(self, image: np.ndarray) -> dict:

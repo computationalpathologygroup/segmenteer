@@ -2,18 +2,22 @@ import segmenteer as seg
 
 
 def main():
-    image = seg.load_image("data/ce1e4a10-d4e7-4524-97ac-9f88fe971778")
-    
-    print(
-        f"Original image: {image.shape[0]}x{image.shape[1]} pixels ({image.shape[0] * image.shape[1]:,} total)"
+    dicom_level = 8
+    image = seg.load_image(
+        "data/ce1e4a10-d4e7-4524-97ac-9f88fe971778", dicom_level=dicom_level
     )
     
-    downsample_factor = 8
-    print(f"Downsampling by {downsample_factor}x for faster processing...")
-    image = seg.downsample_image(image, downsample_factor)
     print(
-        f"Working with: {image.shape[0]}x{image.shape[1]} pixels ({image.shape[0] * image.shape[1]:,} total)\n"
+        f"Loaded image at level {dicom_level}: {image.shape[0]}x{image.shape[1]} pixels ({image.shape[0] * image.shape[1]:,} total)"
     )
+    
+    downsample_factor = 2
+    if downsample_factor > 1:
+        print(f"Downsampling by {downsample_factor}x for faster processing...")
+        image = seg.downsample_image(image, downsample_factor)
+        print(
+            f"Working with: {image.shape[0]}x{image.shape[1]} pixels ({image.shape[0] * image.shape[1]:,} total)\n"
+        )
     
     output_dir = seg.create_timestamped_output_dir("outputs")
     print(f"Output directory: {output_dir}\n")
@@ -80,12 +84,20 @@ def main():
     seg.save_thumbnail(image, output_dir / "original_thumbnail.png")
     print(f"  Saved: original_thumbnail.png")
     
+    upscale_factor = (2 ** dicom_level) * downsample_factor
+    
     for result in results:
         seg.save_geojson(
             result.geojson,
             output_dir / f"{result.method_name}_downsampled.geojson",
         )
+        seg.save_geojson(
+            result.geojson,
+            output_dir / f"{result.method_name}_fullres.geojson",
+            scale_factor=upscale_factor,
+        )
         print(f"    - {result.method_name}_downsampled.geojson")
+        print(f"    - {result.method_name}_fullres.geojson")
     
     for result in results:
         seg.save_heatmap_thumbnail(

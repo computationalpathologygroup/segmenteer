@@ -1,20 +1,31 @@
 import numpy as np
 import torch
 import torch.nn.functional as F
-from PIL import Image
+from pathlib import Path
 from torchvision import transforms
+from torchvision.models.segmentation import deeplabv3_resnet101
 from segmenteer.core.utils import mask_to_geojson
+
+
+def get_model_cache_dir() -> Path:
+    cache_dir = Path(__file__).parent.parent.parent.parent / "models" / "hest"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    return cache_dir
 
 
 class HESTSegmenter:
     def __init__(
         self,
-        model_name: str = "MahmoodLab/hest-tissue-seg",
+        model_repo: str = "MahmoodLab/hest-tissue-seg",
+        model_file: str = "deeplabv3_seg_v4.ckpt",
+        checkpoint_path: str | None = None,
         device: str | None = None,
         confidence_threshold: float = 0.5,
         min_area: int = 10,
     ):
-        self.model_name = model_name
+        self.model_repo = model_repo
+        self.model_file = model_file
+        self.checkpoint_path = checkpoint_path
         self.confidence_threshold = confidence_threshold
         self.min_area = min_area
 
@@ -24,44 +35,88 @@ class HESTSegmenter:
             self.device = torch.device(device)
 
         self._model = None
-        self._processor = None
+        self._transform = None
         self._load_model()
 
     def _load_model(self):
-        try:
-            from transformers import (
-                AutoImageProcessor,
-                AutoModelForSemanticSegmentation,
-            )
-        except ImportError:
-            raise ImportError(
-                "transformers is required for HEST segmenter. "
-                "Install with: pip install transformers"
-            )
+        self._model = deeplabv3_resnet101(weights=None, num_classes=2)
 
-        self._processor = AutoImageProcessor.from_pretrained(self.model_name)
-        self._model = AutoModelForSemanticSegmentation.from_pretrained(self.model_name)
+        if self.checkpoint_path:
+            checkpoint_file = Path(self.checkpoint_path)
+        else:
+            checkpoint_file = get_model_cache_dir() / self.model_file
+
+        if checkpoint_file.exists():
+            try:
+                checkpoint = torch.load(
+                    checkpoint_file, map_location=self.device, weights_only=False
+                )
+                state_dict = checkpoint.get('state_dict', checkpoint)
+                
+                new_state_dict = {}
+                for k, v in state_dict.items():
+                    new_key = k.replace('model.', '') if k.startswith('model.') else k
+                    new_state_dict[new_key] = v
+                
+                self._model.load_state_dict(new_state_dict, strict=False)
+                print(f"Loaded HEST weights from {checkpoint_file}")
+            except Exception as e:
+                print(
+                    f"Warning: Could not load checkpoint from {checkpoint_file}. Error: {e}"
+                )
+        else:
+            try:
+                from huggingface_hub import hf_hub_download
+                
+                print(f"Downloading HEST model from {self.model_repo}/{self.model_file}...")
+                downloaded_path = hf_hub_download(
+                    repo_id=self.model_repo,
+                    filename=self.model_file,
+                    cache_dir=get_model_cache_dir()
+                )
+                checkpoint = torch.load(downloaded_path, map_location=self.device, weights_only=False)
+                state_dict = checkpoint.get('state_dict', checkpoint)
+                
+                new_state_dict = {}
+                for k, v in state_dict.items():
+                    new_key = k.replace('model.', '') if k.startswith('model.') else k
+                    new_state_dict[new_key] = v
+                
+                self._model.load_state_dict(new_state_dict, strict=False)
+                print(f"Loaded HEST model from HuggingFace")
+            except Exception as e:
+                print(
+                    f"Warning: Could not download/load model from HuggingFace. "
+                    f"Using randomly initialized weights. Error: {e}"
+                )
+
         self._model = self._model.to(self.device)
         self._model.eval()
+
+        self._transform = transforms.Compose(
+            [
+                transforms.ToTensor(),
+                transforms.Normalize(
+                    mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
+                ),
+            ]
+        )
 
     @property
     def name(self) -> str:
         return "hest_deeplabv3"
 
     def _preprocess_image(self, image: np.ndarray) -> torch.Tensor:
-        if image.dtype == np.uint8:
-            pil_image = Image.fromarray(image)
-        else:
-            image_uint8 = (image * 255).astype(np.uint8)
-            pil_image = Image.fromarray(image_uint8)
+        if image.dtype != np.uint8:
+            image = (image * 255).astype(np.uint8)
 
-        inputs = self._processor(images=pil_image, return_tensors="pt")
-        return inputs.pixel_values.to(self.device)
+        tensor = self._transform(image)
+        return tensor.unsqueeze(0).to(self.device)
 
     def _postprocess_output(
-        self, outputs: torch.Tensor, original_shape: tuple
+        self, outputs: dict, original_shape: tuple
     ) -> np.ndarray:
-        logits = outputs.logits
+        logits = outputs["out"]
 
         upsampled_logits = F.interpolate(
             logits,
@@ -70,8 +125,9 @@ class HESTSegmenter:
             align_corners=False,
         )
 
-        probs = torch.sigmoid(upsampled_logits)
-        mask = (probs > self.confidence_threshold).squeeze().cpu().numpy()
+        probs = torch.softmax(upsampled_logits, dim=1)
+        tissue_probs = probs[:, 1, :, :]
+        mask = (tissue_probs > self.confidence_threshold).squeeze().cpu().numpy()
 
         return mask.astype(bool)
 
@@ -81,10 +137,10 @@ class HESTSegmenter:
 
         original_shape = image.shape
 
-        pixel_values = self._preprocess_image(image)
+        input_tensor = self._preprocess_image(image)
 
         with torch.no_grad():
-            outputs = self._model(pixel_values=pixel_values)
+            outputs = self._model(input_tensor)
 
         mask = self._postprocess_output(outputs, original_shape)
 
