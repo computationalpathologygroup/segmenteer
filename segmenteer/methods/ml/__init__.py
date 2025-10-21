@@ -1,5 +1,5 @@
-"""Machine learning methods for segmentation."""
+from segmenteer.methods.ml.unsupervised import UnsupervisedClusteringSegmenter
 
-# Placeholder for future ML-based segmentation methods
-
-__all__ = []
+__all__ = [
+    "UnsupervisedClusteringSegmenter",
+]

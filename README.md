@@ -1,12 +1,8 @@
 # segmenteer
 
-<small>___Currently under development.___</small>
+<small> ___Currently under development.___ </small>
 
-Supported now:
-- Unsupervised classical segmentation methods
-- TIFF whole slide image format
+Supported: dicom, tiff image formats; geojson mask output format; unsupervised benchmarking; deep learning models (GrandQC, HEST), classical image segmentation methods, entropy masking segmentation.
 
-Tested:
-- Unsupervised segmentation with TIFFs
+![Segmentation methods visual comparison example](docs/readme_figure.png)
 
-_____

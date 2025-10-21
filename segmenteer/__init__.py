@@ -13,6 +13,7 @@ from segmenteer.methods import (
     EntropyMaskerSegmenter,
     MorphologicalSegmenter,
     WatershedSegmenter,
+    UnsupervisedClusteringSegmenter,
 )
 from segmenteer.metrics import (
     SupervisedMetrics,
@@ -76,6 +77,7 @@ __all__ = [
     "EntropyMaskerSegmenter",
     "MorphologicalSegmenter",
     "WatershedSegmenter",
+    "UnsupervisedClusteringSegmenter",
     "HESTSegmenter",
     "GrandQCSegmenter",
     "SupervisedMetrics",

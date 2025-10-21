@@ -21,10 +21,7 @@ def main():
     print(f"Output directory: {output_dir}\n")
 
     segmenters = [
-        seg.OtsuSegmenter(),
-        seg.LiSegmenter(),
-        seg.YenSegmenter(),
-        seg.MorphologicalSegmenter(disk_size=3),
+        seg.OtsuSegmenter(min_area=100),
         seg.EntropyMaskerSegmenter(),
         seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
         seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),

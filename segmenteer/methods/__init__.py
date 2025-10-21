@@ -1,5 +1,3 @@
-"""Segmentation methods organized by approach type."""
-
 from segmenteer.methods.classical import (
     OtsuSegmenter,
     LiSegmenter,
@@ -8,19 +6,20 @@ from segmenteer.methods.classical import (
     MorphologicalSegmenter,
     WatershedSegmenter,
 )
+from segmenteer.methods.ml import (
+    UnsupervisedClusteringSegmenter,
+)
 
-# Import submodules for easier access
 from segmenteer.methods import classical, ml, dl
 
 __all__ = [
-    # Classical methods
     "OtsuSegmenter",
     "LiSegmenter",
     "YenSegmenter",
     "EntropyMaskerSegmenter",
     "MorphologicalSegmenter",
     "WatershedSegmenter",
-    # Submodules
+    "UnsupervisedClusteringSegmenter",
     "classical",
     "ml",
     "dl",
