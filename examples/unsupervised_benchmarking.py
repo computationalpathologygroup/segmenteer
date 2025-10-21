@@ -2,9 +2,8 @@ import segmenteer as seg
 
 
 def main():
-    # original_image = seg.load_image("data_small/013_M1.tiff")
     original_image = seg.load_image(
-        path="data_small/1d4c700d-07d1-4553-ac65-820559bf8e94", dicom_level=2
+        path="data/ce1e4a10-d4e7-4524-97ac-9f88fe971778", dicom_level=2
     )
 
     print(
@@ -27,6 +26,8 @@ def main():
         seg.YenSegmenter(),
         seg.MorphologicalSegmenter(disk_size=3),
         seg.EntropyMaskerSegmenter(),
+        seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
+        seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),
     ]
 
     runner = seg.BenchmarkRunner()

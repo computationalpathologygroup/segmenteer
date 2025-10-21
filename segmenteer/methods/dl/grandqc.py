@@ -24,12 +24,10 @@ class GrandQCSegmenter:
         device: str | None = None,
         confidence_threshold: float = 0.5,
         min_area: int = 10,
-        input_size: int = 512,
     ):
         self.checkpoint_path = checkpoint_path
         self.confidence_threshold = confidence_threshold
         self.min_area = min_area
-        self.input_size = input_size
 
         if device is None:
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -125,7 +123,6 @@ class GrandQCSegmenter:
 
         self._transform = transforms.Compose(
             [
-                transforms.Resize((self.input_size, self.input_size)),
                 transforms.ToTensor(),
                 transforms.Normalize(
                     mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
@@ -137,26 +134,50 @@ class GrandQCSegmenter:
     def name(self) -> str:
         return f"grandqc_tissue_detection_mpp{self.MPP}"
 
-    def _preprocess_image(self, image: np.ndarray) -> torch.Tensor:
+    def _pad_to_divisible(self, image: np.ndarray, divisor: int = 32):
+        h, w = image.shape[:2]
+        
+        pad_h = (divisor - h % divisor) % divisor
+        pad_w = (divisor - w % divisor) % divisor
+        
+        if pad_h == 0 and pad_w == 0:
+            return image, 0, 0
+        
+        if image.ndim == 3:
+            padded = np.pad(
+                image,
+                ((0, pad_h), (0, pad_w), (0, 0)),
+                mode='reflect'
+            )
+        else:
+            padded = np.pad(
+                image,
+                ((0, pad_h), (0, pad_w)),
+                mode='reflect'
+            )
+        
+        return padded, pad_h, pad_w
+
+    def _preprocess_image(self, image: np.ndarray):
         if image.dtype != np.uint8:
             image = (image * 255).astype(np.uint8)
 
-        pil_image = Image.fromarray(image)
+        padded_image, pad_h, pad_w = self._pad_to_divisible(image)
+        
+        pil_image = Image.fromarray(padded_image)
         tensor = self._transform(pil_image)
-        return tensor.unsqueeze(0).to(self.device)
+        return tensor.unsqueeze(0).to(self.device), pad_h, pad_w
 
     def _postprocess_output(
-        self, outputs: torch.Tensor, original_shape: tuple
+        self, outputs: torch.Tensor, original_shape: tuple, pad_h: int, pad_w: int
     ) -> np.ndarray:
-        upsampled_logits = F.interpolate(
-            outputs,
-            size=original_shape[:2],
-            mode="bilinear",
-            align_corners=False,
-        )
-
-        probs = torch.softmax(upsampled_logits, dim=1)
-        tissue_probs = probs[:, 1, :, :]
+        probs = torch.softmax(outputs, dim=1)
+        tissue_probs = probs[:, 0, :, :]
+        
+        if pad_h > 0 or pad_w > 0:
+            h, w = original_shape[:2]
+            tissue_probs = tissue_probs[:, :h, :w]
+        
         mask = (tissue_probs > self.confidence_threshold).squeeze().cpu().numpy()
 
         return mask.astype(bool)
@@ -167,11 +188,11 @@ class GrandQCSegmenter:
 
         original_shape = image.shape
 
-        input_tensor = self._preprocess_image(image)
+        input_tensor, pad_h, pad_w = self._preprocess_image(image)
 
         with torch.no_grad():
             outputs = self._model(input_tensor)
 
-        mask = self._postprocess_output(outputs, original_shape)
+        mask = self._postprocess_output(outputs, original_shape, pad_h, pad_w)
 
         return mask_to_geojson(mask, self.min_area)
