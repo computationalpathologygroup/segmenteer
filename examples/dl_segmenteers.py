@@ -2,35 +2,30 @@ import segmenteer as seg
 
 
 def main():
-    dicom_level = 8
-    image = seg.load_image(
-        "data/ce1e4a10-d4e7-4524-97ac-9f88fe971778", dicom_level=dicom_level
-    )
+    wsi_path = "data/ce1e4a10-d4e7-4524-97ac-9f88fe971778"
     
-    print(
-        f"Loaded image at level {dicom_level}: {image.shape[0]}x{image.shape[1]} pixels ({image.shape[0] * image.shape[1]:,} total)"
-    )
-    
-    downsample_factor = 2
-    if downsample_factor > 1:
-        print(f"Downsampling by {downsample_factor}x for faster processing...")
-        image = seg.downsample_image(image, downsample_factor)
-        print(
-            f"Working with: {image.shape[0]}x{image.shape[1]} pixels ({image.shape[0] * image.shape[1]:,} total)\n"
-        )
+    metadata = seg.get_wsi_metadata(wsi_path)
+    print(f"\nWSI Information:")
+    print(f"  Dimensions: {metadata.width}x{metadata.height}")
+    print(f"  Native MPP: {metadata.mpp}")
+    print(f"  Pyramid levels: {metadata.num_levels}")
     
     output_dir = seg.create_timestamped_output_dir("outputs")
-    print(f"Output directory: {output_dir}\n")
+    print(f"\nOutput directory: {output_dir}\n")
+    
+    target_mpp = 4.0
+    print(f"Loading image at target MPP: {target_mpp}")
+    image, _ = seg.load_wsi_at_mpp(wsi_path, target_mpp=target_mpp, verbose=True)
     
     segmenters = [
-        seg.OtsuSegmenter(),
-        seg.HESTSegmenter(confidence_threshold=0.5, min_area=10),
-        seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10, input_size=512),
+        seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
+        seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),
     ]
     
     runner = seg.BenchmarkRunner()
     results = runner.run_multiple(segmenters, image)
     
+    print("\n" + "=" * 80)
     print("Deep Learning Segmentation Benchmarking")
     print("=" * 80)
     
@@ -38,66 +33,47 @@ def main():
     print("-" * 80)
     for result in results:
         print(
-            f"{result.method_name:30s} {result.execution_time:8.4f}s  "
+            f"{result.method_name:40s} {result.execution_time:8.4f}s  "
             f"{result.seconds_per_pixel:.10f}s/px"
         )
     
-    print()
-    print("Segmentation Quality Metrics (Unsupervised)")
+    print("\nSegmentation Quality Metrics")
     print("-" * 80)
     print(
-        f"{'Method':30s} {'Objects':>8s} {'Coverage':>10s} {'Mean Area':>12s} {'Compactness':>12s}"
+        f"{'Method':40s} {'Objects':>8s} {'Coverage':>10s} "
+        f"{'Mean Area':>12s} {'Compactness':>12s}"
     )
     print("-" * 80)
     
     for result in results:
         u = result.unsupervised_metrics
         print(
-            f"{result.method_name:30s} "
+            f"{result.method_name:40s} "
             f"{u.num_objects:8d} "
             f"{u.coverage_ratio * 100:9.2f}% "
             f"{u.mean_area:12.2f} "
             f"{u.mean_compactness:12.4f}"
         )
     
-    print()
-    print("Detailed Statistics")
-    print("-" * 80)
-    
-    for result in results:
-        u = result.unsupervised_metrics
-        print(f"\n{result.method_name}:")
-        print(f"  Objects: {u.num_objects}")
-        print(f"  Total area: {u.total_area:.2f}")
-        print(
-            f"  Area stats: mean={u.mean_area:.2f}, std={u.std_area:.2f}, median={u.median_area:.2f}"
-        )
-        print(f"  Area range: [{u.min_area:.2f}, {u.max_area:.2f}]")
-        print(
-            f"  Shape metrics: compactness={u.mean_compactness:.4f}, solidity={u.mean_solidity:.4f}"
-        )
-        print(f"  Coverage: {u.coverage_ratio * 100:.2f}%")
-    
-    print()
-    print("Saving results...")
+    print("\nSaving results...")
     
     seg.save_thumbnail(image, output_dir / "original_thumbnail.png")
-    print(f"  Saved: original_thumbnail.png")
+    print(f"  - original_thumbnail.png")
     
-    upscale_factor = (2 ** dicom_level) * downsample_factor
+    scale_factor = seg.calculate_scale_factor_for_coordinates(target_mpp, metadata.mpp)
     
     for result in results:
         seg.save_geojson(
             result.geojson,
-            output_dir / f"{result.method_name}_downsampled.geojson",
+            output_dir / f"{result.method_name}_at_{target_mpp}mpp.geojson",
         )
         seg.save_geojson(
             result.geojson,
-            output_dir / f"{result.method_name}_fullres.geojson",
-            scale_factor=upscale_factor,
+            output_dir / f"{result.method_name}_native_resolution.geojson",
+            scale_factor=scale_factor,
         )
-        print(f"    - {result.method_name}_downsampled.geojson")
-        print(f"    - {result.method_name}_fullres.geojson")
+        print(f"  - {result.method_name}_at_{target_mpp}mpp.geojson")
+        print(f"  - {result.method_name}_native_resolution.geojson")
     
     for result in results:
         seg.save_heatmap_thumbnail(
@@ -107,7 +83,7 @@ def main():
             max_size=1024,
             alpha=0.4,
         )
-        print(f"    - {result.method_name}_heatmap.png")
+        print(f"  - {result.method_name}_heatmap.png")
     
     seg.export_results_csv(results, output_dir / "results.csv")
     seg.export_results_json(results, output_dir / "results.json")

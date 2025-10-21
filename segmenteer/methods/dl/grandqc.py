@@ -14,18 +14,18 @@ def get_model_cache_dir() -> Path:
 
 
 class GrandQCSegmenter:
+    MODEL_FILE = "Tissue_Detection_MPP10.pth"
+    ZENODO_RECORD_ID = "14507273"
+    MPP = 10.0
+
     def __init__(
         self,
-        model_repo: str = "MahmoodLab/hest-tissue-seg",
-        model_file: str = "GrandQC_MPP1_state_dict.pth",
         checkpoint_path: str | None = None,
         device: str | None = None,
         confidence_threshold: float = 0.5,
         min_area: int = 10,
         input_size: int = 512,
     ):
-        self.model_repo = model_repo
-        self.model_file = model_file
         self.checkpoint_path = checkpoint_path
         self.confidence_threshold = confidence_threshold
         self.min_area = min_area
@@ -36,9 +36,41 @@ class GrandQCSegmenter:
         else:
             self.device = torch.device(device)
 
+        print(
+            f"Initializing GrandQC Tissue Detection model (MPP {self.MPP}, 1x magnification)"
+        )
+
         self._model = None
         self._transform = None
         self._load_model()
+
+    def _download_from_zenodo(self, filename: str, cache_dir: Path) -> Path:
+        import requests
+        from tqdm import tqdm
+
+        url = f"https://zenodo.org/records/{self.ZENODO_RECORD_ID}/files/{filename}"
+        output_path = cache_dir / filename
+
+        if output_path.exists():
+            return output_path
+
+        print(f"Downloading {filename} from Zenodo...")
+        print(f"URL: {url}")
+
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+
+        total_size = int(response.headers.get("content-length", 0))
+
+        with open(output_path, "wb") as f, tqdm(
+            total=total_size, unit="B", unit_scale=True, desc=filename
+        ) as pbar:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+                pbar.update(len(chunk))
+
+        print(f"Downloaded to {output_path}")
+        return output_path
 
     def _load_model(self):
         try:
@@ -50,48 +82,43 @@ class GrandQCSegmenter:
             )
 
         self._model = smp.UnetPlusPlus(
-            encoder_name="efficientnet-b0",
+            encoder_name="timm-efficientnet-b0",
             encoder_weights=None,
             in_channels=3,
-            classes=1,
+            classes=2,
             activation=None,
         )
+
+        cache_dir = get_model_cache_dir()
 
         if self.checkpoint_path:
             checkpoint_file = Path(self.checkpoint_path)
         else:
-            checkpoint_file = get_model_cache_dir() / self.model_file
+            checkpoint_file = cache_dir / self.MODEL_FILE
 
-        if checkpoint_file.exists():
-            try:
-                state_dict = torch.load(
-                    checkpoint_file, map_location=self.device, weights_only=True
-                )
-                self._model.load_state_dict(state_dict)
-                print(f"Loaded GrandQC weights from {checkpoint_file}")
-            except Exception as e:
-                print(
-                    f"Warning: Could not load checkpoint from {checkpoint_file}. Error: {e}"
-                )
-        else:
-            try:
-                from huggingface_hub import hf_hub_download
-                
-                print(f"Downloading GrandQC model from {self.model_repo}/{self.model_file}...")
-                downloaded_path = hf_hub_download(
-                    repo_id=self.model_repo,
-                    filename=self.model_file,
-                    cache_dir=get_model_cache_dir()
-                )
-                state_dict = torch.load(downloaded_path, map_location=self.device, weights_only=True)
-                self._model.load_state_dict(state_dict)
-                print(f"Loaded GrandQC model from HuggingFace")
-            except Exception as e:
-                print(
-                    f"Warning: Could not download model from HuggingFace. "
-                    f"Error: {e}"
-                )
-                raise
+            if not checkpoint_file.exists():
+                try:
+                    checkpoint_file = self._download_from_zenodo(
+                        self.MODEL_FILE, cache_dir
+                    )
+                except Exception as e:
+                    print(
+                        f"Error downloading from Zenodo: {e}\n"
+                        f"Please download {self.MODEL_FILE} manually from:\n"
+                        f"https://zenodo.org/records/{self.ZENODO_RECORD_ID}\n"
+                        f"and place it in {cache_dir}"
+                    )
+                    raise
+
+        try:
+            state_dict = torch.load(
+                checkpoint_file, map_location=self.device, weights_only=True
+            )
+            self._model.load_state_dict(state_dict, strict=False)
+            print(f"Loaded GrandQC Tissue Detection weights from {checkpoint_file}")
+        except Exception as e:
+            print(f"Error loading model weights: {e}")
+            raise
 
         self._model = self._model.to(self.device)
         self._model.eval()
@@ -108,7 +135,7 @@ class GrandQCSegmenter:
 
     @property
     def name(self) -> str:
-        return "grandqc_unetplusplus"
+        return f"grandqc_tissue_detection_mpp{self.MPP}"
 
     def _preprocess_image(self, image: np.ndarray) -> torch.Tensor:
         if image.dtype != np.uint8:
@@ -128,12 +155,10 @@ class GrandQCSegmenter:
             align_corners=False,
         )
 
-        probs = torch.sigmoid(upsampled_logits)
-        mask = (probs > self.confidence_threshold).cpu().numpy()
-        
-        while mask.ndim > 2:
-            mask = mask.squeeze(0)
-        
+        probs = torch.softmax(upsampled_logits, dim=1)
+        tissue_probs = probs[:, 1, :, :]
+        mask = (tissue_probs > self.confidence_threshold).squeeze().cpu().numpy()
+
         return mask.astype(bool)
 
     def segment(self, image: np.ndarray) -> dict:

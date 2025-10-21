@@ -43,6 +43,15 @@ from segmenteer.visualization import (
     save_thumbnail,
     save_heatmap_thumbnail,
 )
+from segmenteer.wsi import (
+    WSIMetadata,
+    get_wsi_metadata,
+    calculate_target_level,
+    resample_to_mpp,
+    load_wsi_at_mpp,
+    estimate_mpp_from_magnification,
+    calculate_scale_factor_for_coordinates,
+)
 
 __version__ = "0.1.0"
 
@@ -90,4 +99,11 @@ __all__ = [
     "create_heatmap_overlay",
     "save_thumbnail",
     "save_heatmap_thumbnail",
+    "WSIMetadata",
+    "get_wsi_metadata",
+    "calculate_target_level",
+    "resample_to_mpp",
+    "load_wsi_at_mpp",
+    "estimate_mpp_from_magnification",
+    "calculate_scale_factor_for_coordinates",
 ]
