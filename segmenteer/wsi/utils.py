@@ -34,14 +34,23 @@ def get_wsi_metadata(path: Union[str, Path]) -> WSIMetadata:
 
     if path.is_dir():
         return _get_dicom_metadata(path)
-    elif path.suffix.lower() in [".tif", ".tiff"]:
+
+    suffix = path.suffix.lower()
+
+    if suffix in [".tif", ".tiff"]:
         return _get_tiff_metadata(path)
+    elif suffix == ".mrxs":
+        return _get_openslide_metadata(path)
     else:
         try:
             import openslide
-            return _get_openslide_metadata(path)
+
+            if openslide.OpenSlide.detect_format(str(path)):
+                return _get_openslide_metadata(path)
         except:
-            return _get_pillow_metadata(path)
+            pass
+
+        return _get_pillow_metadata(path)
 
 
 def _get_dicom_metadata(path: Path) -> WSIMetadata:
@@ -51,17 +60,14 @@ def _get_dicom_metadata(path: Path) -> WSIMetadata:
 
     try:
         mpp_obj = wsi.mpp
-        # Convert SizeMm object to float (use average of width and height)
-        if hasattr(mpp_obj, 'width') and hasattr(mpp_obj, 'height'):
+        if hasattr(mpp_obj, "width") and hasattr(mpp_obj, "height"):
             mpp = (mpp_obj.width + mpp_obj.height) / 2.0
         else:
             mpp = float(mpp_obj)
     except:
         mpp = None
 
-    level_dimensions = [
-        (lvl.size.width, lvl.size.height) for lvl in wsi.levels
-    ]
+    level_dimensions = [(lvl.size.width, lvl.size.height) for lvl in wsi.levels]
 
     level_downsamples = [
         wsi.levels[0].size.width / lvl.size.width for lvl in wsi.levels
@@ -112,7 +118,13 @@ def _get_tiff_metadata(path: Path) -> WSIMetadata:
 
 
 def _get_openslide_metadata(path: Path) -> WSIMetadata:
-    import openslide
+    try:
+        import openslide
+    except ImportError:
+        raise ImportError(
+            f"OpenSlide is required to read {path.suffix} files. "
+            "Install with: pip install openslide-python"
+        )
 
     slide = openslide.OpenSlide(str(path))
 
@@ -133,8 +145,8 @@ def _get_openslide_metadata(path: Path) -> WSIMetadata:
         height=height,
         mpp=mpp,
         num_levels=num_levels,
-        level_dimensions=level_dimensions,
-        level_downsamples=level_downsamples,
+        level_dimensions=list(level_dimensions),
+        level_downsamples=list(level_downsamples),
     )
 
 
@@ -206,9 +218,7 @@ def resample_to_mpp(
 
 
 def load_wsi_at_mpp(
-    path: Union[str, Path],
-    target_mpp: float,
-    verbose: bool = True
+    path: Union[str, Path], target_mpp: float, verbose: bool = True
 ) -> Tuple[np.ndarray, WSIMetadata]:
     path = Path(path)
     metadata = get_wsi_metadata(path)
@@ -236,11 +246,7 @@ def load_wsi_at_mpp(
         elif path.suffix.lower() in [".tif", ".tiff"]:
             image = _load_tiff_level(path, level)
         else:
-            try:
-                image = _load_openslide_level(path, level)
-            except:
-                image = _load_pillow(path)
-                additional_scale = target_mpp / metadata.mpp
+            image = _load_openslide_level(path, level)
 
         current_mpp = metadata.mpp * metadata.level_downsamples[level]
 
@@ -251,9 +257,10 @@ def load_wsi_at_mpp(
             image = _load_dicom_level(path, 0)
         elif path.suffix.lower() in [".tif", ".tiff"]:
             import tifffile
+
             image = tifffile.imread(path)
         else:
-            image = np.array(Image.open(path))
+            image = _load_openslide_level(path, 0)
 
         image = resample_to_mpp(image, metadata.mpp, target_mpp)
 
@@ -285,9 +292,19 @@ def _load_tiff_level(path: Path, level: int) -> np.ndarray:
 
 
 def _load_openslide_level(path: Path, level: int) -> np.ndarray:
-    import openslide
+    try:
+        import openslide
+    except ImportError:
+        raise ImportError(
+            f"OpenSlide is required to read {path.suffix} files. "
+            "Install with: pip install openslide-python"
+        )
 
     slide = openslide.OpenSlide(str(path))
+
+    if level >= slide.level_count:
+        level = slide.level_count - 1
+
     level_dimensions = slide.level_dimensions[level]
     region = slide.read_region((0, 0), level, level_dimensions)
     image_array = np.array(region.convert("RGB"))

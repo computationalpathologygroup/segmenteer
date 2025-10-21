@@ -136,26 +136,18 @@ class GrandQCSegmenter:
 
     def _pad_to_divisible(self, image: np.ndarray, divisor: int = 32):
         h, w = image.shape[:2]
-        
+
         pad_h = (divisor - h % divisor) % divisor
         pad_w = (divisor - w % divisor) % divisor
-        
+
         if pad_h == 0 and pad_w == 0:
             return image, 0, 0
-        
+
         if image.ndim == 3:
-            padded = np.pad(
-                image,
-                ((0, pad_h), (0, pad_w), (0, 0)),
-                mode='reflect'
-            )
+            padded = np.pad(image, ((0, pad_h), (0, pad_w), (0, 0)), mode="reflect")
         else:
-            padded = np.pad(
-                image,
-                ((0, pad_h), (0, pad_w)),
-                mode='reflect'
-            )
-        
+            padded = np.pad(image, ((0, pad_h), (0, pad_w)), mode="reflect")
+
         return padded, pad_h, pad_w
 
     def _preprocess_image(self, image: np.ndarray):
@@ -163,7 +155,7 @@ class GrandQCSegmenter:
             image = (image * 255).astype(np.uint8)
 
         padded_image, pad_h, pad_w = self._pad_to_divisible(image)
-        
+
         pil_image = Image.fromarray(padded_image)
         tensor = self._transform(pil_image)
         return tensor.unsqueeze(0).to(self.device), pad_h, pad_w
@@ -173,11 +165,11 @@ class GrandQCSegmenter:
     ) -> np.ndarray:
         probs = torch.softmax(outputs, dim=1)
         tissue_probs = probs[:, 0, :, :]
-        
+
         if pad_h > 0 or pad_w > 0:
             h, w = original_shape[:2]
             tissue_probs = tissue_probs[:, :h, :w]
-        
+
         mask = (tissue_probs > self.confidence_threshold).squeeze().cpu().numpy()
 
         return mask.astype(bool)

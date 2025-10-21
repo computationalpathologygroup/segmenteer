@@ -3,7 +3,7 @@ import segmenteer as seg
 
 def main():
     original_image = seg.load_image(
-        path="data/ce1e4a10-d4e7-4524-97ac-9f88fe971778", dicom_level=2
+        path="data/ce1e4a10-d4e7-4524-97ac-9f88fe971778", level=2
     )
 
     print(
@@ -21,7 +21,7 @@ def main():
     print(f"Output directory: {output_dir}\n")
 
     segmenters = [
-        seg.OtsuSegmenter(min_area=100),
+        seg.OtsuSegmenter(),
         seg.EntropyMaskerSegmenter(),
         seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
         seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),

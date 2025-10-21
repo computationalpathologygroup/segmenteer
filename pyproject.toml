@@ -24,6 +24,10 @@ dev = [
 entropymasker = [
     "dask>=2025.9.1",
 ]
+openslide = [
+    "openslide-python>=1.2.0",
+    "openslide-bin>=2.0.0",
+]
 dl = [
     "torch>=2.0.0",
     "torchvision>=0.15.0",
@@ -33,6 +37,7 @@ dl = [
 ]
 all = [
     "dask>=2025.9.1",
+    "openslide-python>=1.2.0",
     "torch>=2.0.0",
     "torchvision>=0.15.0",
     "transformers>=4.35.0",

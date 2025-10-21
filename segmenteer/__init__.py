@@ -60,7 +60,10 @@ __version__ = "0.1.0"
 def __getattr__(name):
     if name in ("HESTSegmenter", "GrandQCSegmenter"):
         from segmenteer.methods.dl import HESTSegmenter, GrandQCSegmenter
-        return {"HESTSegmenter": HESTSegmenter, "GrandQCSegmenter": GrandQCSegmenter}[name]
+
+        return {"HESTSegmenter": HESTSegmenter, "GrandQCSegmenter": GrandQCSegmenter}[
+            name
+        ]
     raise AttributeError(f"module 'segmenteer' has no attribute '{name}'")
 
 

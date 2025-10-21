@@ -57,15 +57,75 @@ def load_dicom_wsi(path: Path, level: int = 0, verbose: bool = True) -> np.ndarr
     return image_array
 
 
-def load_image(path: Union[str, Path], dicom_level: int = 0) -> np.ndarray:
+def load_openslide_wsi(path: Path, level: int = 0, verbose: bool = True) -> np.ndarray:
+    try:
+        import openslide
+    except ImportError:
+        raise ImportError(
+            f"OpenSlide is required to read {path.suffix} files. "
+            "Install with: pip install openslide-python openslide-bin"
+        )
+
+    slide = openslide.OpenSlide(str(path))
+
+    num_levels = slide.level_count
+
+    if verbose:
+        print(f"OpenSlide WSI Info:")
+        print(f"  Format: {slide.detect_format(str(path))}")
+        print(f"  Available pyramid levels: {num_levels}")
+        for i in range(num_levels):
+            w, h = slide.level_dimensions[i]
+            print(f"    Level {i}: {w}x{h}")
+
+    if level >= num_levels:
+        original_level = level
+        level = num_levels - 1
+        if verbose:
+            print(
+                f"  Warning: Requested level {original_level} not available, using level {level}"
+            )
+
+    if verbose:
+        w, h = slide.level_dimensions[level]
+        print(f"  Loading level {level}: {w}x{h}")
+
+    level_dimensions = slide.level_dimensions[level]
+    region = slide.read_region((0, 0), level, level_dimensions)
+    image_array = np.array(region.convert("RGB"))
+
+    slide.close()
+
+    return image_array
+
+
+def load_image(path: Union[str, Path], level: int = 0) -> np.ndarray:
     path = Path(path)
 
     if path.is_dir() and is_dicom_directory(path):
-        return load_dicom_wsi(path, level=dicom_level, verbose=True)
+        return load_dicom_wsi(path, level=level, verbose=True)
 
-    if path.suffix.lower() in [".tif", ".tiff"]:
+    suffix = path.suffix.lower()
+
+    if suffix in [".tif", ".tiff"]:
         return tifffile.imread(path)
+    elif suffix == ".mrxs":
+        try:
+            return load_openslide_wsi(path, level=level, verbose=True)
+        except ImportError:
+            raise ImportError(
+                "OpenSlide is required for MRXS files. "
+                "Install with: pip install openslide-python openslide-bin"
+            )
     else:
+        try:
+            import openslide
+
+            if openslide.OpenSlide.detect_format(str(path)):
+                return load_openslide_wsi(path, level=level, verbose=True)
+        except Exception:
+            pass
+
         return np.array(Image.open(path))
 
 

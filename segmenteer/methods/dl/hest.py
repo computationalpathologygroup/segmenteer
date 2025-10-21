@@ -55,13 +55,13 @@ class HESTSegmenter:
                 checkpoint = torch.load(
                     checkpoint_file, map_location=self.device, weights_only=False
                 )
-                state_dict = checkpoint.get('state_dict', checkpoint)
-                
+                state_dict = checkpoint.get("state_dict", checkpoint)
+
                 new_state_dict = {}
                 for k, v in state_dict.items():
-                    new_key = k.replace('model.', '') if k.startswith('model.') else k
+                    new_key = k.replace("model.", "") if k.startswith("model.") else k
                     new_state_dict[new_key] = v
-                
+
                 self._model.load_state_dict(new_state_dict, strict=False)
                 print(f"Loaded HEST weights from {checkpoint_file}")
             except Exception as e:
@@ -72,21 +72,23 @@ class HESTSegmenter:
         else:
             try:
                 from huggingface_hub import hf_hub_download
-                
+
                 print(f"Downloading HEST model from HuggingFace: {self.model_repo}...")
                 downloaded_path = hf_hub_download(
                     repo_id=self.model_repo,
                     filename=self.model_file,
-                    cache_dir=get_model_cache_dir()
+                    cache_dir=get_model_cache_dir(),
                 )
-                checkpoint = torch.load(downloaded_path, map_location=self.device, weights_only=False)
-                state_dict = checkpoint.get('state_dict', checkpoint)
-                
+                checkpoint = torch.load(
+                    downloaded_path, map_location=self.device, weights_only=False
+                )
+                state_dict = checkpoint.get("state_dict", checkpoint)
+
                 new_state_dict = {}
                 for k, v in state_dict.items():
-                    new_key = k.replace('model.', '') if k.startswith('model.') else k
+                    new_key = k.replace("model.", "") if k.startswith("model.") else k
                     new_state_dict[new_key] = v
-                
+
                 self._model.load_state_dict(new_state_dict, strict=False)
                 print(f"Loaded HEST model from HuggingFace")
             except Exception as e:
@@ -122,9 +124,7 @@ class HESTSegmenter:
         tensor = self._transform(image)
         return tensor.unsqueeze(0).to(self.device)
 
-    def _postprocess_output(
-        self, outputs: dict, original_shape: tuple
-    ) -> np.ndarray:
+    def _postprocess_output(self, outputs: dict, original_shape: tuple) -> np.ndarray:
         logits = outputs["out"]
 
         upsampled_logits = F.interpolate(
