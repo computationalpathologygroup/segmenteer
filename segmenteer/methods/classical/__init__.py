@@ -10,6 +10,9 @@ from segmenteer.methods.classical.morphological import (
     MorphologicalSegmenter,
     WatershedSegmenter,
 )
+from segmenteer.methods.classical.background_subtractor import (
+    BackgroundSubtractorMOG2Segmenter,
+)
 
 __all__ = [
     "OtsuSegmenter",
@@ -18,4 +21,5 @@ __all__ = [
     "EntropyMaskerSegmenter",
     "MorphologicalSegmenter",
     "WatershedSegmenter",
+    "BackgroundSubtractorMOG2Segmenter",
 ]

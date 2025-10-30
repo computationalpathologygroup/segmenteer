@@ -13,6 +13,7 @@ from segmenteer.methods import (
     EntropyMaskerSegmenter,
     MorphologicalSegmenter,
     WatershedSegmenter,
+    BackgroundSubtractorMOG2Segmenter,
     UnsupervisedClusteringSegmenter,
 )
 from segmenteer.metrics import (
@@ -58,12 +59,14 @@ __version__ = "0.1.0"
 
 
 def __getattr__(name):
-    if name in ("HESTSegmenter", "GrandQCSegmenter"):
-        from segmenteer.methods.dl import HESTSegmenter, GrandQCSegmenter
+    if name in ("HESTSegmenter", "GrandQCSegmenter", "FastSAMSegmenter"):
+        from segmenteer.methods.dl import HESTSegmenter, GrandQCSegmenter, FastSAMSegmenter
 
-        return {"HESTSegmenter": HESTSegmenter, "GrandQCSegmenter": GrandQCSegmenter}[
-            name
-        ]
+        return {
+            "HESTSegmenter": HESTSegmenter,
+            "GrandQCSegmenter": GrandQCSegmenter,
+            "FastSAMSegmenter": FastSAMSegmenter,
+        }[name]
     raise AttributeError(f"module 'segmenteer' has no attribute '{name}'")
 
 
@@ -80,9 +83,11 @@ __all__ = [
     "EntropyMaskerSegmenter",
     "MorphologicalSegmenter",
     "WatershedSegmenter",
+    "BackgroundSubtractorMOG2Segmenter",
     "UnsupervisedClusteringSegmenter",
     "HESTSegmenter",
     "GrandQCSegmenter",
+    "FastSAMSegmenter",
     "SupervisedMetrics",
     "UnsupervisedMetrics",
     "compute_dice",

@@ -99,21 +99,26 @@ def mask_to_geojson(mask: np.ndarray, min_area: int = 10) -> dict:
 
 
 def geojson_to_mask(geojson_data: dict, shape: tuple) -> np.ndarray:
+    from PIL import Image, ImageDraw
+    
     mask = np.zeros(shape, dtype=bool)
-
     features = geojson_data.get("features", [])
-
+    
+    if not features:
+        return mask
+    
+    img = Image.new('L', (shape[1], shape[0]), 0)
+    draw = ImageDraw.Draw(img)
+    
     for feature in features:
         try:
             geom = shapely_shape(feature["geometry"])
-
-            coords = np.array(geom.exterior.coords)
-
-            from skimage.draw import polygon
-
-            rr, cc = polygon(coords[:, 1], coords[:, 0], shape)
-            mask[rr, cc] = True
+            coords = list(geom.exterior.coords)
+            coords_tuples = [(x, y) for x, y in coords]
+            draw.polygon(coords_tuples, outline=255, fill=255)
         except:
             continue
-
+    
+    mask = np.array(img) > 0
+    
     return mask

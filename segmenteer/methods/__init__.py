@@ -5,6 +5,7 @@ from segmenteer.methods.classical import (
     EntropyMaskerSegmenter,
     MorphologicalSegmenter,
     WatershedSegmenter,
+    BackgroundSubtractorMOG2Segmenter,
 )
 from segmenteer.methods.ml import (
     UnsupervisedClusteringSegmenter,
@@ -19,6 +20,7 @@ __all__ = [
     "EntropyMaskerSegmenter",
     "MorphologicalSegmenter",
     "WatershedSegmenter",
+    "BackgroundSubtractorMOG2Segmenter",
     "UnsupervisedClusteringSegmenter",
     "classical",
     "ml",

@@ -34,6 +34,13 @@ dl = [
     "transformers>=4.35.0",
     "huggingface_hub>=0.19.0",
     "segmentation-models-pytorch",
+    "ultralytics>=8.0.0",
+    "opencv-python>=4.8.0",
+]
+fastsam = [
+    "ultralytics>=8.0.0",
+    "opencv-python>=4.8.0",
+    "openai-clip>=1.0",
 ]
 all = [
     "dask>=2025.9.1",
@@ -43,6 +50,9 @@ all = [
     "transformers>=4.35.0",
     "huggingface_hub>=0.19.0",
     "segmentation-models-pytorch",
+    "ultralytics>=8.0.0",
+    "opencv-python>=4.8.0",
+    "openai-clip>=1.0",
     "matplotlib>=3.7.0",
 ]
 
