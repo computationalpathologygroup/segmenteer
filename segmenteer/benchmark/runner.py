@@ -1,8 +1,10 @@
+from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional
 import time
 import numpy as np
 from segmenteer.core.base import Segmenter
+from skimage.transform import resize
 from segmenteer.metrics.evaluation import (
     SupervisedMetrics,
     compute_all_supervised_metrics,
@@ -11,6 +13,7 @@ from segmenteer.metrics.unsupervised import (
     UnsupervisedMetrics,
     compute_unsupervised_metrics,
 )
+from segmenteer.core.utils import mask_to_geojson
 
 
 @dataclass
@@ -36,13 +39,28 @@ class BenchmarkRunner:
         self,
         segmenter: Segmenter,
         image: np.ndarray,
+        image_path: Path | None = None,
         ground_truth_geojson: Optional[dict] = None,
     ) -> BenchmarkResult:
         self._log(f"Running {segmenter.name}...")
 
-        start_time = time.perf_counter()
-        geojson_result = segmenter.segment(image)
-        execution_time = time.perf_counter() - start_time
+        try:
+            start_time = time.perf_counter()
+            geojson_result = segmenter.segment(image)
+            execution_time = time.perf_counter() - start_time
+        except TypeError:
+            start_time = time.perf_counter()
+            result = segmenter.segment(image_path)
+            execution_time = time.perf_counter() - start_time
+
+            # TODO: this doesn't match the Segmenter Protocol, but we need the mask for resizing (right?)
+            geojson_result = result["geojson"]
+            mask = result["mask"]
+
+            # Resizing the mask so we can compare it with other segmenters.
+            self._log(f"  Segmentation done, but resizing mask to original image size...")
+            mask = resize(mask, image.shape[:2], order=0, preserve_range=True, anti_aliasing=False).astype(mask.dtype)
+            geojson_result = mask_to_geojson(mask, segmenter.min_area)
 
         self._log(f"  Segmentation completed in {execution_time:.4f}s")
 
@@ -79,6 +97,7 @@ class BenchmarkRunner:
         self,
         segmenters: list[Segmenter],
         image: np.ndarray,
+        image_path: Path | None = None,
         ground_truth_geojson: Optional[dict] = None,
     ) -> list[BenchmarkResult]:
         self._log(
@@ -89,7 +108,7 @@ class BenchmarkRunner:
         results = []
         for i, segmenter in enumerate(segmenters, 1):
             self._log(f"[{i}/{len(segmenters)}] ", end="")
-            result = self.run_single(segmenter, image, ground_truth_geojson)
+            result = self.run_single(segmenter, image, image_path, ground_truth_geojson)
             results.append(result)
 
         self._log("=" * 60)

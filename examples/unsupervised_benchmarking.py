@@ -1,9 +1,12 @@
+from pathlib import Path
+
 import segmenteer as seg
 
 
 def main():
+    path = Path("TA232.svs")
     original_image = seg.load_image(
-        path="data/ce1e4a10-d4e7-4524-97ac-9f88fe971778", level=2
+        path=path, level=1
     )
 
     print(
@@ -25,10 +28,11 @@ def main():
         seg.EntropyMaskerSegmenter(),
         seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
         seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),
+        seg.CPGSegmenter(docker_image="cpg-tissuemasker:latest", min_area=10),
     ]
 
     runner = seg.BenchmarkRunner()
-    results = runner.run_multiple(segmenters, image)
+    results = runner.run_multiple(segmenters, image, path)
 
     print("Unsupervised Segmentation Benchmarking")
     print("=" * 80)
