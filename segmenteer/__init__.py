@@ -14,7 +14,6 @@ from segmenteer.methods import (
     MorphologicalSegmenter,
     WatershedSegmenter,
     BackgroundSubtractorMOG2Segmenter,
-    UnsupervisedClusteringSegmenter,
     ODGMMSlideSegmenter,
 )
 from segmenteer.metrics import (
@@ -86,7 +85,6 @@ __all__ = [
     "MorphologicalSegmenter",
     "WatershedSegmenter",
     "BackgroundSubtractorMOG2Segmenter",
-    "UnsupervisedClusteringSegmenter",
     "ODGMMSlideSegmenter",
     "CPGSegmenter",
     "HESTSegmenter",

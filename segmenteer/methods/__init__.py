@@ -7,9 +7,6 @@ from segmenteer.methods.classical import (
     WatershedSegmenter,
     ODGMMSlideSegmenter,
 )
-from segmenteer.methods.ml import (
-    UnsupervisedClusteringSegmenter,
-)
 
 from segmenteer.methods import classical, ml
 
@@ -40,7 +37,6 @@ __all__ = [
     "MorphologicalSegmenter",
     "WatershedSegmenter",
     "ODGMMSlideSegmenter",
-    "UnsupervisedClusteringSegmenter",
     "classical",
     "ml",
 ]
