@@ -2,7 +2,7 @@ import segmenteer as seg
 
 
 def main():
-    image = seg.load_image(path="data/ce1e4a10-d4e7-4524-97ac-9f88fe971778", level=0)
+    image = seg.load_image(path="/Users/agatapolejowska/histopathobiome-s/data/cropped_regions/001_M1.tiff", level=0)
     print(f"Original image: {image.shape[0]}x{image.shape[1]} pixels")
 
     downsample_factor = 8

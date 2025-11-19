@@ -57,8 +57,9 @@ class BenchmarkRunner:
         supervised = None
         if ground_truth_geojson is not None:
             self._log(f"  Computing supervised metrics...")
+            image_shape = (image.shape[0], image.shape[1])
             supervised = compute_all_supervised_metrics(
-                geojson_result, ground_truth_geojson
+                geojson_result, ground_truth_geojson, image_shape
             )
             self._log(f"  Dice: {supervised.dice:.4f}, IoU: {supervised.iou:.4f}")
 

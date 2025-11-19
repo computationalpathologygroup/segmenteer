@@ -38,7 +38,9 @@ class BackgroundSubtractorMOG2Segmenter:
         if len(image_uint8.shape) == 2:
             image_uint8 = cv2.cvtColor(image_uint8, cv2.COLOR_GRAY2BGR)
 
-        blank_background = np.ones_like(image_uint8) * 255
+        # Create white background - use zeros then add 255 to avoid issues with large arrays
+        blank_background = np.zeros(image_uint8.shape, dtype=np.uint8)
+        blank_background[:] = 255
         
         for _ in range(self.history):
             bg_subtractor.apply(blank_background, learningRate=1.0)

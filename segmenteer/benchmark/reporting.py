@@ -2,7 +2,27 @@ from pathlib import Path
 from typing import List, Union
 import json
 from dataclasses import asdict
+import math
+import numpy as np
 from segmenteer.benchmark.runner import BenchmarkResult
+
+
+def _sanitize_for_json(obj):
+    if isinstance(obj, dict):
+        return {k: _sanitize_for_json(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [_sanitize_for_json(v) for v in obj]
+    elif isinstance(obj, (np.integer, np.int32, np.int64)):
+        return int(obj)
+    elif isinstance(obj, (np.floating, np.float32, np.float64)):
+        if math.isinf(obj) or math.isnan(obj):
+            return None
+        return float(obj)
+    elif isinstance(obj, float):
+        if math.isinf(obj) or math.isnan(obj):
+            return None
+        return obj
+    return obj
 
 
 def export_results_json(results: List[BenchmarkResult], output_path: Union[str, Path]):
@@ -22,6 +42,8 @@ def export_results_json(results: List[BenchmarkResult], output_path: Union[str, 
 
         data.append(result_dict)
 
+    data = _sanitize_for_json(data)
+    
     with open(output_path, "w") as f:
         json.dump(data, f, indent=2)
 
@@ -35,7 +57,8 @@ def export_results_csv(results: List[BenchmarkResult], output_path: Union[str, P
         header = (
             "method_name,execution_time,seconds_per_pixel,"
             "num_objects,total_area,mean_area,coverage_ratio,"
-            "dice,iou,precision,recall,hausdorff,over_seg,under_seg"
+            "dice,iou,precision,recall,hausdorff,over_seg,under_seg,"
+            "pixel_accuracy,mae,balanced_error_rate"
         )
         lines.append(header)
 
@@ -56,7 +79,10 @@ def export_results_csv(results: List[BenchmarkResult], output_path: Union[str, P
                 f"{s.recall},"
                 f"{s.hausdorff},"
                 f"{s.over_segmentation_rate},"
-                f"{s.under_segmentation_rate}"
+                f"{s.under_segmentation_rate},"
+                f"{s.pixel_accuracy},"
+                f"{s.mae},"
+                f"{s.balanced_error_rate}"
             )
             lines.append(line)
     else:

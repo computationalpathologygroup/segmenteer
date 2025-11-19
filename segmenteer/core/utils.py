@@ -100,6 +100,7 @@ def mask_to_geojson(mask: np.ndarray, min_area: int = 10) -> dict:
 
 def geojson_to_mask(geojson_data: dict, shape: tuple) -> np.ndarray:
     from PIL import Image, ImageDraw
+    from shapely.geometry import Polygon, MultiPolygon
     
     mask = np.zeros(shape, dtype=bool)
     features = geojson_data.get("features", [])
@@ -113,10 +114,21 @@ def geojson_to_mask(geojson_data: dict, shape: tuple) -> np.ndarray:
     for feature in features:
         try:
             geom = shapely_shape(feature["geometry"])
-            coords = list(geom.exterior.coords)
-            coords_tuples = [(x, y) for x, y in coords]
-            draw.polygon(coords_tuples, outline=255, fill=255)
-        except:
+            
+            polygons = []
+            if isinstance(geom, Polygon):
+                polygons = [geom]
+            elif isinstance(geom, MultiPolygon):
+                polygons = list(geom.geoms)
+            else:
+                continue
+            
+            for poly in polygons:
+                coords = list(poly.exterior.coords)
+                coords_tuples = [(x, y) for x, y in coords]
+                draw.polygon(coords_tuples, outline=255, fill=255)
+                
+        except Exception:
             continue
     
     mask = np.array(img) > 0

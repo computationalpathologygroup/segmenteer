@@ -13,6 +13,9 @@ from segmenteer.methods.classical.morphological import (
 from segmenteer.methods.classical.background_subtractor import (
     BackgroundSubtractorMOG2Segmenter,
 )
+from segmenteer.methods.classical.od_gmm import (
+    ODGMMSlideSegmenter,
+)
 
 __all__ = [
     "OtsuSegmenter",
@@ -22,4 +25,5 @@ __all__ = [
     "MorphologicalSegmenter",
     "WatershedSegmenter",
     "BackgroundSubtractorMOG2Segmenter",
+    "ODGMMSlideSegmenter",
 ]

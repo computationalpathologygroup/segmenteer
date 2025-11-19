@@ -4,7 +4,7 @@ version = "0.0.1"
 description = "segmentation benchmarking library"
 requires-python = ">=3.10"
 dependencies = [
-    "numpy>=1.24.0",
+    "numpy>=1.24.0,<2.0",
     "scipy>=1.10.0",
     "scikit-image>=0.20.0",
     "scikit-learn>=1.3.0",
@@ -14,6 +14,7 @@ dependencies = [
     "shapely>=2.0.0",
     "geojson>=3.0.0",
     "wsidicom>=0.9.0",
+    "opencv-python>=4.5.0,<4.6.0",
 ]
 
 [project.optional-dependencies]

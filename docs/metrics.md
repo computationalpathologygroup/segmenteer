@@ -98,6 +98,27 @@ These metrics require ground truth annotations for comparison.
   - *High value (>20 pixels)*: Poor boundary matching
   - *Use case*: Sensitive to outliers, useful for detecting large boundary errors
 
+### Pixel-Level Metrics
+- **Pixel Accuracy** (range: 0-1, perfect = 1)
+  - *Formula*: (TP + TN) / Total Pixels
+  - *What it means*: Percentage of correctly classified pixels (both foreground and background)
+  - *Good value*: >0.9 (excellent), 0.8-0.9 (good)
+  - *Caveat*: Can be misleading for imbalanced datasets (high accuracy even with poor foreground detection)
+
+- **Mean Absolute Error (MAE)** (range: 0-1, perfect = 0)
+  - *Formula*: Mean of |predicted_mask - ground_truth_mask|
+  - *What it means*: Average pixel-wise difference between predicted and ground truth
+  - *Low value (<0.1)*: Very accurate pixel-level predictions
+  - *High value (>0.3)*: Significant pixel-level errors
+  - *Use case*: Quantifies overall prediction accuracy at pixel level
+
+- **Balanced Error Rate (BER)** (range: 0-1, perfect = 0)
+  - *Formula*: (FPR + FNR) / 2, where FPR = FP/N, FNR = FN/P
+  - *What it means*: Average of false positive and false negative rates
+  - *Low value (<0.1)*: Excellent balance between precision and recall
+  - *Use case*: Specifically useful for imbalanced datasets (e.g., shadow detection, small objects)
+  - *Advantage*: Accounts for both foreground and background errors equally
+
 ---
 
 ## Interpretation Guide
