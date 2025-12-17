@@ -15,6 +15,7 @@ Currently implemented:
 Check their respective documentations for references.
 
 Source: https://github.com/NKI-AI/dlup/blob/52a65d06a4f636b94cb142d00ccfc2f98b6a966b/dlup/background.py
+Licensed under the Apache License, Version 2.0 (the "License")
 
 Changes to original:
 - fit the code into the segmenteer structure.
