@@ -4,7 +4,7 @@ import segmenteer as seg
 
 
 def main():
-    path = Path("CMU-1-Small-Region.svs")
+    path = Path("TA232.svs")
     original_image = seg.load_image(
         path=path, level=1
     )
@@ -24,11 +24,11 @@ def main():
     print(f"Output directory: {output_dir}\n")
 
     segmenters = [
-        # seg.OtsuSegmenter(),
-        # seg.EntropyMaskerSegmenter(),
-        # seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
-        # seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),
-        # seg.CPGSegmenter(docker_image="cpg-tissuemasker:latest", min_area=10),
+        seg.OtsuSegmenter(),
+        seg.EntropyMaskerSegmenter(),
+        seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
+        seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),
+        seg.CPGSegmenter(docker_image="cpg-tissuemasker:latest", min_area=10),
         seg.FESISegmenter(),
         seg.FESISegmenter(improved=False),
     ]
