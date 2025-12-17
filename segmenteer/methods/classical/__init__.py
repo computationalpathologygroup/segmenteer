@@ -16,6 +16,7 @@ from segmenteer.methods.classical.background_subtractor import (
 from segmenteer.methods.classical.od_gmm import (
     ODGMMSlideSegmenter,
 )
+from segmenteer.methods.classical.fesi import FESISegmenter
 
 __all__ = [
     "OtsuSegmenter",
@@ -26,4 +27,5 @@ __all__ = [
     "WatershedSegmenter",
     "BackgroundSubtractorMOG2Segmenter",
     "ODGMMSlideSegmenter",
+    "FESISegmenter",
 ]
