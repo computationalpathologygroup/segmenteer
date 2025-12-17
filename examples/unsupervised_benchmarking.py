@@ -29,6 +29,7 @@ def main():
         seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
         seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),
         seg.CPGSegmenter(docker_image="cpg-tissuemasker:latest", min_area=10),
+        seg.HistomicsTKSegmenter(),
     ]
 
     runner = seg.BenchmarkRunner()

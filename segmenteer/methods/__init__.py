@@ -6,6 +6,7 @@ from segmenteer.methods.classical import (
     MorphologicalSegmenter,
     WatershedSegmenter,
     ODGMMSlideSegmenter,
+    HistomicsTKSegmenter,
 )
 
 from segmenteer.methods import classical, ml
@@ -37,6 +38,7 @@ __all__ = [
     "MorphologicalSegmenter",
     "WatershedSegmenter",
     "ODGMMSlideSegmenter",
+    "HistomicsTKSegmenter",
     "classical",
     "ml",
 ]
