@@ -31,6 +31,8 @@ def main():
         seg.CPGSegmenter(docker_image="cpg-tissuemasker:latest", min_area=10),
         seg.HistomicsTKSegmenter(),
         seg.HistomicsTKSegmenter("simple"),
+        seg.FESISegmenter(),
+        seg.FESISegmenter(improved=False),
     ]
 
     runner = seg.BenchmarkRunner()

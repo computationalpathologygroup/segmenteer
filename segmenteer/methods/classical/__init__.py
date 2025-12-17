@@ -17,6 +17,7 @@ from segmenteer.methods.classical.od_gmm import (
     ODGMMSlideSegmenter,
 )
 from segmenteer.methods.classical.histomicstk import HistomicsTKSegmenter
+from segmenteer.methods.classical.fesi import FESISegmenter
 
 __all__ = [
     "OtsuSegmenter",
@@ -28,4 +29,5 @@ __all__ = [
     "BackgroundSubtractorMOG2Segmenter",
     "ODGMMSlideSegmenter",
     "HistomicsTKSegmenter",
+    "FESISegmenter",
 ]
