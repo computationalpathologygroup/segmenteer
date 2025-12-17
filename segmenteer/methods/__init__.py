@@ -6,6 +6,7 @@ from segmenteer.methods.classical import (
     MorphologicalSegmenter,
     WatershedSegmenter,
     ODGMMSlideSegmenter,
+    HistomicsTKSegmenter,
     FESISegmenter,
 )
 
@@ -38,6 +39,7 @@ __all__ = [
     "MorphologicalSegmenter",
     "WatershedSegmenter",
     "ODGMMSlideSegmenter",
+    "HistomicsTKSegmenter",
     "FESISegmenter",
     "classical",
     "ml",
