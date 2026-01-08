@@ -1,6 +1,6 @@
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Callable
 import time
 import numpy as np
 from segmenteer.core.base import Segmenter
@@ -27,9 +27,10 @@ class BenchmarkResult:
 
 
 class BenchmarkRunner:
-    def __init__(self, verbose: bool = True):
+    def __init__(self, verbose: bool = True, result_callback: Optional[Callable[[BenchmarkResult], None]] = None):
         self.results = []
         self.verbose = verbose
+        self.result_callback = result_callback
 
     def _log(self, message: str, end: str = "\n"):
         if self.verbose:
@@ -92,6 +93,10 @@ class BenchmarkRunner:
 
         self.results.append(result)
         self._log(f"  ✓ {segmenter.name} complete\n")
+        
+        if self.result_callback:
+            self.result_callback(result)
+        
         return result
 
     def run_multiple(

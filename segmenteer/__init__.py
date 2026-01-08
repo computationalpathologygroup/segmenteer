@@ -15,7 +15,7 @@ from segmenteer.methods import (
     WatershedSegmenter,
     BackgroundSubtractorMOG2Segmenter,
     ODGMMSlideSegmenter,
-    HistomicsTKSegmenter
+    HistomicsTKSegmenter,
     FESISegmenter,
 )
 from segmenteer.metrics import (

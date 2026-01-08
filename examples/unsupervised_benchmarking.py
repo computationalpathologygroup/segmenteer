@@ -4,7 +4,7 @@ import segmenteer as seg
 
 
 def main():
-    path = Path("TA232.svs")
+    path = Path("")
     original_image = seg.load_image(
         path=path, level=1
     )
@@ -23,6 +23,29 @@ def main():
     output_dir = seg.create_timestamped_output_dir("outputs")
     print(f"Output directory: {output_dir}\n")
 
+    # Save original thumbnail once
+    seg.save_thumbnail(image, output_dir / "original_thumbnail.png")
+    print(f"Saved: original_thumbnail.png\n")
+
+    def save_result(result):
+        print(f"  Saving results for {result.method_name}...")
+        seg.save_geojson(
+            result.geojson,
+            output_dir / f"{result.method_name}_fullres.geojson",
+            scale_factor=downsample_factor,
+        )
+        seg.save_geojson(
+            result.geojson, output_dir / f"{result.method_name}_downsampled.geojson"
+        )
+        seg.save_heatmap_thumbnail(
+            image,
+            result.geojson,
+            output_dir / f"{result.method_name}_heatmap.png",
+            max_size=1024,
+            alpha=0.4,
+        )
+        print(f"  ✓ Saved all outputs for {result.method_name}\n")
+
     segmenters = [
         seg.OtsuSegmenter(),
         seg.EntropyMaskerSegmenter(),
@@ -35,7 +58,7 @@ def main():
         seg.FESISegmenter(improved=False),
     ]
 
-    runner = seg.BenchmarkRunner()
+    runner = seg.BenchmarkRunner(result_callback=save_result)
     results = runner.run_multiple(segmenters, image, path)
 
     print("Unsupervised Segmentation Benchmarking")
@@ -86,44 +109,11 @@ def main():
         print(f"  Coverage: {u.coverage_ratio * 100:.2f}%")
 
     print()
-    print("Saving results...")
-
-    seg.save_thumbnail(image, output_dir / "original_thumbnail.png")
-    print(f"  Saved: original_thumbnail.png")
-
-    print(
-        f"  Saving full resolution annotations (original size: {original_image.shape[0]}x{original_image.shape[1]})..."
-    )
-    for result in results:
-        seg.save_geojson(
-            result.geojson,
-            output_dir / f"{result.method_name}_fullres.geojson",
-            scale_factor=downsample_factor,
-        )
-        print(f"    - {result.method_name}_fullres.geojson")
-
-    print(f"  Saving downsampled annotations ({image.shape[0]}x{image.shape[1]})...")
-    for result in results:
-        seg.save_geojson(
-            result.geojson, output_dir / f"{result.method_name}_downsampled.geojson"
-        )
-        print(f"    - {result.method_name}_downsampled.geojson")
-
-    print(f"  Saving heatmap thumbnails...")
-    for result in results:
-        seg.save_heatmap_thumbnail(
-            image,
-            result.geojson,
-            output_dir / f"{result.method_name}_heatmap.png",
-            max_size=1024,
-            alpha=0.4,
-        )
-        print(f"    - {result.method_name}_heatmap.png")
-
+    print("Saving summary files...")
     seg.export_results_csv(results, output_dir / "results.csv")
     seg.export_results_json(results, output_dir / "results.json")
-    print(f"  - results.csv")
-    print(f"  - results.json")
+    print(f"  ✓ results.csv")
+    print(f"  ✓ results.json")
 
     print(f"\nAll results saved to: {output_dir}/")
 

@@ -25,6 +25,13 @@ dev = [
 entropymasker = [
     "dask>=2025.9.1",
 ]
+histomicstk = [
+    "histomicstk>=1.0.0",
+]
+cpg = [
+    "docker>=6.0.0",
+    "pyvips>=2.2.0",
+]
 openslide = [
     "openslide-python>=1.2.0",
     "openslide-bin>=2.0.0",
@@ -45,6 +52,9 @@ fastsam = [
 ]
 all = [
     "dask>=2025.9.1",
+    "histomicstk>=1.0.0",
+    "docker>=6.0.0",
+    "pyvips>=2.2.0",
     "openslide-python>=1.2.0",
     "torch>=2.0.0",
     "torchvision>=0.15.0",

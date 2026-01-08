@@ -1,8 +1,6 @@
 import os
 from pathlib import Path
-import docker
 from segmenteer.core.utils import mask_to_geojson
-import pyvips
 import tempfile
 
 class CPGSegmenter:
@@ -16,7 +14,26 @@ class CPGSegmenter:
         self.docker_image = docker_image
         self.min_area = min_area
         self.device = device
+        self._validate_dependencies()
+        import docker
         self._client = docker.from_env()
+
+    def _validate_dependencies(self):
+        """Check if docker and pyvips are available, raise helpful error if not."""
+        try:
+            import docker
+        except ImportError:
+            raise ImportError(
+                "docker is required for CPGSegmenter but not installed. "
+                "Install it with: pip install 'segmenteer[cpg]'"
+            )
+        try:
+            import pyvips
+        except ImportError:
+            raise ImportError(
+                "pyvips is required for CPGSegmenter but not installed. "
+                "Install it with: pip install 'segmenteer[cpg]'"
+            )
 
 
     @property
@@ -24,6 +41,9 @@ class CPGSegmenter:
         return "cpg_tissuemasker"
 
     def segment(self, input_file: str) -> dict:
+        import docker
+        import pyvips
+        
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
             output_file = str(tmpdir / "tissuemask.tif")
