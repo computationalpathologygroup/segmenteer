@@ -15,6 +15,8 @@ from segmenteer.methods import (
     WatershedSegmenter,
     BackgroundSubtractorMOG2Segmenter,
     ODGMMSlideSegmenter,
+    HistomicsTKSegmenter,
+    FESISegmenter,
 )
 from segmenteer.metrics import (
     SupervisedMetrics,
@@ -86,6 +88,8 @@ __all__ = [
     "WatershedSegmenter",
     "BackgroundSubtractorMOG2Segmenter",
     "ODGMMSlideSegmenter",
+    "HistomicsTKSegmenter",
+    "FESISegmenter",
     "CPGSegmenter",
     "HESTSegmenter",
     "GrandQCSegmenter",

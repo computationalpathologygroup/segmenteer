@@ -9,6 +9,10 @@ def main():
     output_dir = seg.create_timestamped_output_dir("outputs")
     print(f"Output directory: {output_dir}\n")
 
+    # Save original thumbnail once
+    seg.save_thumbnail(path, output_dir / "original_thumbnail.png")
+    print(f"Saved: original_thumbnail.png\n")
+
     segmenters = [
         seg.OtsuSegmenter(),
         # seg.EntropyMaskerSegmenter(),
@@ -68,33 +72,11 @@ def main():
         print(f"  Coverage: {u.coverage_ratio * 100:.2f}%")
 
     print()
-    print("Saving results...")
-
-    seg.save_thumbnail(path, output_dir / "original_thumbnail.png")
-    print(f"  Saved: original_thumbnail.png")
-
-    print(f"  Saving annotations...")
-    for result in results:
-        seg.save_geojson(
-            result.geojson, output_dir / f"{result.method_name}.geojson"
-        )
-        print(f"    - {result.method_name}.geojson")
-
-    print(f"  Saving heatmap thumbnails...")
-    for result in results:
-        seg.save_heatmap_thumbnail(
-            path,
-            result.geojson,
-            output_dir / f"{result.method_name}_heatmap.png",
-            max_size=1024,
-            alpha=0.4,
-        )
-        print(f"    - {result.method_name}_heatmap.png")
-
+    print("Saving summary files...")
     seg.export_results_csv(results, output_dir / "results.csv")
     seg.export_results_json(results, output_dir / "results.json")
-    print(f"  - results.csv")
-    print(f"  - results.json")
+    print(f"  ✓ results.csv")
+    print(f"  ✓ results.json")
 
     print(f"\nAll results saved to: {output_dir}/")
 

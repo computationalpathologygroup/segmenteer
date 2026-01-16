@@ -16,6 +16,15 @@ from segmenteer.methods.classical.background_subtractor import (
 from segmenteer.methods.classical.od_gmm import (
     ODGMMSlideSegmenter,
 )
+from segmenteer.methods.classical.fesi import FESISegmenter
+
+# histomicstk is optional. Import it only if available.
+try:
+    from segmenteer.methods.classical.histomicstk import HistomicsTKSegmenter
+    _has_histomicstk = True
+except ImportError:
+    HistomicsTKSegmenter = None
+    _has_histomicstk = False
 
 __all__ = [
     "OtsuSegmenter",
@@ -26,4 +35,6 @@ __all__ = [
     "WatershedSegmenter",
     "BackgroundSubtractorMOG2Segmenter",
     "ODGMMSlideSegmenter",
+    "HistomicsTKSegmenter",
+    "FESISegmenter",
 ]
