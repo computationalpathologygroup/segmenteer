@@ -14,6 +14,7 @@ from segmenteer.metrics.unsupervised import (
     compute_unsupervised_metrics,
 )
 from segmenteer.core.utils import mask_to_geojson
+import pyvips
 
 
 @dataclass
@@ -38,52 +39,39 @@ class BenchmarkRunner:
     def run_single(
         self,
         segmenter: Segmenter,
-        image: np.ndarray,
         image_path: Path | None = None,
         ground_truth_geojson: Optional[dict] = None,
     ) -> BenchmarkResult:
         self._log(f"Running {segmenter.name}...")
 
-        try:
-            start_time = time.perf_counter()
-            geojson_result = segmenter.segment(image)
-            execution_time = time.perf_counter() - start_time
-        except TypeError:
-            start_time = time.perf_counter()
-            result = segmenter.segment(image_path)
-            execution_time = time.perf_counter() - start_time
-
-            # TODO: this doesn't match the Segmenter Protocol, but we need the mask for resizing (right?)
-            geojson_result = result["geojson"]
-            mask = result["mask"]
-
-            # Resizing the mask so we can compare it with other segmenters.
-            self._log(f"  Segmentation done, but resizing mask to original image size...")
-            mask = resize(mask, image.shape[:2], order=0, preserve_range=True, anti_aliasing=False).astype(mask.dtype)
-            geojson_result = mask_to_geojson(mask, segmenter.min_area)
+        start_time = time.perf_counter()
+        result = segmenter.segment(image_path)
+        execution_time = time.perf_counter() - start_time
 
         self._log(f"  Segmentation completed in {execution_time:.4f}s")
 
-        num_pixels = image.shape[0] * image.shape[1]
+        image = pyvips.Image.tiffload(image_path, access="sequential", page=0, n=1)
+
+        image_shape = (image.height, image.width)
+        num_pixels = image_shape[0] * image_shape[1]
         seconds_per_pixel = execution_time / num_pixels
 
         self._log(f"  Computing unsupervised metrics...")
-        image_area = float(image.shape[0] * image.shape[1])
-        unsupervised = compute_unsupervised_metrics(geojson_result, image_area)
+        image_area = num_pixels
+        unsupervised = compute_unsupervised_metrics(result, image_area)
         self._log(f"  Found {unsupervised.num_objects} objects")
 
         supervised = None
         if ground_truth_geojson is not None:
             self._log(f"  Computing supervised metrics...")
-            image_shape = (image.shape[0], image.shape[1])
             supervised = compute_all_supervised_metrics(
-                geojson_result, ground_truth_geojson, image_shape
+                result, ground_truth_geojson, image_shape
             )
             self._log(f"  Dice: {supervised.dice:.4f}, IoU: {supervised.iou:.4f}")
 
         result = BenchmarkResult(
             method_name=segmenter.name,
-            geojson=geojson_result,
+            geojson=result,
             execution_time=execution_time,
             seconds_per_pixel=seconds_per_pixel,
             unsupervised_metrics=unsupervised,
@@ -97,19 +85,18 @@ class BenchmarkRunner:
     def run_multiple(
         self,
         segmenters: list[Segmenter],
-        image: np.ndarray,
-        image_path: Path | None = None,
+        image_path: Path,
         ground_truth_geojson: Optional[dict] = None,
     ) -> list[BenchmarkResult]:
         self._log(
-            f"\nBenchmarking {len(segmenters)} methods on {image.shape[0]}x{image.shape[1]} image"
+            f"\nBenchmarking {len(segmenters)} methods on image {image_path}"
         )
         self._log("=" * 60 + "\n")
 
         results = []
         for i, segmenter in enumerate(segmenters, 1):
             self._log(f"[{i}/{len(segmenters)}] ", end="")
-            result = self.run_single(segmenter, image, image_path, ground_truth_geojson)
+            result = self.run_single(segmenter, image_path, ground_truth_geojson)
             results.append(result)
 
         self._log("=" * 60)

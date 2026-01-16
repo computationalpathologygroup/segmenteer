@@ -1,6 +1,7 @@
 from typing import Protocol
 from dataclasses import dataclass
-import numpy as np
+from pathlib import Path
+import geojson
 
 
 @dataclass
@@ -15,4 +16,4 @@ class Segmenter(Protocol):
     @property
     def name(self) -> str: ...
 
-    def segment(self, image: np.ndarray) -> dict: ...
+    def segment(self, image: Path) -> geojson.FeatureCollection: ...

@@ -4,35 +4,21 @@ import segmenteer as seg
 
 
 def main():
-    path = Path("TA232.svs")
-    original_image = seg.load_image(
-        path=path, level=1
-    )
-
-    print(
-        f"Original image: {original_image.shape[0]}x{original_image.shape[1]} pixels ({original_image.shape[0] * original_image.shape[1]:,} total)"
-    )
-
-    downsample_factor = 8
-    print(f"Downsampling by {downsample_factor}x for faster processing...")
-    image = seg.downsample_image(original_image, downsample_factor)
-    print(
-        f"Working with: {image.shape[0]}x{image.shape[1]} pixels ({image.shape[0] * image.shape[1]:,} total)\n"
-    )
+    path = Path("CMU-1-Small-Region.svs")
 
     output_dir = seg.create_timestamped_output_dir("outputs")
     print(f"Output directory: {output_dir}\n")
 
     segmenters = [
         seg.OtsuSegmenter(),
-        seg.EntropyMaskerSegmenter(),
-        seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
-        seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),
-        seg.CPGSegmenter(docker_image="cpg-tissuemasker:latest", min_area=10),
+        # seg.EntropyMaskerSegmenter(),
+        # seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
+        # seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),
+        # seg.CPGSegmenter(docker_image="cpg-tissuemasker:latest", min_area=10),
     ]
 
     runner = seg.BenchmarkRunner()
-    results = runner.run_multiple(segmenters, image, path)
+    results = runner.run_multiple(segmenters, path)
 
     print("Unsupervised Segmentation Benchmarking")
     print("=" * 80)
@@ -84,31 +70,20 @@ def main():
     print()
     print("Saving results...")
 
-    seg.save_thumbnail(image, output_dir / "original_thumbnail.png")
+    seg.save_thumbnail(path, output_dir / "original_thumbnail.png")
     print(f"  Saved: original_thumbnail.png")
 
-    print(
-        f"  Saving full resolution annotations (original size: {original_image.shape[0]}x{original_image.shape[1]})..."
-    )
+    print(f"  Saving annotations...")
     for result in results:
         seg.save_geojson(
-            result.geojson,
-            output_dir / f"{result.method_name}_fullres.geojson",
-            scale_factor=downsample_factor,
+            result.geojson, output_dir / f"{result.method_name}.geojson"
         )
-        print(f"    - {result.method_name}_fullres.geojson")
-
-    print(f"  Saving downsampled annotations ({image.shape[0]}x{image.shape[1]})...")
-    for result in results:
-        seg.save_geojson(
-            result.geojson, output_dir / f"{result.method_name}_downsampled.geojson"
-        )
-        print(f"    - {result.method_name}_downsampled.geojson")
+        print(f"    - {result.method_name}.geojson")
 
     print(f"  Saving heatmap thumbnails...")
     for result in results:
         seg.save_heatmap_thumbnail(
-            image,
+            path,
             result.geojson,
             output_dir / f"{result.method_name}_heatmap.png",
             max_size=1024,

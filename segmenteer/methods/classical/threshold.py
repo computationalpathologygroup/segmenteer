@@ -10,6 +10,9 @@ from skimage.color import rgb2gray
 from skimage.morphology import disk
 from skimage.util import apply_parallel
 from segmenteer.core.utils import mask_to_geojson
+from pathlib import Path
+import pyvips
+import geojson
 
 
 class DaskWarning(UserWarning):
@@ -27,7 +30,10 @@ class OtsuSegmenter:
     def name(self) -> str:
         return "otsu"
 
-    def segment(self, image: np.ndarray) -> dict:
+    def segment(self, image: Path) -> geojson.FeatureCollection:
+        vimage_at_level_zero = pyvips.Image.tiffload(image, access="sequential", page=0, n=1)
+        vimage = pyvips.Image.tiffload(image, access="sequential", page=1, n=1)
+        image = vimage.numpy()
         if image.ndim == 3:
             gray = rgb2gray(image)
         else:
@@ -35,7 +41,10 @@ class OtsuSegmenter:
 
         threshold = threshold_otsu(gray)
         mask = gray > threshold
-        return mask_to_geojson(mask, self.min_area)
+
+        scaling_factor = vimage_at_level_zero.height / vimage.height
+
+        return mask_to_geojson(mask, self.min_area, scaling_factor=scaling_factor)
 
 
 class LiSegmenter:
