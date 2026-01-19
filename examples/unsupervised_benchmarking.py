@@ -5,7 +5,7 @@ from segmenteer.io.loader import Image
 
 
 def main():
-    path = Path("CMU-1-Small-Region.svs")
+    path = Path("CMU-3.tiff")
     image = Image(path)
 
     output_dir = seg.create_timestamped_output_dir("outputs")
@@ -16,12 +16,12 @@ def main():
     print(f"Saved: original_thumbnail.png\n")
 
     segmenters = [
-        seg.OtsuSegmenter(),
-        seg.LiSegmenter(),
-        seg.EntropyMaskerSegmenter(),
-        # seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
-        # seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),
-        # seg.CPGSegmenter(docker_image="cpg-tissuemasker:latest", min_area=10),
+        seg.OtsuSegmenter(level=6, min_area=0),
+        seg.LiSegmenter(level=6, min_area=0),
+        seg.EntropyMaskerSegmenter(level=6, min_area=0),
+        seg.GrandQCSegmenter(level=6, confidence_threshold=0.5, min_area=0),
+        seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=0),
+        # seg.CPGSegmenter(docker_image="dodrio1.umcn.nl/daangeijs/tissueseg:latest", min_area=10),
     ]
 
     def save_result(result):
@@ -35,9 +35,10 @@ def main():
                 result.geojson, output_dir / f"{result.method_name}_downsampled.geojson"
             )
             seg.save_heatmap_thumbnail(
-                image,
-                result.geojson,
-                output_dir / f"{result.method_name}_heatmap.png",
+                image=image,
+                geojson_data=result.geojson,
+                output_path=output_dir / f"{result.method_name}_heatmap.png",
+                level=4,
                 max_size=1024,
                 alpha=0.4,
             )

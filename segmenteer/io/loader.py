@@ -13,7 +13,7 @@ class Image:
     path: Path
 
     def get_vips_image(self, level: int = 0):
-        return pyvips.Image.tiffload(self.path, access="sequential", page=level, n=1, revalidate=True)
+        return pyvips.Image.openslideload(self.path, access="sequential", level=level, revalidate=True, rgb=True)
     
     def get_numpy_image(self, level: int = 0):
         return self.get_vips_image(level=level).numpy()
@@ -33,6 +33,14 @@ class Image:
     @property
     def area(self):
         return self.shape[0] * self.shape[1]
+
+    def downscale_factor(self, level: int = 0) -> float:
+        vimage = self.get_vips_image()
+        if level == 0:
+            return 1.0
+        else:
+            level_image = self.get_vips_image(level=level)
+            return vimage.width / level_image.width
 
 
 def is_dicom_directory(path: Path) -> bool:

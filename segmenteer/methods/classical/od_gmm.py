@@ -3,17 +3,21 @@ from sklearn.mixture import GaussianMixture
 from scipy.ndimage import binary_opening, binary_closing
 from skimage.measure import label
 from segmenteer.core.utils import mask_to_geojson
+from segmenteer.io.loader import Image
+import geojson
 
 
 class ODGMMSlideSegmenter:
     def __init__(
         self,
+        level: int = 1,
         n_samples: int = 100000,
         n_components: int = 2,
         min_area: int = 10,
         morph_kernel_size: int = 5,
         epsilon: float = 1e-6,
     ):
+        self.level = level
         self.n_samples = n_samples
         self.n_components = n_components
         self.min_area = min_area
@@ -32,7 +36,8 @@ class ODGMMSlideSegmenter:
     def _od_to_sum(self, od: np.ndarray) -> np.ndarray:
         return np.sum(od, axis=-1)
 
-    def segment(self, image: np.ndarray) -> dict:
+    def segment(self, image: Image) -> geojson.FeatureCollection:
+        image = image.get_numpy_image(level=self.level)
         if image.ndim != 3 or image.shape[2] != 3:
             raise ValueError("Input image must be RGB (H, W, 3)")
 

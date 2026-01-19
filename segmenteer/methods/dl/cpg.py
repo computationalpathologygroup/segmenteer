@@ -1,13 +1,15 @@
 import os
 from pathlib import Path
 from segmenteer.core.utils import mask_to_geojson
+from segmenteer.io.loader import Image
 import tempfile
+import geojson
 
 class CPGSegmenter:
 
     def __init__(
 		self,
-		docker_image: str = "cpg-tissuemasker:latest",
+		docker_image: str = "dodrio1.umcn.nl/daangeijs/tissueseg:latest",
 		min_area: int = 10,
 		device: str | None = None,
 	):
@@ -40,7 +42,7 @@ class CPGSegmenter:
     def name(self) -> str:
         return "cpg_tissuemasker"
 
-    def segment(self, input_file: str) -> dict:
+    def segment(self, image: Image) -> geojson.FeatureCollection:
         import docker
         import pyvips
         
@@ -49,7 +51,7 @@ class CPGSegmenter:
             output_file = str(tmpdir / "tissuemask.tif")
             command = [
                 "-c",
-                f"sh /home/user/run.sh /data/{os.path.basename(input_file)} /output/{os.path.basename(output_file)}",
+                f"sh /home/user/run.sh /data/{os.path.basename(image.path)} /output/{os.path.basename(output_file)}",
             ]
 
             if self.device is not None:
@@ -57,8 +59,7 @@ class CPGSegmenter:
             device_requests = [docker.types.DeviceRequest(device_ids=['0'], capabilities=[['gpu']])]
 
             # NOTE: Container is run from scratch, so has to load weights too every time.
-            # NOTE: Should be fairly quick. If running for over a minute, check stdout to investigate why the process hangs.
-            # Sometimes it may hang if it couldn't find the necessary spacing.
+            # NOTE: Sometimes it hangs if it cannot find the necessary 4.0 mpp (0.25 mpp tolerance) spacing.
             container = self._client.containers.run(
                 self.docker_image,
                 command,
@@ -70,9 +71,10 @@ class CPGSegmenter:
                 detach=True,
                 entrypoint="/bin/bash",
                 device_requests=device_requests,
+                auto_remove=True,
             )
             for line in container.logs(stream=True):
                 print(line.decode(), end="")
             # TODO: is it fair that we need to read the output file here again?
             mask = pyvips.Image.new_from_file(output_file).numpy()
-        return {"geojson": mask_to_geojson(mask, self.min_area), "mask": mask}
+        return mask_to_geojson(mask, self.min_area)

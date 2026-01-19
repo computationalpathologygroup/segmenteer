@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Union
 import numpy as np
 from PIL import Image
-from segmenteer.core.utils import geojson_to_mask
+from segmenteer.core.utils import geojson_to_mask, scale_geojson_coordinates
 from segmenteer.io.loader import Image
 from PIL import Image as PILImage
 import pyvips
@@ -66,13 +66,15 @@ def save_heatmap_thumbnail(
     image: Image,
     geojson_data: dict,
     output_path: Union[str, Path],
+    level: int = 0,
     max_size: int = 1024,
     alpha: float = 0.4,
 ):
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    image = image.get_numpy_image()
+    geojson_data = scale_geojson_coordinates(geojson_data, scale_factor=1 / image.downscale_factor(level=level))
+    image = image.get_numpy_image(level=level)
     overlay = create_heatmap_overlay(image, geojson_data, alpha)
     thumbnail = create_thumbnail(overlay, max_size)
     pyvips.Image.new_from_array(thumbnail).write_to_file(output_path)

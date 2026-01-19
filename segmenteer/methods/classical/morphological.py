@@ -6,10 +6,13 @@ from scipy import ndimage as ndi
 from skimage.segmentation import watershed
 from skimage.feature import peak_local_max
 from segmenteer.core.utils import mask_to_geojson
+from segmenteer.io.loader import Image
+import geojson
 
 
 class MorphologicalSegmenter:
-    def __init__(self, disk_size: int = 3, min_area: int = 10):
+    def __init__(self, level: int = 1, disk_size: int = 3, min_area: int = 10):
+        self.level = level
         self.disk_size = disk_size
         self.min_area = min_area
 
@@ -17,7 +20,8 @@ class MorphologicalSegmenter:
     def name(self) -> str:
         return f"morphological_disk{self.disk_size}"
 
-    def segment(self, image: np.ndarray) -> dict:
+    def segment(self, image: Image) -> geojson.FeatureCollection:
+        image = image.get_numpy_image(level=self.level)
         if image.ndim == 3:
             gray = rgb2gray(image)
         else:
@@ -34,7 +38,8 @@ class MorphologicalSegmenter:
 
 
 class WatershedSegmenter:
-    def __init__(self, min_distance: int = 10, min_area: int = 10):
+    def __init__(self, level: int = 1, min_distance: int = 10, min_area: int = 10):
+        self.level = level
         self.min_distance = min_distance
         self.min_area = min_area
 
@@ -42,7 +47,8 @@ class WatershedSegmenter:
     def name(self) -> str:
         return f"watershed_mindist{self.min_distance}"
 
-    def segment(self, image: np.ndarray) -> dict:
+    def segment(self, image: Image) -> geojson.FeatureCollection:
+        image = image.get_numpy_image(level=self.level)
         if image.ndim == 3:
             gray = rgb2gray(image)
         else:

@@ -29,9 +29,12 @@ import skimage.segmentation
 from skimage.color import rgb2gray
 
 from segmenteer.core.utils import mask_to_geojson
+from segmenteer.io.loader import Image
+import geojson
 
 class FESISegmenter:
-    def __init__(self, improved: bool = True, min_area: int = 10):
+    def __init__(self, level: int = 1, improved: bool = True, min_area: int = 10):
+        self.level = level
         self.improved = improved
         self.min_area = min_area
 
@@ -42,7 +45,8 @@ class FESISegmenter:
         else:
             return "fesi"
 
-    def segment(self, image: np.ndarray) -> dict:
+    def segment(self, image: Image) -> geojson.FeatureCollection:
+        image = image.get_numpy_image(level=self.level)
         if self.improved:
             mask = improved_fesi(image)
         else:

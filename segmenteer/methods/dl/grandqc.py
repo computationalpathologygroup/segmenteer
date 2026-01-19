@@ -2,9 +2,11 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from pathlib import Path
-from PIL import Image
+from PIL import Image as PILImage
 from torchvision import transforms
 from segmenteer.core.utils import mask_to_geojson
+from segmenteer.io.loader import Image
+import geojson
 
 
 def get_model_cache_dir() -> Path:
@@ -20,11 +22,13 @@ class GrandQCSegmenter:
 
     def __init__(
         self,
+        level: int = 1,
         checkpoint_path: str | None = None,
         device: str | None = None,
         confidence_threshold: float = 0.5,
         min_area: int = 10,
     ):
+        self.level = level
         self.checkpoint_path = checkpoint_path
         self.confidence_threshold = confidence_threshold
         self.min_area = min_area
@@ -156,7 +160,7 @@ class GrandQCSegmenter:
 
         padded_image, pad_h, pad_w = self._pad_to_divisible(image)
 
-        pil_image = Image.fromarray(padded_image)
+        pil_image = PILImage.fromarray(padded_image)
         tensor = self._transform(pil_image)
         return tensor.unsqueeze(0).to(self.device), pad_h, pad_w
 
@@ -174,7 +178,8 @@ class GrandQCSegmenter:
 
         return mask.astype(bool)
 
-    def segment(self, image: np.ndarray) -> dict:
+    def segment(self, image: Image) -> geojson.FeatureCollection:
+        image = image.get_numpy_image(level=self.level)
         if not isinstance(image, np.ndarray):
             raise ValueError("Input image must be a numpy array")
 

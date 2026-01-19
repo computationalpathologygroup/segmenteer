@@ -265,3 +265,6 @@ qupath
 outputs*
 
 todo
+
+*.ndpi
+*.svs

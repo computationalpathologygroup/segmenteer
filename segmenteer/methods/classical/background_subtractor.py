@@ -1,16 +1,20 @@
 import numpy as np
 import cv2
 from segmenteer.core.utils import mask_to_geojson
+from segmenteer.io.loader import Image
+import geojson
 
 
 class BackgroundSubtractorMOG2Segmenter:
     def __init__(
         self,
+        level: int = 1,
         history: int = 500,
         var_threshold: float = 16.0,
         detect_shadows: bool = True,
         min_area: int = 10,
     ):
+        self.level = level
         self.history = history
         self.var_threshold = var_threshold
         self.detect_shadows = detect_shadows
@@ -20,12 +24,14 @@ class BackgroundSubtractorMOG2Segmenter:
     def name(self) -> str:
         return f"bg_subtractor_mog2_h{self.history}_v{int(self.var_threshold)}"
 
-    def segment(self, image: np.ndarray) -> dict:
+    def segment(self, image: Image) -> geojson.FeatureCollection:
         bg_subtractor = cv2.createBackgroundSubtractorMOG2(
             history=self.history,
             varThreshold=self.var_threshold,
             detectShadows=self.detect_shadows,
         )
+
+        image = image.get_numpy_image(level=self.level)
 
         if image.dtype != np.uint8:
             if image.max() <= 1.0:

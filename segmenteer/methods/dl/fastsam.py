@@ -2,6 +2,8 @@ import numpy as np
 from pathlib import Path
 from ultralytics import FastSAM
 from segmenteer.core.utils import mask_to_geojson
+from segmenteer.io.loader import Image
+import geojson
 
 
 def get_model_cache_dir() -> Path:
@@ -13,6 +15,7 @@ def get_model_cache_dir() -> Path:
 class FastSAMSegmenter:
     def __init__(
         self,
+        level: int = 1,
         model_name: str = "FastSAM-x.pt",
         text_prompt: str | None = None,
         conf: float = 0.4,
@@ -21,6 +24,7 @@ class FastSAMSegmenter:
         min_area: int = 10,
         imgsz: int = 1024,
     ):
+        self.level = level
         self.model_name = model_name
         self.text_prompt = text_prompt
         self.conf = conf
@@ -69,7 +73,8 @@ class FastSAMSegmenter:
     def name(self) -> str:
         return f"fastsam_{self.model_name.replace('.pt', '').lower()}"
     
-    def segment(self, image: np.ndarray) -> dict:
+    def segment(self, image: Image) -> geojson.FeatureCollection:
+        image = image.get_numpy_image(level=self.level)
         if self.text_prompt:
             results = self._model(
                 image,

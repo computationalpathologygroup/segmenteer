@@ -5,6 +5,8 @@ from pathlib import Path
 from torchvision import transforms
 from torchvision.models.segmentation import deeplabv3_resnet50
 from segmenteer.core.utils import mask_to_geojson
+from segmenteer.io.loader import Image
+import geojson
 
 
 def get_model_cache_dir() -> Path:
@@ -16,6 +18,7 @@ def get_model_cache_dir() -> Path:
 class HESTSegmenter:
     def __init__(
         self,
+        level: int = 1,
         model_repo: str = "MahmoodLab/hest-tissue-seg",
         model_file: str = "deeplabv3_seg_v4.ckpt",
         checkpoint_path: str | None = None,
@@ -24,6 +27,7 @@ class HESTSegmenter:
         min_area: int = 10,
         mpp: float = 1.0,
     ):
+        self.level = level  # TODO: level and mpp should be consistent.
         self.model_repo = model_repo
         self.model_file = model_file
         self.checkpoint_path = checkpoint_path
@@ -140,7 +144,8 @@ class HESTSegmenter:
 
         return mask.astype(bool)
 
-    def segment(self, image: np.ndarray) -> dict:
+    def segment(self, image: Image) -> geojson.FeatureCollection:
+        image = image.get_numpy_image(level=self.level)
         if not isinstance(image, np.ndarray):
             raise ValueError("Input image must be a numpy array")
 

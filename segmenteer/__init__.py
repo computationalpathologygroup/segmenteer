@@ -61,7 +61,7 @@ __version__ = "0.1.0"
 
 
 def __getattr__(name):
-    if name in ("HESTSegmenter", "GrandQCSegmenter", "FastSAMSegmenter"):
+    if name in ("HESTSegmenter", "GrandQCSegmenter", "FastSAMSegmenter", "CPGSegmenter"):
         from segmenteer.methods.dl import HESTSegmenter, GrandQCSegmenter, FastSAMSegmenter, CPGSegmenter
 
         return {
