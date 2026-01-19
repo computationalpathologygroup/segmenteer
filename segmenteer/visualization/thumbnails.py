@@ -3,6 +3,8 @@ from typing import Union
 import numpy as np
 from PIL import Image
 from segmenteer.core.utils import geojson_to_mask
+from segmenteer.io.loader import Image
+from PIL import Image as PILImage
 import pyvips
 
 
@@ -17,8 +19,8 @@ def create_thumbnail(image: np.ndarray, max_size: int = 1024) -> np.ndarray:
     new_width = int(width * scale)
     new_height = int(height * scale)
 
-    img_pil = Image.fromarray(image)
-    img_pil_resized = img_pil.resize((new_width, new_height), Image.Resampling.LANCZOS)
+    img_pil = PILImage.fromarray(image)
+    img_pil_resized = img_pil.resize((new_width, new_height), PILImage.Resampling.LANCZOS)
 
     return np.array(img_pil_resized)
 
@@ -61,7 +63,7 @@ def save_thumbnail(
 
 
 def save_heatmap_thumbnail(
-    image: Path,
+    image: Image,
     geojson_data: dict,
     output_path: Union[str, Path],
     max_size: int = 1024,
@@ -70,7 +72,7 @@ def save_heatmap_thumbnail(
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    image = pyvips.Image.tiffload(image, access="sequential", page=0, n=1).numpy()
+    image = image.get_numpy_image()
     overlay = create_heatmap_overlay(image, geojson_data, alpha)
     thumbnail = create_thumbnail(overlay, max_size)
     pyvips.Image.new_from_array(thumbnail).write_to_file(output_path)

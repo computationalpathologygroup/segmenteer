@@ -1,11 +1,38 @@
 from pathlib import Path
 from typing import Union
 import numpy as np
-from PIL import Image
 import tifffile
 import json
 import geojson
 from segmenteer.core.utils import scale_geojson_coordinates
+from dataclasses import dataclass
+import pyvips
+
+@dataclass
+class Image:
+    path: Path
+
+    def get_vips_image(self, level: int = 0):
+        return pyvips.Image.tiffload(self.path, access="sequential", page=level, n=1, revalidate=True)
+    
+    def get_numpy_image(self, level: int = 0):
+        return self.get_vips_image(level=level).numpy()
+    
+    @property
+    def width(self):
+        return self.get_vips_image().width
+    
+    @property
+    def height(self):
+        return self.get_vips_image().height
+
+    @property
+    def shape(self):
+        return (self.width, self.height)
+
+    @property
+    def area(self):
+        return self.shape[0] * self.shape[1]
 
 
 def is_dicom_directory(path: Path) -> bool:
@@ -126,7 +153,7 @@ def load_image(path: Union[str, Path], level: int = 0) -> np.ndarray:
         except Exception:
             pass
 
-        return np.array(Image.open(path))
+        return np.array(pyvips.Image.new_from_file(path))
 
 
 def save_geojson(geojson_data: dict, path: Union[str, Path], scale_factor: float = 1.0):
