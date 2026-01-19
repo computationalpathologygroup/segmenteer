@@ -32,14 +32,14 @@ class HistomicsTKSegmenter:
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
 
-        image = image.get_numpy_image(level=self.level)
+        image_np = image.get_numpy_image(level=self.level)
         # Lazy import - only import when actually used
         from histomicstk.segmentation import simple_mask as histomicstk_simple_tissue_mask
         from histomicstk.saliency.tissue_detection import get_tissue_mask as histomicstk_saliency_tissue_mask
         
         if self.mask_type == HistomicsTKMaskType.SIMPLE:
-            mask = histomicstk_simple_tissue_mask(image)
+            mask = histomicstk_simple_tissue_mask(image_np)
         elif self.mask_type == HistomicsTKMaskType.SALIENCY:
-            tissue_regions, _ = histomicstk_saliency_tissue_mask(image)
+            tissue_regions, _ = histomicstk_saliency_tissue_mask(image_np)
             mask = tissue_regions.astype(bool).astype(np.uint8)  # Convert to zero-one mask
-        return mask_to_geojson(mask, self.min_area)
+        return mask_to_geojson(mask, self.min_area, scaling_factor=image.get_scaling(self.level))

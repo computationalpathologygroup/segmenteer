@@ -179,17 +179,15 @@ class GrandQCSegmenter:
         return mask.astype(bool)
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        image = image.get_numpy_image(level=self.level)
-        if not isinstance(image, np.ndarray):
-            raise ValueError("Input image must be a numpy array")
+        image_np = image.get_numpy_image(level=self.level)
 
-        original_shape = image.shape
+        original_shape = image_np.shape
 
-        input_tensor, pad_h, pad_w = self._preprocess_image(image)
+        input_tensor, pad_h, pad_w = self._preprocess_image(image_np)
 
         with torch.no_grad():
             outputs = self._model(input_tensor)
 
         mask = self._postprocess_output(outputs, original_shape, pad_h, pad_w)
 
-        return mask_to_geojson(mask, self.min_area)
+        return mask_to_geojson(mask, self.min_area, scaling_factor=image.get_scaling(self.level))

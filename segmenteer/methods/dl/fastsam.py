@@ -74,10 +74,10 @@ class FastSAMSegmenter:
         return f"fastsam_{self.model_name.replace('.pt', '').lower()}"
     
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        image = image.get_numpy_image(level=self.level)
+        image_np = image.get_numpy_image(level=self.level)
         if self.text_prompt:
             results = self._model(
-                image,
+                image_np,
                 device=self.device,
                 retina_masks=True,
                 imgsz=self.imgsz,
@@ -88,7 +88,7 @@ class FastSAMSegmenter:
             )
         else:
             results = self._model(
-                image,
+                image_np,
                 device=self.device,
                 retina_masks=True,
                 imgsz=self.imgsz,
@@ -98,12 +98,12 @@ class FastSAMSegmenter:
             )
         
         if not results or len(results) == 0:
-            return mask_to_geojson(np.zeros(image.shape[:2], dtype=bool), self.min_area)
+            return mask_to_geojson(np.zeros(image_np.shape[:2], dtype=bool), self.min_area)
         
         result = results[0]
         
         if not hasattr(result, 'masks') or result.masks is None or len(result.masks) == 0:
-            return mask_to_geojson(np.zeros(image.shape[:2], dtype=bool), self.min_area)
+            return mask_to_geojson(np.zeros(image_np.shape[:2], dtype=bool), self.min_area)
         
         masks = result.masks.data.cpu().numpy()
         
@@ -114,14 +114,14 @@ class FastSAMSegmenter:
         
         combined_mask = combined_mask.astype(bool)
         
-        if combined_mask.shape != image.shape[:2]:
+        if combined_mask.shape != image_np.shape[:2]:
             from skimage.transform import resize
             combined_mask = resize(
                 combined_mask.astype(float),
-                image.shape[:2],
+                image_np.shape[:2],
                 order=0,
                 preserve_range=True,
                 anti_aliasing=False
             ).astype(bool)
         
-        return mask_to_geojson(combined_mask, self.min_area)
+        return mask_to_geojson(combined_mask, self.min_area, scaling_factor=image.get_scaling(self.level))

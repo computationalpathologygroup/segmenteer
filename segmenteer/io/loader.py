@@ -34,13 +34,13 @@ class Image:
     def area(self):
         return self.shape[0] * self.shape[1]
 
-    def downscale_factor(self, level: int = 0) -> float:
+    def get_scaling(self, level: int = 0) -> float:
         vimage = self.get_vips_image()
         if level == 0:
             return 1.0
         else:
             level_image = self.get_vips_image(level=level)
-            return vimage.width / level_image.width
+            return level_image.width / vimage.width
 
 
 def is_dicom_directory(path: Path) -> bool:

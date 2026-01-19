@@ -46,13 +46,13 @@ class FESISegmenter:
             return "fesi"
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        image = image.get_numpy_image(level=self.level)
+        image_np = image.get_numpy_image(level=self.level)
         if self.improved:
-            mask = improved_fesi(image)
+            mask = improved_fesi(image_np)
         else:
-            mask = fesi(image)
+            mask = fesi(image_np)
 
-        return mask_to_geojson(mask, self.min_area)
+        return mask_to_geojson(mask, self.min_area, scaling_factor=image.get_scaling(self.level))
 
 
 def _is_close(_seeds, _start) -> bool:

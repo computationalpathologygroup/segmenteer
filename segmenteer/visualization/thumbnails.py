@@ -73,7 +73,7 @@ def save_heatmap_thumbnail(
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    geojson_data = scale_geojson_coordinates(geojson_data, scale_factor=1 / image.downscale_factor(level=level))
+    geojson_data = scale_geojson_coordinates(geojson_data, scale_factor=image.get_scaling(level=level))
     image = image.get_numpy_image(level=level)
     overlay = create_heatmap_overlay(image, geojson_data, alpha)
     thumbnail = create_thumbnail(overlay, max_size)

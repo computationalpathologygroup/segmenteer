@@ -21,11 +21,11 @@ class MorphologicalSegmenter:
         return f"morphological_disk{self.disk_size}"
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        image = image.get_numpy_image(level=self.level)
-        if image.ndim == 3:
-            gray = rgb2gray(image)
+        image_np = image.get_numpy_image(level=self.level)
+        if image_np.ndim == 3:
+            gray = rgb2gray(image_np)
         else:
-            gray = image
+            gray = image_np
 
         threshold = threshold_otsu(gray)
         binary = gray > threshold
@@ -34,7 +34,7 @@ class MorphologicalSegmenter:
         opened = binary_opening(binary, selem)
         closed = binary_closing(opened, selem)
 
-        return mask_to_geojson(closed, self.min_area)
+        return mask_to_geojson(closed, self.min_area, image.get_scaling(self.level))
 
 
 class WatershedSegmenter:
@@ -48,11 +48,11 @@ class WatershedSegmenter:
         return f"watershed_mindist{self.min_distance}"
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        image = image.get_numpy_image(level=self.level)
-        if image.ndim == 3:
-            gray = rgb2gray(image)
+        image_np = image.get_numpy_image(level=self.level)
+        if image_np.ndim == 3:
+            gray = rgb2gray(image_np)
         else:
-            gray = image
+            gray = image_np
 
         threshold = threshold_otsu(gray)
         binary = gray > threshold
@@ -65,4 +65,4 @@ class WatershedSegmenter:
 
         labels = watershed(-distance, markers, mask=binary)
 
-        return mask_to_geojson(labels > 0, self.min_area)
+        return mask_to_geojson(labels > 0, self.min_area, image.get_scaling(self.level))

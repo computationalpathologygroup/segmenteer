@@ -31,15 +31,15 @@ class BackgroundSubtractorMOG2Segmenter:
             detectShadows=self.detect_shadows,
         )
 
-        image = image.get_numpy_image(level=self.level)
+        image_np = image.get_numpy_image(level=self.level)
 
-        if image.dtype != np.uint8:
-            if image.max() <= 1.0:
-                image_uint8 = (image * 255).astype(np.uint8)
+        if image_np.dtype != np.uint8:
+            if image_np.max() <= 1.0:
+                image_uint8 = (image_np * 255).astype(np.uint8)
             else:
-                image_uint8 = image.astype(np.uint8)
+                image_uint8 = image_np.astype(np.uint8)
         else:
-            image_uint8 = image
+            image_uint8 = image_np
 
         if len(image_uint8.shape) == 2:
             image_uint8 = cv2.cvtColor(image_uint8, cv2.COLOR_GRAY2BGR)
@@ -58,4 +58,4 @@ class BackgroundSubtractorMOG2Segmenter:
 
         mask = fg_mask > 0
 
-        return mask_to_geojson(mask, self.min_area)
+        return mask_to_geojson(mask, self.min_area, scaling_factor=image.get_scaling(self.level))

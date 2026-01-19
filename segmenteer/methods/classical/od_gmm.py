@@ -37,11 +37,11 @@ class ODGMMSlideSegmenter:
         return np.sum(od, axis=-1)
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        image = image.get_numpy_image(level=self.level)
-        if image.ndim != 3 or image.shape[2] != 3:
+        image_np = image.get_numpy_image(level=self.level)
+        if image_np.ndim != 3 or image_np.shape[2] != 3:
             raise ValueError("Input image must be RGB (H, W, 3)")
 
-        h, w, _ = image.shape
+        h, w, _ = image_np.shape
         total_pixels = h * w
 
         n_samples = min(self.n_samples, total_pixels)
@@ -49,7 +49,7 @@ class ODGMMSlideSegmenter:
         row_indices = indices // w
         col_indices = indices % w
 
-        sampled_pixels = image[row_indices, col_indices]
+        sampled_pixels = image_np[row_indices, col_indices]
         od_samples = self._rgb_to_od(sampled_pixels)
         od_sum_samples = self._od_to_sum(od_samples).reshape(-1, 1)
 
@@ -64,7 +64,7 @@ class ODGMMSlideSegmenter:
         means = gmm.means_.flatten()
         background_cluster = np.argmin(means)
 
-        od_full = self._rgb_to_od(image)
+        od_full = self._rgb_to_od(image_np)
         od_sum_full = self._od_to_sum(od_full).reshape(-1, 1)
         posteriors = gmm.predict_proba(od_sum_full)
         posteriors = posteriors.reshape(h, w, self.n_components)
@@ -87,4 +87,4 @@ class ODGMMSlideSegmenter:
             if count < self.min_area:
                 tissue_mask[labeled_mask == lbl] = False
 
-        return mask_to_geojson(tissue_mask, self.min_area)
+        return mask_to_geojson(tissue_mask, self.min_area, scaling_factor=image.get_scaling(self.level))

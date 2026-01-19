@@ -33,20 +33,17 @@ class OtsuSegmenter:
         return "otsu"
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        vimage_at_level_zero = image.get_vips_image()
         vimage = image.get_vips_image(level=self.level)
-        image = vimage.numpy()
-        if image.ndim == 3:
-            gray = rgb2gray(image)
+        image_np = vimage.numpy()
+        if image_np.ndim == 3:
+            gray = rgb2gray(image_np)
         else:
-            gray = image
+            gray = image_np
 
         threshold = threshold_otsu(gray)
         mask = gray > threshold
 
-        scaling_factor = vimage_at_level_zero.height / vimage.height
-
-        return mask_to_geojson(mask, self.min_area, scaling_factor=scaling_factor)
+        return mask_to_geojson(mask, self.min_area, scaling_factor=image.get_scaling(self.level))
 
 
 class LiSegmenter:
@@ -59,20 +56,17 @@ class LiSegmenter:
         return "li"
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        vimage_at_level_zero = image.get_vips_image()
         vimage = image.get_vips_image(level=self.level)
-        image = vimage.numpy()
-        if image.ndim == 3:
-            gray = rgb2gray(image)
+        image_np = vimage.numpy()
+        if image_np.ndim == 3:
+            gray = rgb2gray(image_np)
         else:
-            gray = image
+            gray = image_np
 
         threshold = threshold_li(gray)
         mask = gray > threshold
 
-        scaling_factor = vimage_at_level_zero.height / vimage.height
-
-        return mask_to_geojson(mask, self.min_area, scaling_factor=scaling_factor)
+        return mask_to_geojson(mask, self.min_area, scaling_factor=image.get_scaling(self.level))
 
 
 class YenSegmenter:
@@ -85,20 +79,17 @@ class YenSegmenter:
         return "yen"
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        vimage_at_level_zero = image.get_vips_image()
         vimage = image.get_vips_image(level=self.level)
-        image = vimage.numpy()
-        if image.ndim == 3:
-            gray = rgb2gray(image)
+        image_np = vimage.numpy()
+        if image_np.ndim == 3:
+            gray = rgb2gray(image_np)
         else:
-            gray = image
+            gray = image_np
 
         threshold = threshold_yen(gray)
         mask = gray > threshold
 
-        scaling_factor = vimage_at_level_zero.height / vimage.height
-
-        return mask_to_geojson(mask, self.min_area, scaling_factor=scaling_factor)
+        return mask_to_geojson(mask, self.min_area, scaling_factor=image.get_scaling(self.level))
 
 
 class EntropyMaskerSegmenter:
@@ -135,19 +126,16 @@ class EntropyMaskerSegmenter:
         return "entropy_masker"
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        vimage_at_level_zero = image.get_vips_image()
         vimage = image.get_vips_image(level=self.level)
-        image = vimage.numpy()
+        image_np = vimage.numpy()
         if image.ndim == 3:
-            gray = self.to_gray_func(image)
+            gray = self.to_gray_func(image_np)
         else:
-            gray = image
+            gray = image_np
 
         mask = entropy_masker(gray, self.footprint)
 
-        scaling_factor = vimage_at_level_zero.height / vimage.height
-
-        return mask_to_geojson(mask, self.min_area, scaling_factor=scaling_factor)
+        return mask_to_geojson(mask, self.min_area, scaling_factor=image.get_scaling(self.level))
 
 
 def entropy_masker(
