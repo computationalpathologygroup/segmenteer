@@ -1,79 +1,67 @@
 [project]
 name = "segmenteer"
-version = "0.0.1"
-description = "segmentation benchmarking library"
+version = "0.1.0"
 requires-python = ">=3.10"
 dependencies = [
-    "numpy>=1.24.0,<2.0",
-    "scipy>=1.10.0",
-    "scikit-image>=0.20.0",
-    "scikit-learn>=1.3.0",
-    "pillow>=10.0.0",
-    "tifffile>=2023.0.0",
-    "imagecodecs>=2023.0.0",
-    "shapely>=2.0.0",
-    "geojson>=3.0.0",
-    "wsidicom>=0.9.0",
-    "opencv-python>=4.8.0",
-    "pyvips>=2.2.0",
+    "geojson>=3.2.0",
+    "imagecodecs>=2025.3.30",
+    "numpy>=2.2.6",
+    "opencv-python>=4.13.0.90",
+    "pillow>=12.1.0",
+    "pyvips>=3.1.1.8.18.0",
+    "scikit-image>=0.25.2",
+    "scikit-learn>=1.7.2",
+    "scipy>=1.15.3",
+    "shapely>=2.1.2",
+    "tifffile>=2025.5.10",
+    "wsidicom>=0.29.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0.0",
-    "matplotlib>=3.7.0",
+    "matplotlib>=3.10.8",
+    "pytest>=9.0.2",
 ]
 entropymasker = [
-    "dask>=2025.9.1",
-]
-histomicstk = [
-    # "histomicstk>=1.0.0",
+    "dask>=2024.10.0",
 ]
 cpg = [
-    "docker>=6.0.0",
+    "docker>=7.1.0",
 ]
 openslide = [
-    "openslide-python>=1.2.0",
-    "openslide-bin>=2.0.0",
+    "openslide-bin>=4.0.0.11",
+    "openslide-python>=1.4.3.1",
 ]
 dl = [
-    "torch>=2.0.0",
-    "torchvision>=0.15.0",
-    "transformers>=4.35.0",
-    "huggingface_hub>=0.19.0",
-    "segmentation-models-pytorch",
-    "ultralytics>=8.0.0",
+    "huggingface-hub>=0.36.0",
+    "segmentation-models-pytorch>=0.5.0",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+    "transformers>=4.57.6",
+    "ultralytics>=8.4.6",
 ]
 fastsam = [
-    "ultralytics>=8.0.0",
-    "openai-clip>=1.0",
+    "openai-clip>=1.0.1",
+    "ultralytics>=8.4.6",
 ]
-all = [
-    "dask>=2025.9.1",
-    # "histomicstk>=1.0.0",
-    "docker>=6.0.0",
-    "pyvips>=2.2.0",
-    "openslide-python>=1.2.0",
-    "torch>=2.0.0",
-    "torchvision>=0.15.0",
-    "transformers>=4.35.0",
-    "huggingface_hub>=0.19.0",
-    "segmentation-models-pytorch",
-    "ultralytics>=8.0.0",
-    "openai-clip>=1.0",
-    "matplotlib>=3.7.0",
+histomicstk = [
+    "histomicstk>=1.4.0",
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.uv.sources]
-large_image  = { index = "large_image"}
+requires = ["uv_build>=0.9.26,<0.10.0"]
+build-backend = "uv_build"
 
 [[tool.uv.index]]
 name = "large_image"
 url = "https://girder.github.io/large_image_wheels"
 
-[tool.hatch.build.targets.wheel]
-packages = ["segmenteer"]
+[tool.uv.build-backend]
+module-root = ""
+module-name = "segmenteer"
+
+[tool.uv.sources]
+large_image  = { index = "large_image"}
+
+[tool.uv]
+index-strategy = "unsafe-best-match"
