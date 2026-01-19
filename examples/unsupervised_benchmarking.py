@@ -1,10 +1,12 @@
 from pathlib import Path
 
 import segmenteer as seg
+from segmenteer.io.loader import Image
 
 
 def main():
     path = Path("CMU-1-Small-Region.svs")
+    image = Image(path)
 
     output_dir = seg.create_timestamped_output_dir("outputs")
     print(f"Output directory: {output_dir}\n")
@@ -15,14 +17,34 @@ def main():
 
     segmenters = [
         seg.OtsuSegmenter(),
-        # seg.EntropyMaskerSegmenter(),
+        seg.LiSegmenter(),
+        seg.EntropyMaskerSegmenter(),
         # seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
         # seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),
         # seg.CPGSegmenter(docker_image="cpg-tissuemasker:latest", min_area=10),
     ]
 
-    runner = seg.BenchmarkRunner()
-    results = runner.run_multiple(segmenters, path)
+    def save_result(result):
+            print(f"  Saving results for {result.method_name}...")
+            seg.save_geojson(
+                result.geojson,
+                output_dir / f"{result.method_name}_fullres.geojson",
+                scale_factor=1,
+            )
+            seg.save_geojson(
+                result.geojson, output_dir / f"{result.method_name}_downsampled.geojson"
+            )
+            seg.save_heatmap_thumbnail(
+                image,
+                result.geojson,
+                output_dir / f"{result.method_name}_heatmap.png",
+                max_size=1024,
+                alpha=0.4,
+            )
+            print(f"  ✓ Saved all outputs for {result.method_name}\n")
+            
+    runner = seg.BenchmarkRunner(result_callback=save_result)
+    results = runner.run_multiple(segmenters, image)
 
     print("Unsupervised Segmentation Benchmarking")
     print("=" * 80)
