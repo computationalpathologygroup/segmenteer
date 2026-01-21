@@ -33,8 +33,7 @@ class OtsuSegmenter:
         return "otsu"
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        vimage = image.get_vips_image(level=self.level)
-        image_np = vimage.numpy()
+        image_np = image.get_numpy_image(level=self.level)
         if image_np.ndim == 3:
             gray = rgb2gray(image_np)
         else:
@@ -56,8 +55,7 @@ class LiSegmenter:
         return "li"
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        vimage = image.get_vips_image(level=self.level)
-        image_np = vimage.numpy()
+        image_np = image.get_numpy_image(level=self.level)
         if image_np.ndim == 3:
             gray = rgb2gray(image_np)
         else:
@@ -79,8 +77,7 @@ class YenSegmenter:
         return "yen"
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        vimage = image.get_vips_image(level=self.level)
-        image_np = vimage.numpy()
+        image_np = image.get_numpy_image(level=self.level)
         if image_np.ndim == 3:
             gray = rgb2gray(image_np)
         else:

@@ -76,5 +76,7 @@ class CPGSegmenter:
             for line in container.logs(stream=True):
                 print(line.decode(), end="")
             # TODO: is it fair that we need to read the output file here again?
+            # It is similar to what we're doing with the non-containerized algorithms,
+            # except we need to read from disk here.
             mask = pyvips.Image.new_from_file(output_file).numpy()
         return mask_to_geojson(mask, self.min_area)
