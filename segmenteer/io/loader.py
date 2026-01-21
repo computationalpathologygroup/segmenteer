@@ -5,47 +5,39 @@ import tifffile
 import json
 import geojson
 from segmenteer.core.utils import scale_geojson_coordinates
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import pyvips
+from monai.data import WSIReader
+from openslide import OpenSlide
 
 @dataclass
 class Image:
     path: Path
-    _vips_cache: dict[int, pyvips.Image] = field(default_factory=dict, init=False, repr=False)
-
-    def get_vips_image(self, level: int = 0):
-        if level not in self._vips_cache:
-            self._vips_cache[level] = pyvips.Image.openslideload(
-                self.path, level=level, revalidate=True, rgb=True
-            )
-        return self._vips_cache[level]
     
-    def get_numpy_image(self, level: int = 0):
-        return self.get_vips_image(level=level).numpy()
+    def __post_init__(self):
+        self.reader = WSIReader(backend="openslide")  # Force openslide, we build on it.
+        self.wsi: OpenSlide = self.reader.read(self.path)
     
-    @property
-    def width(self):
-        return self.get_vips_image().width
+    def get_data(self, mpp: float = 1):
+        return self.reader.get_data(self.wsi, mpp=mpp)[0]
+
+    def width(self, mpp: float = 1):
+        return self.shape(mpp)[1]
     
-    @property
-    def height(self):
-        return self.get_vips_image().height
+    def height(self, mpp: float = 1):
+        return self.shape(mpp)[0]
 
-    @property
-    def shape(self):
-        return (self.width, self.height)
+    def shape(self, mpp: float = 1):
+        level = self.reader.get_valid_level(self.wsi, mpp=mpp)
+        self.reader.get_size(self.wsi, level)
+        return self.wsi.level_dimensions
 
-    @property
-    def area(self):
-        return self.shape[0] * self.shape[1]
+    def area(self, mpp: float = 1):
+        return self.width(mpp) * self.height(mpp)
 
-    def get_scaling(self, level: int = 0) -> float:
-        vimage = self.get_vips_image()
-        if level == 0:
-            return 1.0
-        else:
-            level_image = self.get_vips_image(level=level)
-            return level_image.width / vimage.width
+    def get_scaling(self, mpp: int = 1) -> float:
+        level = self.reader.get_valid_level(self.wsi, level=None, power=None, mpp=mpp)
+        return self.reader.get_downsample_ratio(self.wsi, level)
 
 
 def is_dicom_directory(path: Path) -> bool:

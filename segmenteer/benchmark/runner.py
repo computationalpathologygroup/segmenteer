@@ -52,17 +52,24 @@ class BenchmarkRunner:
 
         self._log(f"  Segmentation completed in {execution_time:.4f}s")
 
-        seconds_per_pixel = execution_time / image.area
+        # TODO: this doesn't look clean and is repeated elsewhere.
+        from monai.data.wsi_reader import WSIReader
+        reader = WSIReader("openslide")
+        image = reader.read(image)
 
-        self._log(f"  Computing unsupervised metrics...")
-        unsupervised = compute_unsupervised_metrics(result, image.area)
+        shape = reader.get_size(image, 0)
+        area = shape[0] * shape[1]
+        seconds_per_pixel = execution_time / area
+
+        self._log("  Computing unsupervised metrics...")
+        unsupervised = compute_unsupervised_metrics(result, area)
         self._log(f"  Found {unsupervised.num_objects} objects")
 
         supervised = None
         if ground_truth_geojson is not None:
-            self._log(f"  Computing supervised metrics...")
+            self._log("  Computing supervised metrics...")
             supervised = compute_all_supervised_metrics(
-                result, ground_truth_geojson, image.shape
+                result, ground_truth_geojson, shape
             )
             self._log(f"  Dice: {supervised.dice:.4f}, IoU: {supervised.iou:.4f}")
 
@@ -90,7 +97,7 @@ class BenchmarkRunner:
         ground_truth_geojson: Optional[dict] = None,
     ) -> list[BenchmarkResult]:
         self._log(
-            f"\nBenchmarking {len(segmenters)} methods on image {image.path}"
+            f"\nBenchmarking {len(segmenters)} methods on image {image}"
         )
         self._log("=" * 60 + "\n")
 

@@ -2,7 +2,7 @@ import numpy as np
 from pathlib import Path
 from ultralytics import FastSAM
 from segmenteer.core.utils import mask_to_geojson
-from segmenteer.io.loader import Image
+from segmenteer.core.base import NumpySegmenter
 import geojson
 
 
@@ -12,25 +12,29 @@ def get_model_cache_dir() -> Path:
     return cache_dir
 
 
-class FastSAMSegmenter:
+class FastSAMSegmenter(NumpySegmenter):
+
+    APPLY_TO_GRAYSCALE = False
+
     def __init__(
         self,
-        level: int = 1,
+        mpp: int = 10,
         model_name: str = "FastSAM-x.pt",
         text_prompt: str | None = None,
         conf: float = 0.4,
         iou: float = 0.9,
         device: str | None = None,
-        min_area: int = 10,
         imgsz: int = 1024,
+        *args,
+        **kwargs,
     ):
-        self.level = level
+        super().__init__(*args, **kwargs)
+        self.mpp = mpp
         self.model_name = model_name
         self.text_prompt = text_prompt
         self.conf = conf
         self.iou = iou
         self.device = device if device else "cuda" if self._cuda_available() else "cpu"
-        self.min_area = min_area
         self.imgsz = imgsz
         
         print(f"Initializing FastSAM model: {model_name}")
@@ -73,11 +77,10 @@ class FastSAMSegmenter:
     def name(self) -> str:
         return f"fastsam_{self.model_name.replace('.pt', '').lower()}"
     
-    def segment(self, image: Image) -> geojson.FeatureCollection:
-        image_np = image.get_numpy_image(level=self.level)
+    def _segment_numpy(self, image):
         if self.text_prompt:
             results = self._model(
-                image_np,
+                image,
                 device=self.device,
                 retina_masks=True,
                 imgsz=self.imgsz,
@@ -88,7 +91,7 @@ class FastSAMSegmenter:
             )
         else:
             results = self._model(
-                image_np,
+                image,
                 device=self.device,
                 retina_masks=True,
                 imgsz=self.imgsz,
@@ -98,12 +101,12 @@ class FastSAMSegmenter:
             )
         
         if not results or len(results) == 0:
-            return mask_to_geojson(np.zeros(image_np.shape[:2], dtype=bool), self.min_area)
+            return mask_to_geojson(np.zeros(image.shape[:2], dtype=bool), self.min_area)
         
         result = results[0]
         
         if not hasattr(result, 'masks') or result.masks is None or len(result.masks) == 0:
-            return mask_to_geojson(np.zeros(image_np.shape[:2], dtype=bool), self.min_area)
+            return mask_to_geojson(np.zeros(image.shape[:2], dtype=bool), self.min_area)
         
         masks = result.masks.data.cpu().numpy()
         
@@ -114,14 +117,13 @@ class FastSAMSegmenter:
         
         combined_mask = combined_mask.astype(bool)
         
-        if combined_mask.shape != image_np.shape[:2]:
+        if combined_mask.shape != image.shape[:2]:
             from skimage.transform import resize
             combined_mask = resize(
                 combined_mask.astype(float),
-                image_np.shape[:2],
+                image.shape[:2],
                 order=0,
                 preserve_range=True,
                 anti_aliasing=False
             ).astype(bool)
-        
-        return mask_to_geojson(combined_mask, self.min_area, scaling_factor=image.get_scaling(self.level))
+        return combined_mask

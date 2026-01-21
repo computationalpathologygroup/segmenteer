@@ -6,63 +6,56 @@ from scipy import ndimage as ndi
 from skimage.segmentation import watershed
 from skimage.feature import peak_local_max
 from segmenteer.core.utils import mask_to_geojson
-from segmenteer.io.loader import Image
+from segmenteer.core.base import NumpySegmenter
 import geojson
 
 
-class MorphologicalSegmenter:
-    def __init__(self, level: int = 1, disk_size: int = 3, min_area: int = 10):
-        self.level = level
+class MorphologicalSegmenter(NumpySegmenter):
+    def __init__(
+            self,
+            mpp: int = 10,
+            disk_size: int = 3,
+            *args,
+            **kargs,
+        ):
+        super().__init__(*args, **kargs)
+        self.mpp = mpp
         self.disk_size = disk_size
-        self.min_area = min_area
 
     @property
     def name(self) -> str:
         return f"morphological_disk{self.disk_size}"
-
-    def segment(self, image: Image) -> geojson.FeatureCollection:
-        image_np = image.get_numpy_image(level=self.level)
-        if image_np.ndim == 3:
-            gray = rgb2gray(image_np)
-        else:
-            gray = image_np
-
-        threshold = threshold_otsu(gray)
-        binary = gray > threshold
-
+    
+    def _segment_numpy(self, image):
+        threshold = threshold_otsu(image)
+        binary = image > threshold
         selem = disk(self.disk_size)
         opened = binary_opening(binary, selem)
-        closed = binary_closing(opened, selem)
-
-        return mask_to_geojson(closed, self.min_area, image.get_scaling(self.level))
+        return binary_closing(opened, selem)
 
 
-class WatershedSegmenter:
-    def __init__(self, level: int = 1, min_distance: int = 10, min_area: int = 10):
-        self.level = level
+class WatershedSegmenter(NumpySegmenter):
+    def __init__(
+            self,
+            mpp: int = 10,
+            min_distance: int = 10,
+            *args,
+            **kargs,
+        ):
+        super().__init__(*args, **kargs)
+        self.mpp = mpp
         self.min_distance = min_distance
-        self.min_area = min_area
 
     @property
     def name(self) -> str:
         return f"watershed_mindist{self.min_distance}"
 
-    def segment(self, image: Image) -> geojson.FeatureCollection:
-        image_np = image.get_numpy_image(level=self.level)
-        if image_np.ndim == 3:
-            gray = rgb2gray(image_np)
-        else:
-            gray = image_np
-
-        threshold = threshold_otsu(gray)
-        binary = gray > threshold
-
+    def _segment_numpy(self, image):
+        threshold = threshold_otsu(image)
+        binary = image > threshold
         distance = ndi.distance_transform_edt(binary)
         coords = peak_local_max(distance, min_distance=self.min_distance, labels=binary)
         mask = np.zeros(distance.shape, dtype=bool)
         mask[tuple(coords.T)] = True
         markers = ndi.label(mask)[0]
-
-        labels = watershed(-distance, markers, mask=binary)
-
-        return mask_to_geojson(labels > 0, self.min_area, image.get_scaling(self.level))
+        return watershed(-distance, markers, mask=binary)

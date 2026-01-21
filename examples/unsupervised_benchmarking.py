@@ -1,44 +1,50 @@
 from pathlib import Path
 
 import segmenteer as seg
-from segmenteer.io.loader import Image
 
 
 def main():
     path = Path("CMU-3.tiff")
-    image = Image(path)
+    # path = Path("CMU-1-Small-Region.tiff")
+    # image = Image(path)
+    image = path
 
     output_dir = seg.create_timestamped_output_dir("outputs")
     print(f"Output directory: {output_dir}\n")
 
     # Save original thumbnail once
     seg.save_thumbnail(path, output_dir / "original_thumbnail.png")
-    print(f"Saved: original_thumbnail.png\n")
+    print("Saved: original_thumbnail.png\n")
 
     segmenters = [
-        seg.OtsuSegmenter(level=6, min_area=0),
-        seg.LiSegmenter(level=6, min_area=0),
-        seg.EntropyMaskerSegmenter(level=6, min_area=0),
-        seg.GrandQCSegmenter(level=6, confidence_threshold=0.5, min_area=0),
-        seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=0),
-        # seg.CPGSegmenter(docker_image="dodrio1.umcn.nl/daangeijs/tissueseg:latest", min_area=10),
+        seg.OtsuSegmenter(mpp=20, min_area=0),
+        seg.LiSegmenter(mpp=20, min_area=0),
+        seg.YenSegmenter(mpp=20, min_area=0),
+        seg.EntropyMaskerSegmenter(mpp=10, min_area=0),
+        seg.ODGMMSlideSegmenter(mpp=10),
+        seg.MorphologicalSegmenter(mpp=10),
+        seg.WatershedSegmenter(mpp=10),
+        seg.HistomicsTKSegmenter(mpp=10),
+        seg.FESISegmenter(),
+        seg.FESISegmenter(improved=False),
+        seg.BackgroundSubtractorMOG2Segmenter(mpp=20),
+        seg.HESTSegmenter(mpp=5, confidence_threshold=0.5, min_area=0),
+        seg.GrandQCSegmenter(mpp=10, confidence_threshold=0.5, min_area=0),
+        seg.FastSAMSegmenter(mpp=10),
+        seg.CPGSegmenter(docker_image="dodrio1.umcn.nl/daangeijs/tissueseg:latest", min_area=10),
     ]
 
     def save_result(result):
             print(f"  Saving results for {result.method_name}...")
             seg.save_geojson(
                 result.geojson,
-                output_dir / f"{result.method_name}_fullres.geojson",
-                scale_factor=1,
-            )
-            seg.save_geojson(
-                result.geojson, output_dir / f"{result.method_name}_downsampled.geojson"
+                output_dir / f"{result.method_name}.geojson",
             )
             seg.save_heatmap_thumbnail(
                 image=image,
                 geojson_data=result.geojson,
                 output_path=output_dir / f"{result.method_name}_heatmap.png",
-                level=4,
+                mpp=10,
                 max_size=1024,
                 alpha=0.4,
             )

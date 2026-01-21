@@ -1,6 +1,6 @@
 import warnings
 from functools import partial
-from typing import Callable, Optional
+from typing import Union, Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -10,10 +10,8 @@ from skimage.color import rgb2gray
 from skimage.morphology import disk
 from skimage.util import apply_parallel
 from segmenteer.core.utils import mask_to_geojson
-from segmenteer.io.loader import Image
-from pathlib import Path
-import pyvips
 import geojson
+from segmenteer.core.base import NumpySegmenter
 
 
 class DaskWarning(UserWarning):
@@ -23,73 +21,47 @@ class DaskWarning(UserWarning):
 warnings.simplefilter("once", DaskWarning)
 
 
-class OtsuSegmenter:
-    def __init__(self, level: int = 1, min_area: int = 10):
-        self.level = level
-        self.min_area = min_area
+class OtsuSegmenter(NumpySegmenter):
+
+    def __init__(self, mpp: float = 20, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.mpp = mpp
 
     @property
     def name(self) -> str:
         return "otsu"
 
-    def segment(self, image: Image) -> geojson.FeatureCollection:
-        image_np = image.get_numpy_image(level=self.level)
-        if image_np.ndim == 3:
-            gray = rgb2gray(image_np)
-        else:
-            gray = image_np
-
-        threshold = threshold_otsu(gray)
-        mask = gray > threshold
-
-        return mask_to_geojson(mask, self.min_area, scaling_factor=image.get_scaling(self.level))
+    def _segment_numpy(self, image: npt.NDArray[np.uint8]) -> npt.NDArray[np.bool_]:
+        return image > threshold_otsu(image)
 
 
-class LiSegmenter:
-    def __init__(self, level: int = 1, min_area: int = 10):
-        self.level = level
-        self.min_area = min_area
+class LiSegmenter(NumpySegmenter):
+    def __init__(self, mpp: float = 20, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.mpp = mpp
 
     @property
     def name(self) -> str:
         return "li"
 
-    def segment(self, image: Image) -> geojson.FeatureCollection:
-        image_np = image.get_numpy_image(level=self.level)
-        if image_np.ndim == 3:
-            gray = rgb2gray(image_np)
-        else:
-            gray = image_np
-
-        threshold = threshold_li(gray)
-        mask = gray > threshold
-
-        return mask_to_geojson(mask, self.min_area, scaling_factor=image.get_scaling(self.level))
+    def _segment_numpy(self, image: npt.NDArray[np.uint8]) -> npt.NDArray[np.bool_]:
+        return image > threshold_li(image)
 
 
-class YenSegmenter:
-    def __init__(self, level: int = 1, min_area: int = 10):
-        self.level = level
-        self.min_area = min_area
+class YenSegmenter(NumpySegmenter):
+    def __init__(self, mpp: float = 20, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.mpp = mpp
 
     @property
     def name(self) -> str:
         return "yen"
 
-    def segment(self, image: Image) -> geojson.FeatureCollection:
-        image_np = image.get_numpy_image(level=self.level)
-        if image_np.ndim == 3:
-            gray = rgb2gray(image_np)
-        else:
-            gray = image_np
-
-        threshold = threshold_yen(gray)
-        mask = gray > threshold
-
-        return mask_to_geojson(mask, self.min_area, scaling_factor=image.get_scaling(self.level))
+    def _segment_numpy(self, image: npt.NDArray[np.uint8]) -> npt.NDArray[np.bool_]:
+        return image > threshold_yen(image)
 
 
-class EntropyMaskerSegmenter:
+class EntropyMaskerSegmenter(NumpySegmenter):
     """Unofficial implementation of the EntropyMasker algorithm [1] to extract foreground from histopathology images.
 
     Parameters
@@ -107,31 +79,23 @@ class EntropyMaskerSegmenter:
     """
 
     def __init__(
-        self,
-        level: int = 1,
-        min_area: int = 10,
-        footprint: Optional[npt.NDArray] = None,
-        to_gray_func: Callable = partial(np.max, axis=2),
-    ):
-        self.level = level
-        self.min_area = min_area
+            self,
+            footprint: npt.NDArray[np.int_] | None = None,
+            to_gray_func: Union[callable, None] = None,
+            *args,
+            **kwargs,
+        ) -> None:
+        if to_gray_func is None:
+            to_gray_func = partial(np.max, axis=2)
+        super().__init__(to_gray_func=to_gray_func, *args, **kwargs)
         self.footprint = footprint
-        self.to_gray_func = to_gray_func
 
     @property
     def name(self) -> str:
         return "entropy_masker"
 
-    def segment(self, image: Image) -> geojson.FeatureCollection:
-        image_np = image.get_numpy_image(level=self.level)
-        if image_np.ndim == 3:
-            gray = self.to_gray_func(image_np)
-        else:
-            gray = image_np
-
-        mask = entropy_masker(gray, self.footprint)
-
-        return mask_to_geojson(mask, self.min_area, scaling_factor=image.get_scaling(self.level))
+    def _segment_numpy(self, image: npt.NDArray[np.uint8]) -> npt.NDArray[np.bool_]:
+        return entropy_masker(image, self.footprint)
 
 
 def entropy_masker(

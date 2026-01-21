@@ -3,7 +3,6 @@ from typing import Union
 import numpy as np
 from PIL import Image
 from segmenteer.core.utils import geojson_to_mask, scale_geojson_coordinates
-from segmenteer.io.loader import Image
 from PIL import Image as PILImage
 import pyvips
 
@@ -66,15 +65,20 @@ def save_heatmap_thumbnail(
     image: Image,
     geojson_data: dict,
     output_path: Union[str, Path],
-    level: int = 0,
+    mpp: int = 0,
     max_size: int = 1024,
     alpha: float = 0.4,
 ):
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    geojson_data = scale_geojson_coordinates(geojson_data, scale_factor=image.get_scaling(level=level))
-    image = image.get_numpy_image(level=level)
+    # TODO: this isn't very clean, refactor?
+    from monai.data.wsi_reader import WSIReader
+    reader = WSIReader("openslide")
+    image = reader.read(image)
+
+    geojson_data = scale_geojson_coordinates(geojson_data, scale_factor=reader.get_mpp(image, 0)[0] / mpp)
+    image =  reader.get_wsi_at_mpp(image, (mpp, mpp))[..., :3]
     overlay = create_heatmap_overlay(image, geojson_data, alpha)
     thumbnail = create_thumbnail(overlay, max_size)
     pyvips.Image.new_from_array(thumbnail).write_to_file(output_path)
