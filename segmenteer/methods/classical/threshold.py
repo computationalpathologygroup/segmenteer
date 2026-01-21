@@ -123,9 +123,8 @@ class EntropyMaskerSegmenter:
         return "entropy_masker"
 
     def segment(self, image: Image) -> geojson.FeatureCollection:
-        vimage = image.get_vips_image(level=self.level)
-        image_np = vimage.numpy()
-        if image.ndim == 3:
+        image_np = image.get_numpy_image(level=self.level)
+        if image_np.ndim == 3:
             gray = self.to_gray_func(image_np)
         else:
             gray = image_np
