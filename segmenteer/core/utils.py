@@ -84,7 +84,7 @@ def mask_to_geojson(mask: np.ndarray, min_area: int = 10, scaling_factor: float 
             if not polygon.is_valid:
                 polygon = polygon.buffer(0)
 
-            polygon = affinity.scale(polygon, xfact=scaling_factor, yfact=scaling_factor, origin=(0, 0, 0))
+            polygon = affinity.scale(polygon, xfact=1 / scaling_factor, yfact=1 / scaling_factor, origin=(0, 0, 0))
 
             if polygon.is_valid and not polygon.is_empty:
                 feature = geojson.Feature(
