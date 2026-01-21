@@ -5,15 +5,20 @@ import tifffile
 import json
 import geojson
 from segmenteer.core.utils import scale_geojson_coordinates
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import pyvips
 
 @dataclass
 class Image:
     path: Path
+    _vips_cache: dict[int, pyvips.Image] = field(default_factory=dict, init=False, repr=False)
 
     def get_vips_image(self, level: int = 0):
-        return pyvips.Image.openslideload(self.path, access="sequential", level=level, revalidate=True, rgb=True)
+        if level not in self._vips_cache:
+            self._vips_cache[level] = pyvips.Image.openslideload(
+                self.path, level=level, revalidate=True, rgb=True
+            )
+        return self._vips_cache[level]
     
     def get_numpy_image(self, level: int = 0):
         return self.get_vips_image(level=level).numpy()
