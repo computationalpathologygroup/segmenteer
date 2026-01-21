@@ -6,11 +6,8 @@ import numpy as np
 import numpy.typing as npt
 from skimage.filters import threshold_otsu, threshold_li, threshold_yen
 from skimage.filters.rank import entropy
-from skimage.color import rgb2gray
 from skimage.morphology import disk
 from skimage.util import apply_parallel
-from segmenteer.core.utils import mask_to_geojson
-import geojson
 from segmenteer.core.base import NumpySegmenter
 
 

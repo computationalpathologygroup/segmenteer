@@ -4,10 +4,7 @@ import torch.nn.functional as F
 from pathlib import Path
 from torchvision import transforms
 from torchvision.models.segmentation import deeplabv3_resnet50
-from segmenteer.core.utils import mask_to_geojson
-from segmenteer.io.loader import Image
 from segmenteer.core.base import NumpySegmenter
-import geojson
 
 
 def get_model_cache_dir() -> Path:
@@ -97,7 +94,7 @@ class HESTSegmenter(NumpySegmenter):
                     new_state_dict[new_key] = v
 
                 self._model.load_state_dict(new_state_dict, strict=False)
-                print(f"Loaded HEST model from HuggingFace")
+                print("Loaded HEST model from HuggingFace")
             except Exception as e:
                 print(
                     f"Error downloading/loading model from HuggingFace: {e}\n"

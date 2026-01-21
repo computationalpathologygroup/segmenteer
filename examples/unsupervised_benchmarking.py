@@ -5,9 +5,6 @@ import segmenteer as seg
 
 def main():
     path = Path("CMU-3.tiff")
-    # path = Path("CMU-1-Small-Region.tiff")
-    # image = Image(path)
-    image = path
 
     output_dir = seg.create_timestamped_output_dir("outputs")
     print(f"Output directory: {output_dir}\n")
@@ -41,7 +38,7 @@ def main():
                 output_dir / f"{result.method_name}.geojson",
             )
             seg.save_heatmap_thumbnail(
-                image=image,
+                image=path,
                 geojson_data=result.geojson,
                 output_path=output_dir / f"{result.method_name}_heatmap.png",
                 mpp=10,
@@ -51,7 +48,7 @@ def main():
             print(f"  ✓ Saved all outputs for {result.method_name}\n")
             
     runner = seg.BenchmarkRunner(result_callback=save_result)
-    results = runner.run_multiple(segmenters, image)
+    results = runner.run_multiple(segmenters, path)
 
     print("Unsupervised Segmentation Benchmarking")
     print("=" * 80)
@@ -104,8 +101,8 @@ def main():
     print("Saving summary files...")
     seg.export_results_csv(results, output_dir / "results.csv")
     seg.export_results_json(results, output_dir / "results.json")
-    print(f"  ✓ results.csv")
-    print(f"  ✓ results.json")
+    print("  ✓ results.csv")
+    print("  ✓ results.json")
 
     print(f"\nAll results saved to: {output_dir}/")
 

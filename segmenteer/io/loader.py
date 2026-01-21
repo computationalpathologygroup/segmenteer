@@ -5,39 +5,7 @@ import tifffile
 import json
 import geojson
 from segmenteer.core.utils import scale_geojson_coordinates
-from dataclasses import dataclass
 import pyvips
-from monai.data import WSIReader
-from openslide import OpenSlide
-
-@dataclass
-class Image:
-    path: Path
-    
-    def __post_init__(self):
-        self.reader = WSIReader(backend="openslide")  # Force openslide, we build on it.
-        self.wsi: OpenSlide = self.reader.read(self.path)
-    
-    def get_data(self, mpp: float = 1):
-        return self.reader.get_data(self.wsi, mpp=mpp)[0]
-
-    def width(self, mpp: float = 1):
-        return self.shape(mpp)[1]
-    
-    def height(self, mpp: float = 1):
-        return self.shape(mpp)[0]
-
-    def shape(self, mpp: float = 1):
-        level = self.reader.get_valid_level(self.wsi, mpp=mpp)
-        self.reader.get_size(self.wsi, level)
-        return self.wsi.level_dimensions
-
-    def area(self, mpp: float = 1):
-        return self.width(mpp) * self.height(mpp)
-
-    def get_scaling(self, mpp: int = 1) -> float:
-        level = self.reader.get_valid_level(self.wsi, level=None, power=None, mpp=mpp)
-        return self.reader.get_downsample_ratio(self.wsi, level)
 
 
 def is_dicom_directory(path: Path) -> bool:
@@ -59,7 +27,7 @@ def load_dicom_wsi(path: Path, level: int = 0, verbose: bool = True) -> np.ndarr
     num_levels = len(wsi.levels)
 
     if verbose:
-        print(f"DICOM WSI Info:")
+        print("DICOM WSI Info:")
         print(f"  Available pyramid levels: {num_levels}")
         for i, lvl in enumerate(wsi.levels):
             print(f"    Level {i}: {lvl.size.width}x{lvl.size.height}")
@@ -103,7 +71,7 @@ def load_openslide_wsi(path: Path, level: int = 0, verbose: bool = True) -> np.n
     num_levels = slide.level_count
 
     if verbose:
-        print(f"OpenSlide WSI Info:")
+        print("OpenSlide WSI Info:")
         print(f"  Format: {slide.detect_format(str(path))}")
         print(f"  Available pyramid levels: {num_levels}")
         for i in range(num_levels):

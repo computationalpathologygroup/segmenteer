@@ -1,9 +1,8 @@
 from pathlib import Path
 from typing import Union
 import numpy as np
-from PIL import Image
 from segmenteer.core.utils import geojson_to_mask, scale_geojson_coordinates
-from PIL import Image as PILImage
+from PIL import Image
 import pyvips
 
 
@@ -18,8 +17,8 @@ def create_thumbnail(image: np.ndarray, max_size: int = 1024) -> np.ndarray:
     new_width = int(width * scale)
     new_height = int(height * scale)
 
-    img_pil = PILImage.fromarray(image)
-    img_pil_resized = img_pil.resize((new_width, new_height), PILImage.Resampling.LANCZOS)
+    img_pil = Image.fromarray(image)
+    img_pil_resized = img_pil.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
     return np.array(img_pil_resized)
 
@@ -62,7 +61,7 @@ def save_thumbnail(
 
 
 def save_heatmap_thumbnail(
-    image: Image,
+    image: Path,
     geojson_data: dict,
     output_path: Union[str, Path],
     mpp: int = 0,

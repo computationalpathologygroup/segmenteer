@@ -2,9 +2,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional, Callable
 import time
-import numpy as np
 from segmenteer.core.base import Segmenter
-from skimage.transform import resize
 from segmenteer.metrics.evaluation import (
     SupervisedMetrics,
     compute_all_supervised_metrics,
@@ -13,9 +11,6 @@ from segmenteer.metrics.unsupervised import (
     UnsupervisedMetrics,
     compute_unsupervised_metrics,
 )
-from segmenteer.core.utils import mask_to_geojson
-import pyvips
-from segmenteer.io.loader import Image
 
 
 @dataclass
@@ -41,7 +36,7 @@ class BenchmarkRunner:
     def run_single(
         self,
         segmenter: Segmenter,
-        image: Image,
+        image: Path,
         ground_truth_geojson: Optional[dict] = None,
     ) -> BenchmarkResult:
         self._log(f"Running {segmenter.name}...")
@@ -93,7 +88,7 @@ class BenchmarkRunner:
     def run_multiple(
         self,
         segmenters: list[Segmenter],
-        image: Image,
+        image: Path,
         ground_truth_geojson: Optional[dict] = None,
     ) -> list[BenchmarkResult]:
         self._log(

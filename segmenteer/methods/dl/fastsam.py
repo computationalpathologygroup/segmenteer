@@ -3,7 +3,6 @@ from pathlib import Path
 from ultralytics import FastSAM
 from segmenteer.core.utils import mask_to_geojson
 from segmenteer.core.base import NumpySegmenter
-import geojson
 
 
 def get_model_cache_dir() -> Path:
