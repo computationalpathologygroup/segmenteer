@@ -61,14 +61,15 @@ __version__ = "0.1.0"
 
 
 def __getattr__(name):
-    if name in ("HESTSegmenter", "GrandQCSegmenter", "FastSAMSegmenter"):
-        from segmenteer.methods.dl import HESTSegmenter, GrandQCSegmenter, FastSAMSegmenter, CPGSegmenter
+    if name in ("HESTSegmenter", "GrandQCSegmenter", "FastSAMSegmenter", "CPGSegmenter", "RTLucassenSlideSegmenter"):
+        from segmenteer.methods.dl import HESTSegmenter, GrandQCSegmenter, FastSAMSegmenter, CPGSegmenter, RTLucassenSlideSegmenter
 
         return {
             "HESTSegmenter": HESTSegmenter,
             "GrandQCSegmenter": GrandQCSegmenter,
             "FastSAMSegmenter": FastSAMSegmenter,
             "CPGSegmenter": CPGSegmenter,
+            "RTLucassenSlideSegmenter": RTLucassenSlideSegmenter,
         }[name]
     raise AttributeError(f"module 'segmenteer' has no attribute '{name}'")
 
@@ -94,6 +95,7 @@ __all__ = [
     "HESTSegmenter",
     "GrandQCSegmenter",
     "FastSAMSegmenter",
+    "RTLucassenSlideSegmenter",
     "SupervisedMetrics",
     "UnsupervisedMetrics",
     "compute_dice",

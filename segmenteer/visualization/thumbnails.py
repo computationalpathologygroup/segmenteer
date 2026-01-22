@@ -1,8 +1,9 @@
 from pathlib import Path
 from typing import Union
 import numpy as np
+from segmenteer.core.utils import geojson_to_mask, scale_geojson_coordinates
 from PIL import Image
-from segmenteer.core.utils import geojson_to_mask
+import pyvips
 
 
 def create_thumbnail(image: np.ndarray, max_size: int = 1024) -> np.ndarray:
@@ -51,33 +52,32 @@ def create_heatmap_overlay(
 
 
 def save_thumbnail(
-    image: np.ndarray, output_path: Union[str, Path], max_size: int = 1024
+    image: Path, output_path: Union[str, Path], max_size: int = 1024
 ):
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    thumbnail = create_thumbnail(image, max_size)
-
-    if thumbnail.dtype != np.uint8:
-        if thumbnail.max() <= 1.0:
-            thumbnail = (thumbnail * 255).astype(np.uint8)
-        else:
-            thumbnail = thumbnail.astype(np.uint8)
-
-    Image.fromarray(thumbnail).save(output_path)
+    thumbnail = pyvips.Image.thumbnail(image, max_size)
+    thumbnail.write_to_file(output_path)
 
 
 def save_heatmap_thumbnail(
-    image: np.ndarray,
+    image: Path,
     geojson_data: dict,
     output_path: Union[str, Path],
+    mpp: int = 0,
     max_size: int = 1024,
     alpha: float = 0.4,
 ):
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # TODO: this isn't very clean, refactor?
+    from monai.data.wsi_reader import WSIReader
+    reader = WSIReader("openslide")
+    image = reader.read(image)
+
+    geojson_data = scale_geojson_coordinates(geojson_data, scale_factor=reader.get_mpp(image, 0)[0] / mpp)
+    image =  reader.get_wsi_at_mpp(image, (mpp, mpp))[..., :3]
     overlay = create_heatmap_overlay(image, geojson_data, alpha)
     thumbnail = create_thumbnail(overlay, max_size)
-
-    Image.fromarray(thumbnail).save(output_path)
+    pyvips.Image.new_from_array(thumbnail).write_to_file(output_path)

@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from pathlib import Path
 from torchvision import transforms
 from torchvision.models.segmentation import deeplabv3_resnet50
-from segmenteer.core.utils import mask_to_geojson
+from segmenteer.core.base import NumpySegmenter
 
 
 def get_model_cache_dir() -> Path:
@@ -13,7 +13,10 @@ def get_model_cache_dir() -> Path:
     return cache_dir
 
 
-class HESTSegmenter:
+class HESTSegmenter(NumpySegmenter):
+
+    APPLY_TO_GRAYSCALE = False
+
     def __init__(
         self,
         model_repo: str = "MahmoodLab/hest-tissue-seg",
@@ -21,14 +24,15 @@ class HESTSegmenter:
         checkpoint_path: str | None = None,
         device: str | None = None,
         confidence_threshold: float = 0.5,
-        min_area: int = 10,
-        mpp: float = 1.0,
+        mpp: float = 2.0,
+        *args,
+        **kwargs,
     ):
+        super().__init__(*args, **kwargs)
         self.model_repo = model_repo
         self.model_file = model_file
         self.checkpoint_path = checkpoint_path
         self.confidence_threshold = confidence_threshold
-        self.min_area = min_area
         self.mpp = mpp
 
         if device is None:
@@ -90,7 +94,7 @@ class HESTSegmenter:
                     new_state_dict[new_key] = v
 
                 self._model.load_state_dict(new_state_dict, strict=False)
-                print(f"Loaded HEST model from HuggingFace")
+                print("Loaded HEST model from HuggingFace")
             except Exception as e:
                 print(
                     f"Error downloading/loading model from HuggingFace: {e}\n"
@@ -140,17 +144,11 @@ class HESTSegmenter:
 
         return mask.astype(bool)
 
-    def segment(self, image: np.ndarray) -> dict:
-        if not isinstance(image, np.ndarray):
-            raise ValueError("Input image must be a numpy array")
-
+    def _segment_numpy(self, image):
         original_shape = image.shape
-
         input_tensor = self._preprocess_image(image)
 
         with torch.no_grad():
             outputs = self._model(input_tensor)
 
-        mask = self._postprocess_output(outputs, original_shape)
-
-        return mask_to_geojson(mask, self.min_area)
+        return self._postprocess_output(outputs, original_shape)

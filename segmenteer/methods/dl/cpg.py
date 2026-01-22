@@ -1,18 +1,17 @@
-import os
 from pathlib import Path
-from segmenteer.core.utils import mask_to_geojson
-import tempfile
+from segmenteer.core.base import PathSegmenter
 
-class CPGSegmenter:
+class CPGSegmenter(PathSegmenter):
 
     def __init__(
 		self,
-		docker_image: str = "cpg-tissuemasker:latest",
-		min_area: int = 10,
+		docker_image: str = "dodrio1.umcn.nl/daangeijs/tissueseg:latest",
 		device: str | None = None,
+        *args,
+        **kwargs,
 	):
+        super().__init__(*args, **kwargs)
         self.docker_image = docker_image
-        self.min_area = min_area
         self.device = device
         self._validate_dependencies()
         import docker
@@ -40,39 +39,44 @@ class CPGSegmenter:
     def name(self) -> str:
         return "cpg_tissuemasker"
 
-    def segment(self, input_file: str) -> dict:
+    def _segment_path(self, image_path: Path, output_path: Path) -> None:
         import docker
-        import pyvips
         
-        with tempfile.TemporaryDirectory() as tmpdir:
-            tmpdir = Path(tmpdir)
-            output_file = str(tmpdir / "tissuemask.tif")
-            command = [
-                "-c",
-                f"sh /home/user/run.sh /data/{os.path.basename(input_file)} /output/{os.path.basename(output_file)}",
-            ]
+        command = [
+            "-c",
+            f"sh /home/user/run.sh /data/{image_path.name} /output/{output_path.name}",
+        ]
 
-            if self.device is not None:
-                raise NotImplementedError("Only GPU support is implemented.")
-            device_requests = [docker.types.DeviceRequest(device_ids=['0'], capabilities=[['gpu']])]
+        if self.device is not None:
+            raise NotImplementedError("Only GPU support is implemented.")
+        device_requests = [docker.types.DeviceRequest(device_ids=['0'], capabilities=[['gpu']])]
 
-            # NOTE: Container is run from scratch, so has to load weights too every time.
-            # NOTE: Should be fairly quick. If running for over a minute, check stdout to investigate why the process hangs.
-            # Sometimes it may hang if it couldn't find the necessary spacing.
+        # NOTE: Container is run from scratch, so has to load weights too every time.
+        # NOTE: Sometimes it hangs if it cannot find the necessary 4.0 mpp (0.25 mpp tolerance) spacing.
+        try:
             container = self._client.containers.run(
                 self.docker_image,
                 command,
                 volumes={
-                    str(Path.cwd()): {'bind': '/data', 'mode': 'rw'},
-                    str(tmpdir): {'bind': '/output', 'mode': 'rw'},
+                    str(image_path.parent.resolve()): {'bind': '/data', 'mode': 'rw'},
+                    str(output_path.parent.resolve()): {'bind': '/output', 'mode': 'rw'},
                 },
                 remove=True,
                 detach=True,
                 entrypoint="/bin/bash",
                 device_requests=device_requests,
+                auto_remove=True,
             )
-            for line in container.logs(stream=True):
-                print(line.decode(), end="")
-            # TODO: is it fair that we need to read the output file here again?
-            mask = pyvips.Image.new_from_file(output_file).numpy()
-        return {"geojson": mask_to_geojson(mask, self.min_area), "mask": mask}
+        except docker.errors.DockerException as e:
+            raise RuntimeError(
+                "Error running Docker container for CPGSegmenter. "
+                "Make sure Docker is installed and running."
+            ) from e
+        for line in container.logs(stream=True):
+            decoded = line.decode()
+            print(decoded, end="")
+            if "digitalpathology.errors.imageerrors.PixelSpacingLevelError" in decoded:
+                raise RuntimeError(
+                    "CPGSegmenter failed due to missing required MPP level. "
+                    "Make sure the WSI contains a level close to 4.0 MPP."
+                )

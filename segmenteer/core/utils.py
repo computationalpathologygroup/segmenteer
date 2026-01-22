@@ -3,6 +3,7 @@ from skimage.measure import find_contours, label
 from skimage.transform import rescale
 from shapely.geometry import Polygon, mapping, shape as shapely_shape
 import geojson
+from shapely import affinity
 
 
 def downsample_image(image: np.ndarray, factor: int) -> np.ndarray:
@@ -53,7 +54,7 @@ def scale_geojson_coordinates(geojson_data: dict, scale_factor: float) -> dict:
     return geojson.FeatureCollection(scaled_features)
 
 
-def mask_to_geojson(mask: np.ndarray, min_area: int = 10) -> dict:
+def mask_to_geojson(mask: np.ndarray, min_area: int = 10, scaling_factor: float = 1) -> dict:
     labeled = label(mask)
     features = []
 
@@ -83,6 +84,8 @@ def mask_to_geojson(mask: np.ndarray, min_area: int = 10) -> dict:
             if not polygon.is_valid:
                 polygon = polygon.buffer(0)
 
+            polygon = affinity.scale(polygon, xfact=1 / scaling_factor, yfact=1 / scaling_factor, origin=(0, 0, 0))
+
             if polygon.is_valid and not polygon.is_empty:
                 feature = geojson.Feature(
                     geometry=mapping(polygon),
@@ -92,9 +95,9 @@ def mask_to_geojson(mask: np.ndarray, min_area: int = 10) -> dict:
                     },
                 )
                 features.append(feature)
-        except:
+        except:  # TODO: specify exception
             continue
-
+    
     return geojson.FeatureCollection(features)
 
 

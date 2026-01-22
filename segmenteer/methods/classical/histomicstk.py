@@ -1,16 +1,23 @@
 import numpy as np
-from segmenteer.core.utils import mask_to_geojson
-from enum import StrEnum
+from segmenteer.core.base import NumpySegmenter
+from enum import Enum
 
-class HistomicsTKMaskType(StrEnum):
+class HistomicsTKMaskType(str, Enum):
     SIMPLE = "simple"
     SALIENCY = "saliency"
 
 
-class HistomicsTKSegmenter:
-    def __init__(self, mask_type: HistomicsTKMaskType = HistomicsTKMaskType.SALIENCY, min_area: int = 10):
+class HistomicsTKSegmenter(NumpySegmenter):
+    def __init__(
+            self,
+            mpp: float = 20,
+            mask_type: HistomicsTKMaskType = HistomicsTKMaskType.SALIENCY, 
+            *args,
+            **kwargs,
+        ):
+        super().__init__(*args, **kwargs)
+        self.mpp = mpp
         self.mask_type = mask_type
-        self.min_area = min_area
         self._validate_histomicstk_available()
 
     def _validate_histomicstk_available(self):
@@ -27,14 +34,13 @@ class HistomicsTKSegmenter:
     def name(self) -> str:
         return f"histomicstk_{self.mask_type.value}"
 
-    def segment(self, image: np.ndarray) -> dict:
-        # Lazy import - only import when actually used
+
+    def _segment_numpy(self, image):
         from histomicstk.segmentation import simple_mask as histomicstk_simple_tissue_mask
         from histomicstk.saliency.tissue_detection import get_tissue_mask as histomicstk_saliency_tissue_mask
         
         if self.mask_type == HistomicsTKMaskType.SIMPLE:
-            mask = histomicstk_simple_tissue_mask(image)
+            return histomicstk_simple_tissue_mask(image)
         elif self.mask_type == HistomicsTKMaskType.SALIENCY:
             tissue_regions, _ = histomicstk_saliency_tissue_mask(image)
-            mask = tissue_regions.astype(bool).astype(np.uint8)  # Convert to zero-one mask
-        return mask_to_geojson(mask, self.min_area)
+            return tissue_regions.astype(bool).astype(np.uint8)  # Convert to zero-one mask

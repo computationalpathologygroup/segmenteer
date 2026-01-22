@@ -40,6 +40,7 @@ __all__ = [
     "WatershedSegmenter",
     "ODGMMSlideSegmenter",
     "HistomicsTKSegmenter",
+    "RTLucassenSlideSegmenter",
     "FESISegmenter",
     "classical",
     "ml",

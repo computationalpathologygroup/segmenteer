@@ -2,21 +2,28 @@ import numpy as np
 from sklearn.mixture import GaussianMixture
 from scipy.ndimage import binary_opening, binary_closing
 from skimage.measure import label
-from segmenteer.core.utils import mask_to_geojson
+import numpy.typing as npt
+from segmenteer.core.base import NumpySegmenter
 
 
-class ODGMMSlideSegmenter:
+class ODGMMSlideSegmenter(NumpySegmenter):
+
+    APPLY_TO_GRAYSCALE = False
+
     def __init__(
         self,
+        mpp: int = 10,
         n_samples: int = 100000,
         n_components: int = 2,
-        min_area: int = 10,
         morph_kernel_size: int = 5,
         epsilon: float = 1e-6,
-    ):
+        *args,
+        **kwargs,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.mpp = mpp
         self.n_samples = n_samples
         self.n_components = n_components
-        self.min_area = min_area
         self.morph_kernel_size = morph_kernel_size
         self.epsilon = epsilon
 
@@ -32,7 +39,7 @@ class ODGMMSlideSegmenter:
     def _od_to_sum(self, od: np.ndarray) -> np.ndarray:
         return np.sum(od, axis=-1)
 
-    def segment(self, image: np.ndarray) -> dict:
+    def _segment_numpy(self, image: npt.NDArray[np.uint8]) -> npt.NDArray[np.bool_]:
         if image.ndim != 3 or image.shape[2] != 3:
             raise ValueError("Input image must be RGB (H, W, 3)")
 
@@ -81,5 +88,4 @@ class ODGMMSlideSegmenter:
                 continue
             if count < self.min_area:
                 tissue_mask[labeled_mask == lbl] = False
-
-        return mask_to_geojson(tissue_mask, self.min_area)
+        return tissue_mask

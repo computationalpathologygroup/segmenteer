@@ -4,62 +4,52 @@ import segmenteer as seg
 
 
 def main():
-    path = Path("")
-    original_image = seg.load_image(
-        path=path, level=1
-    )
-
-    print(
-        f"Original image: {original_image.shape[0]}x{original_image.shape[1]} pixels ({original_image.shape[0] * original_image.shape[1]:,} total)"
-    )
-
-    downsample_factor = 8
-    print(f"Downsampling by {downsample_factor}x for faster processing...")
-    image = seg.downsample_image(original_image, downsample_factor)
-    print(
-        f"Working with: {image.shape[0]}x{image.shape[1]} pixels ({image.shape[0] * image.shape[1]:,} total)\n"
-    )
+    path = Path("CMU-3.tiff")
 
     output_dir = seg.create_timestamped_output_dir("outputs")
     print(f"Output directory: {output_dir}\n")
 
     # Save original thumbnail once
-    seg.save_thumbnail(image, output_dir / "original_thumbnail.png")
-    print(f"Saved: original_thumbnail.png\n")
-
-    def save_result(result):
-        print(f"  Saving results for {result.method_name}...")
-        seg.save_geojson(
-            result.geojson,
-            output_dir / f"{result.method_name}_fullres.geojson",
-            scale_factor=downsample_factor,
-        )
-        seg.save_geojson(
-            result.geojson, output_dir / f"{result.method_name}_downsampled.geojson"
-        )
-        seg.save_heatmap_thumbnail(
-            image,
-            result.geojson,
-            output_dir / f"{result.method_name}_heatmap.png",
-            max_size=1024,
-            alpha=0.4,
-        )
-        print(f"  ✓ Saved all outputs for {result.method_name}\n")
+    seg.save_thumbnail(path, output_dir / "original_thumbnail.png")
+    print("Saved: original_thumbnail.png\n")
 
     segmenters = [
-        seg.OtsuSegmenter(),
-        seg.EntropyMaskerSegmenter(),
-        seg.GrandQCSegmenter(confidence_threshold=0.5, min_area=10),
-        seg.HESTSegmenter(mpp=1.0, confidence_threshold=0.5, min_area=10),
-        seg.CPGSegmenter(docker_image="cpg-tissuemasker:latest", min_area=10),
-        seg.HistomicsTKSegmenter(),
-        seg.HistomicsTKSegmenter("simple"),
+        seg.OtsuSegmenter(mpp=20, min_area=0),
+        seg.LiSegmenter(mpp=20, min_area=0),
+        seg.YenSegmenter(mpp=20, min_area=0),
+        seg.EntropyMaskerSegmenter(mpp=10, min_area=0),
+        seg.ODGMMSlideSegmenter(mpp=10),
+        seg.MorphologicalSegmenter(mpp=10),
+        seg.WatershedSegmenter(mpp=10),
+        seg.HistomicsTKSegmenter(mpp=10),
         seg.FESISegmenter(),
         seg.FESISegmenter(improved=False),
+        seg.BackgroundSubtractorMOG2Segmenter(mpp=20),
+        seg.HESTSegmenter(mpp=2, confidence_threshold=0.5, min_area=0),
+        seg.RTLucassenSlideSegmenter(),
+        seg.GrandQCSegmenter(mpp=10, confidence_threshold=0.5, min_area=0),
+        seg.FastSAMSegmenter(mpp=10),
+        seg.CPGSegmenter(docker_image="dodrio1.umcn.nl/daangeijs/tissueseg:latest", min_area=10),
     ]
 
+    def save_result(result):
+            print(f"  Saving results for {result.method_name}...")
+            seg.save_geojson(
+                result.geojson,
+                output_dir / f"{result.method_name}.geojson",
+            )
+            seg.save_heatmap_thumbnail(
+                image=path,
+                geojson_data=result.geojson,
+                output_path=output_dir / f"{result.method_name}_heatmap.png",
+                mpp=10,
+                max_size=1024,
+                alpha=0.4,
+            )
+            print(f"  ✓ Saved all outputs for {result.method_name}\n")
+            
     runner = seg.BenchmarkRunner(result_callback=save_result)
-    results = runner.run_multiple(segmenters, image, path)
+    results = runner.run_multiple(segmenters, path)
 
     print("Unsupervised Segmentation Benchmarking")
     print("=" * 80)
@@ -112,8 +102,8 @@ def main():
     print("Saving summary files...")
     seg.export_results_csv(results, output_dir / "results.csv")
     seg.export_results_json(results, output_dir / "results.json")
-    print(f"  ✓ results.csv")
-    print(f"  ✓ results.json")
+    print("  ✓ results.csv")
+    print("  ✓ results.json")
 
     print(f"\nAll results saved to: {output_dir}/")
 

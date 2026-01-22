@@ -1,10 +1,9 @@
 import numpy as np
 import torch
-import torch.nn.functional as F
 from pathlib import Path
-from PIL import Image
+from PIL import Image as PILImage
 from torchvision import transforms
-from segmenteer.core.utils import mask_to_geojson
+from segmenteer.core.base import NumpySegmenter
 
 
 def get_model_cache_dir() -> Path:
@@ -13,21 +12,24 @@ def get_model_cache_dir() -> Path:
     return cache_dir
 
 
-class GrandQCSegmenter:
+class GrandQCSegmenter(NumpySegmenter):
     MODEL_FILE = "Tissue_Detection_MPP10.pth"
     ZENODO_RECORD_ID = "14507273"
-    MPP = 10.0
+    APPLY_TO_GRAYSCALE = False
 
     def __init__(
         self,
+        mpp: float = 10,
         checkpoint_path: str | None = None,
         device: str | None = None,
         confidence_threshold: float = 0.5,
-        min_area: int = 10,
+        *args,
+        **kwargs,
     ):
+        super().__init__(*args, **kwargs)
+        self.mpp = mpp
         self.checkpoint_path = checkpoint_path
         self.confidence_threshold = confidence_threshold
-        self.min_area = min_area
 
         if device is None:
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -35,7 +37,7 @@ class GrandQCSegmenter:
             self.device = torch.device(device)
 
         print(
-            f"Initializing GrandQC Tissue Detection model (MPP {self.MPP}, 1x magnification)"
+            f"Initializing GrandQC Tissue Detection model (MPP {self.mpp}, 1x magnification)"
         )
 
         self._model = None
@@ -132,7 +134,7 @@ class GrandQCSegmenter:
 
     @property
     def name(self) -> str:
-        return f"grandqc_tissue_detection_mpp{self.MPP}"
+        return f"grandqc_tissue_detection_mpp{self.mpp}"
 
     def _pad_to_divisible(self, image: np.ndarray, divisor: int = 32):
         h, w = image.shape[:2]
@@ -156,7 +158,7 @@ class GrandQCSegmenter:
 
         padded_image, pad_h, pad_w = self._pad_to_divisible(image)
 
-        pil_image = Image.fromarray(padded_image)
+        pil_image = PILImage.fromarray(padded_image)
         tensor = self._transform(pil_image)
         return tensor.unsqueeze(0).to(self.device), pad_h, pad_w
 
@@ -174,17 +176,10 @@ class GrandQCSegmenter:
 
         return mask.astype(bool)
 
-    def segment(self, image: np.ndarray) -> dict:
-        if not isinstance(image, np.ndarray):
-            raise ValueError("Input image must be a numpy array")
-
-        original_shape = image.shape
-
+    def _segment_numpy(self, image):
         input_tensor, pad_h, pad_w = self._preprocess_image(image)
 
         with torch.no_grad():
             outputs = self._model(input_tensor)
 
-        mask = self._postprocess_output(outputs, original_shape, pad_h, pad_w)
-
-        return mask_to_geojson(mask, self.min_area)
+        return self._postprocess_output(outputs, image.shape, pad_h, pad_w)

@@ -1,11 +1,11 @@
 from pathlib import Path
 from typing import Union
 import numpy as np
-from PIL import Image
 import tifffile
 import json
 import geojson
 from segmenteer.core.utils import scale_geojson_coordinates
+import pyvips
 
 
 def is_dicom_directory(path: Path) -> bool:
@@ -27,7 +27,7 @@ def load_dicom_wsi(path: Path, level: int = 0, verbose: bool = True) -> np.ndarr
     num_levels = len(wsi.levels)
 
     if verbose:
-        print(f"DICOM WSI Info:")
+        print("DICOM WSI Info:")
         print(f"  Available pyramid levels: {num_levels}")
         for i, lvl in enumerate(wsi.levels):
             print(f"    Level {i}: {lvl.size.width}x{lvl.size.height}")
@@ -71,7 +71,7 @@ def load_openslide_wsi(path: Path, level: int = 0, verbose: bool = True) -> np.n
     num_levels = slide.level_count
 
     if verbose:
-        print(f"OpenSlide WSI Info:")
+        print("OpenSlide WSI Info:")
         print(f"  Format: {slide.detect_format(str(path))}")
         print(f"  Available pyramid levels: {num_levels}")
         for i in range(num_levels):
@@ -126,7 +126,7 @@ def load_image(path: Union[str, Path], level: int = 0) -> np.ndarray:
         except Exception:
             pass
 
-        return np.array(Image.open(path))
+        return np.array(pyvips.Image.new_from_file(path))
 
 
 def save_geojson(geojson_data: dict, path: Union[str, Path], scale_factor: float = 1.0):

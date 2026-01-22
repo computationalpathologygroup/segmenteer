@@ -21,19 +21,27 @@ Changes to original:
 - fit the code into the segmenteer structure.
 """
 import numpy as np
-import PIL.Image
 import scipy.ndimage as ndi
 import skimage.filters
 import skimage.morphology
 import skimage.segmentation
-from skimage.color import rgb2gray
 
-from segmenteer.core.utils import mask_to_geojson
+from segmenteer.core.base import NumpySegmenter
 
-class FESISegmenter:
-    def __init__(self, improved: bool = True, min_area: int = 10):
+class FESISegmenter(NumpySegmenter):
+
+    APPLY_TO_GRAYSCALE = False
+
+    def __init__(
+            self,
+            mpp: float = 20,
+            improved: bool = True, 
+            *args,
+            **kwargs,
+        ):
+        super().__init__(*args, **kwargs)
+        self.mpp = mpp
         self.improved = improved
-        self.min_area = min_area
 
     @property
     def name(self) -> str:
@@ -41,15 +49,11 @@ class FESISegmenter:
             return "improved_fesi"
         else:
             return "fesi"
-
-    def segment(self, image: np.ndarray) -> dict:
+    
+    def _segment_numpy(self, image):
         if self.improved:
-            mask = improved_fesi(image)
-        else:
-            mask = fesi(image)
-
-        return mask_to_geojson(mask, self.min_area)
-
+            return improved_fesi(image)
+        return fesi(image)
 
 def _is_close(_seeds, _start) -> bool:
     """
