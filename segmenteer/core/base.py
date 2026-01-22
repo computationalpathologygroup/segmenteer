@@ -78,7 +78,8 @@ class NumpySegmenter(ABC):
         return np.take(image, [0, 1, 2], 2)
 
     def _convert_to_geojson(self, wsi: OpenSlide, mask: npt.NDArray[np.bool]) -> geojson.FeatureCollection:
-        return mask_to_geojson(mask, self.min_area, scaling_factor=self.reader.get_mpp(wsi, 0)[0] / self.mpp)
+        scaling_factor = mask.shape[0] / self.reader.get_size(wsi, 0)[0]
+        return mask_to_geojson(mask, self.min_area, scaling_factor=scaling_factor)
 
     @abstractmethod
     def _segment_numpy(
