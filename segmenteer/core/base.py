@@ -118,6 +118,9 @@ class PathSegmenter(ABC):
     def _segment_path(self, image_path: Path, output_path: Path) -> None:
         pass
 
-    def _convert_to_geojson(self, output_path: Path) -> geojson.FeatureCollection:
-        mask = pyvips.Image.new_from_file(output_path).numpy()
-        return mask_to_geojson(mask, self.min_area)
+    def _convert_to_geojson(self, input_path: Path, output_path: Path) -> geojson.FeatureCollection:
+        wsi = self.reader.read(input_path)
+        width = self.reader.get_size(wsi, 0)[0]
+        mask = pyvips.Image.new_from_file(output_path)
+        scaling_factor = mask.width / width
+        return mask_to_geojson(mask.numpy(), self.min_area, scaling_factor=scaling_factor)
