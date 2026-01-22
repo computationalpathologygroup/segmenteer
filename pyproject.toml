@@ -48,6 +48,9 @@ fastsam = [
 histomicstk = [
     "histomicstk>=1.4.0",
 ]
+slidesegmenter = [
+    "slidesegmenter",
+]
 
 [build-system]
 requires = ["uv_build>=0.9.26,<0.10.0"]
@@ -64,6 +67,7 @@ module-name = "segmenteer"
 [tool.uv.sources]
 large_image  = { index = "large_image"}
 monai = { git = "https://github.com/NikolasSchmitz/MONAI", rev = "ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4" }
+slidesegmenter = { git = "https://github.com/RTLucassen/slidesegmenter" }
 
 [tool.uv]
 index-strategy = "unsafe-best-match"
