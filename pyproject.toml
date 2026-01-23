@@ -15,6 +15,7 @@ dependencies = [
     "scipy>=1.15.3",
     "shapely>=2.1.2",
     "tifffile>=2025.5.10",
+    "trident",
     "wsidicom>=0.29.0",
 ]
 
@@ -67,7 +68,8 @@ module-name = "segmenteer"
 [tool.uv.sources]
 large_image  = { index = "large_image"}
 monai = { git = "https://github.com/NikolasSchmitz/MONAI", rev = "ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4" }
-slidesegmenter = { git = "https://github.com/RTLucassen/slidesegmenter" }
+slidesegmenter = { git = "https://github.com/RTLucassen/slidesegmenter", rev = "9d9d690913d6e8520a24d678f54decccd59dce9e" }
+trident = { git = "https://github.com/mahmoodlab/trident.git", rev = "adf3b7e8fdd7c815f33bec79da0d8d265200c2d6"}
 
 [tool.uv]
 index-strategy = "unsafe-best-match"
