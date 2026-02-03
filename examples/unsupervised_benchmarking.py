@@ -25,9 +25,11 @@ def main():
         seg.FESISegmenter(),
         seg.FESISegmenter(improved=False),
         seg.BackgroundSubtractorMOG2Segmenter(mpp=20),
-        seg.HESTSegmenter(mpp=2, confidence_threshold=0.5, min_area=0),
+        seg.HESTSegmenter(mpp=1),
+        seg.GrandQCSegmenter(mpp=8),
         seg.RTLucassenSlideSegmenter(),
-        seg.GrandQCSegmenter(mpp=10, confidence_threshold=0.5, min_area=0),
+        seg.TRIDENTHESTSegmenter,
+        seg.TRIDENTGrandQCSegmenter,
         seg.FastSAMSegmenter(mpp=10),
         seg.CPGSegmenter(docker_image="dodrio1.umcn.nl/daangeijs/tissueseg:latest", min_area=10),
     ]

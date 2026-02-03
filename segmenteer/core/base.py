@@ -12,6 +12,8 @@ from openslide import OpenSlide
 import skimage
 import tempfile
 import pyvips
+from trident.wsi_objects.OpenSlideWSI import OpenSlideWSI as WSI
+from trident.segmentation_models.load import GrandQCSegmenter, SegmentationModel as TRIDENTSegmentationModel
 
 
 @dataclass
@@ -87,6 +89,28 @@ class NumpySegmenter(ABC):
         image: npt.NDArray[np.uint8],
     ) -> npt.NDArray[np.bool_]:
         pass
+
+@dataclass
+class TRIDENTSegmenter:
+    """Base class for segmenters that work on numpy arrays."""
+
+    segmenter: TRIDENTSegmentationModel
+    
+    @property
+    def name(self) -> str:
+        return "trident_" + self.segmenter.__class__.__name__.lower()
+    
+    def segment(self, path: Path) -> geojson.FeatureCollection:
+        """Satisfies Segmenter protocol."""
+        wsi = WSI(path)
+        return geojson.loads(wsi.segment_tissue(
+            segmentation_model=GrandQCSegmenter(),
+            target_mag=10,
+            holes_are_tissue=True,
+            batch_size=8,
+            device="cuda:0",
+            num_workers=None,
+        ).to_json())
 
 
 class PathSegmenter(ABC):

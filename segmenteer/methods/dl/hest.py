@@ -24,7 +24,7 @@ class HESTSegmenter(NumpySegmenter):
         checkpoint_path: str | None = None,
         device: str | None = None,
         confidence_threshold: float = 0.5,
-        mpp: float = 2.0,
+        mpp: float = 8,
         *args,
         **kwargs,
     ):
