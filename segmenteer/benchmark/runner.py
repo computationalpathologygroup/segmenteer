@@ -49,7 +49,8 @@ class BenchmarkRunner:
 
         # TODO: this doesn't look clean and is repeated elsewhere.
         from monai.data.wsi_reader import WSIReader
-        reader = WSIReader("openslide")
+        from segmenteer.core.base import WSI_READER
+        reader = WSIReader(WSI_READER)
         image = reader.read(image)
 
         shape = reader.get_size(image, 0)

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Protocol, Union
+from typing import Any, Protocol, Union
 from dataclasses import dataclass
 from pathlib import Path
 import geojson
@@ -8,11 +8,15 @@ from skimage.color import rgb2gray
 import numpy as np
 from segmenteer.core.utils import mask_to_geojson
 from monai.data.wsi_reader import WSIReader
-from openslide import OpenSlide
 import skimage
 import tempfile
 import pyvips
 
+__all__ = ["Segmenter", "NumpySegmenter", "PathSegmenter", "SegmentationResult", "WSI_READER"]
+
+
+# WSI reader should be recognized by MONAI.
+WSI_READER = "cucim"
 
 @dataclass
 class SegmentationResult:
@@ -46,7 +50,7 @@ class NumpySegmenter(ABC):
         self.mpp = mpp
         self.min_area = min_area
         self.to_gray_func = to_gray_func
-        self.reader = reader if reader is not None else WSIReader("openslide")
+        self.reader = reader if reader is not None else WSIReader(WSI_READER)
     
     @property
     @abstractmethod
@@ -77,7 +81,7 @@ class NumpySegmenter(ABC):
     def _rgba_to_rgb(self, image):
         return np.take(image, [0, 1, 2], 2)
 
-    def _convert_to_geojson(self, wsi: OpenSlide, mask: npt.NDArray[np.bool]) -> geojson.FeatureCollection:
+    def _convert_to_geojson(self, wsi: Any, mask: npt.NDArray[np.bool]) -> geojson.FeatureCollection:
         scaling_factor = mask.shape[0] / self.reader.get_size(wsi, 0)[0]
         return mask_to_geojson(mask, self.min_area, scaling_factor=scaling_factor)
 
@@ -98,7 +102,7 @@ class PathSegmenter(ABC):
         reader: WSIReader | None = None,
     ):
         self.min_area = min_area
-        self.reader = reader if reader is not None else WSIReader("openslide")
+        self.reader = reader if reader is not None else WSIReader(WSI_READER)
 
     @property
     @abstractmethod

@@ -55,7 +55,12 @@ def scale_geojson_coordinates(geojson_data: dict, scale_factor: float) -> dict:
 
 
 def mask_to_geojson(mask: np.ndarray, min_area: int = 10, scaling_factor: float = 1) -> dict:
-    labeled = label(mask)
+    # Pad the mask to ensure contours touching image edges are properly closed
+    # Without padding, edge-touching contours create invalid polygons when their endpoints are connected
+    pad_width = 2
+    padded_mask = np.pad(mask, pad_width=pad_width, mode='constant', constant_values=False)
+    
+    labeled = label(padded_mask)
     features = []
 
     for region_id in range(1, labeled.max() + 1):
@@ -74,7 +79,8 @@ def mask_to_geojson(mask: np.ndarray, min_area: int = 10, scaling_factor: float 
         if len(largest_contour) < 3:
             continue
 
-        coords = [(float(x), float(y)) for y, x in largest_contour]
+        # Adjust coordinates back to original image space by removing padding offset
+        coords = [(float(x - pad_width), float(y - pad_width)) for y, x in largest_contour]
 
         if len(coords) < 3:
             continue

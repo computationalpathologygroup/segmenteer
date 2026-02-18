@@ -73,7 +73,8 @@ def save_heatmap_thumbnail(
 
     # TODO: this isn't very clean, refactor?
     from monai.data.wsi_reader import WSIReader
-    reader = WSIReader("openslide")
+    from segmenteer.core.base import WSI_READER
+    reader = WSIReader(WSI_READER)
     image = reader.read(image)
 
     geojson_data = scale_geojson_coordinates(geojson_data, scale_factor=reader.get_mpp(image, 0)[0] / mpp)
