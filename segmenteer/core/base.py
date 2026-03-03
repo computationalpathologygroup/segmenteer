@@ -12,7 +12,7 @@ import skimage
 import tempfile
 import pyvips
 from trident.wsi_objects.OpenSlideWSI import OpenSlideWSI as WSI
-from trident.segmentation_models.load import GrandQCSegmenter, SegmentationModel as TRIDENTSegmentationModel
+from trident.segmentation_models.load import SegmentationModel as TRIDENTSegmentationModel
 
 __all__ = ["Segmenter", "NumpySegmenter", "PathSegmenter", "SegmentationResult", "WSI_READER"]
 
@@ -108,7 +108,7 @@ class TRIDENTSegmenter:
         """Satisfies Segmenter protocol."""
         wsi = WSI(path)
         return geojson.loads(wsi.segment_tissue(
-            segmentation_model=GrandQCSegmenter(),
+            segmentation_model=self.segmenter(),
             target_mag=10,
             holes_are_tissue=True,
             batch_size=8,
