@@ -61,7 +61,7 @@ class NumpySegmenter(ABC):
     
     def segment(self, path: Path) -> geojson.FeatureCollection:
         """Satisfies Segmenter protocol."""
-        wsi = self.reader.read(path)
+        wsi = self.reader.read(str(path))
         image = self.load_numpy(wsi)
         preprocessed = self._preprocess(image)
         mask = self._segment_numpy(preprocessed)
@@ -108,7 +108,7 @@ class TRIDENTSegmenter:
         """Satisfies Segmenter protocol."""
         wsi = WSI(path)
         return geojson.loads(wsi.segment_tissue(
-            segmentation_model=self.segmenter(),
+            segmentation_model=self.segmenter,
             target_mag=10,
             holes_are_tissue=True,
             batch_size=8,

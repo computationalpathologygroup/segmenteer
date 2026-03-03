@@ -51,7 +51,7 @@ class BenchmarkRunner:
         from monai.data.wsi_reader import WSIReader
         from segmenteer.core.base import WSI_READER
         reader = WSIReader(WSI_READER)
-        image = reader.read(image)
+        image = reader.read(str(image))
 
         shape = reader.get_size(image, 0)
         area = shape[0] * shape[1]

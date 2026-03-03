@@ -75,7 +75,7 @@ def save_heatmap_thumbnail(
     from monai.data.wsi_reader import WSIReader
     from segmenteer.core.base import WSI_READER
     reader = WSIReader(WSI_READER)
-    image = reader.read(image)
+    image = reader.read(str(image))
 
     geojson_data = scale_geojson_coordinates(geojson_data, scale_factor=reader.get_mpp(image, 0)[0] / mpp)
     image =  reader.get_wsi_at_mpp(image, (mpp, mpp))[..., :3]

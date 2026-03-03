@@ -30,6 +30,7 @@ def main():
         seg.RTLucassenSlideSegmenter(),
         seg.TRIDENTHESTSegmenter,
         seg.TRIDENTGrandQCSegmenter,
+        seg.TRIDENTPathProfilerSegmenter,
         seg.FastSAMSegmenter(mpp=10),
         seg.CPGSegmenter(docker_image="dodrio1.umcn.nl/daangeijs/tissueseg:latest", min_area=10),
     ]
