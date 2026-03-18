@@ -3,6 +3,7 @@ from segmenteer.methods.dl.grandqc import GrandQCSegmenter
 from segmenteer.methods.dl.trident import TRIDENTHESTSegmenter, TRIDENTGrandQCSegmenter
 from segmenteer.methods.dl.fastsam import FastSAMSegmenter
 from segmenteer.methods.dl.rtlucassen import RTLucassenSlideSegmenter
+from segmenteer.methods.dl.bigpicture import BigPictureSegmenter
 
 try:
     from segmenteer.methods.dl.cpg import CPGSegmenter
@@ -19,4 +20,5 @@ __all__ = [
     "RTLucassenSlideSegmenter",
     "TRIDENTHESTSegmenter",
     "TRIDENTGrandQCSegmenter",
+    "BigPictureSegmenter",
 ]

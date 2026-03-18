@@ -28,6 +28,7 @@ def main():
         seg.HESTSegmenter(mpp=1),
         seg.GrandQCSegmenter(mpp=8),
         seg.RTLucassenSlideSegmenter(),
+        seg.BigPictureSegmenter(),
         seg.TRIDENTHESTSegmenter,
         seg.TRIDENTGrandQCSegmenter,
         seg.FastSAMSegmenter(mpp=10),
