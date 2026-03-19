@@ -1,6 +1,6 @@
 from segmenteer.methods.dl.hest import HESTSegmenter
 from segmenteer.methods.dl.grandqc import GrandQCSegmenter
-from segmenteer.methods.dl.trident import TRIDENTHESTSegmenter, TRIDENTGrandQCSegmenter
+from segmenteer.methods.dl.trident import TRIDENTHESTSegmenter, TRIDENTGrandQCSegmenter, TRIDENTPathProfilerSegmenter
 from segmenteer.methods.dl.fastsam import FastSAMSegmenter
 from segmenteer.methods.dl.rtlucassen import RTLucassenSlideSegmenter
 from segmenteer.methods.dl.bigpicture import BigPictureSegmenter
@@ -21,4 +21,5 @@ __all__ = [
     "TRIDENTHESTSegmenter",
     "TRIDENTGrandQCSegmenter",
     "BigPictureSegmenter",
+    "TRIDENTPathProfilerSegmenter",
 ]

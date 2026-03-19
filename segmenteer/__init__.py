@@ -61,8 +61,8 @@ __version__ = "0.1.0"
 
 
 def __getattr__(name):
-    if name in ("HESTSegmenter", "GrandQCSegmenter", "FastSAMSegmenter", "CPGSegmenter", "RTLucassenSlideSegmenter", "TRIDENTGrandQCSegmenter", "TRIDENTHESTSegmenter", "BigPictureSegmenter"):
-        from segmenteer.methods.dl import HESTSegmenter, GrandQCSegmenter, FastSAMSegmenter, CPGSegmenter, RTLucassenSlideSegmenter, TRIDENTGrandQCSegmenter, TRIDENTHESTSegmenter, BigPictureSegmenter
+    if name in ("HESTSegmenter", "GrandQCSegmenter", "FastSAMSegmenter", "CPGSegmenter", "RTLucassenSlideSegmenter", "TRIDENTGrandQCSegmenter", "TRIDENTHESTSegmenter", "TRIDENTPathProfilerSegmenter", "BigPictureSegmenter"):
+        from segmenteer.methods.dl import HESTSegmenter, GrandQCSegmenter, FastSAMSegmenter, CPGSegmenter, RTLucassenSlideSegmenter, TRIDENTGrandQCSegmenter, TRIDENTHESTSegmenter, TRIDENTPathProfilerSegmenter, BigPictureSegmenter
 
         return {
             "HESTSegmenter": HESTSegmenter,
@@ -73,6 +73,7 @@ def __getattr__(name):
             "TRIDENTHESTSegmenter": TRIDENTHESTSegmenter,
             "TRIDENTGrandQCSegmenter": TRIDENTGrandQCSegmenter,
             "BigPictureSegmenter": BigPictureSegmenter,
+            "TRIDENTPathProfilerSegmenter": TRIDENTPathProfilerSegmenter,
         }[name]
     raise AttributeError(f"module 'segmenteer' has no attribute '{name}'")
 
@@ -99,6 +100,7 @@ __all__ = [
     "TRIDENTHESTSegmenter",
     "GrandQCSegmenter",
     "TRIDENTGrandQCSegmenter",
+    "TRIDENTPathProfilerSegmenter",
     "FastSAMSegmenter",
     "RTLucassenSlideSegmenter",
     "BigPictureSegmenter",
