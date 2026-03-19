@@ -61,8 +61,8 @@ __version__ = "0.1.0"
 
 
 def __getattr__(name):
-    if name in ("HESTSegmenter", "GrandQCSegmenter", "FastSAMSegmenter", "CPGSegmenter", "RTLucassenSlideSegmenter", "TRIDENTGrandQCSegmenter", "TRIDENTHESTSegmenter", "TRIDENTPathProfilerSegmenter"):
-        from segmenteer.methods.dl import HESTSegmenter, GrandQCSegmenter, FastSAMSegmenter, CPGSegmenter, RTLucassenSlideSegmenter, TRIDENTGrandQCSegmenter, TRIDENTHESTSegmenter, TRIDENTPathProfilerSegmenter
+    if name in ("HESTSegmenter", "GrandQCSegmenter", "FastSAMSegmenter", "CPGSegmenter", "RTLucassenSlideSegmenter", "TRIDENTGrandQCSegmenter", "TRIDENTHESTSegmenter", "TRIDENTPathProfilerSegmenter", "BigPictureSegmenter"):
+        from segmenteer.methods.dl import HESTSegmenter, GrandQCSegmenter, FastSAMSegmenter, CPGSegmenter, RTLucassenSlideSegmenter, TRIDENTGrandQCSegmenter, TRIDENTHESTSegmenter, TRIDENTPathProfilerSegmenter, BigPictureSegmenter
 
         return {
             "HESTSegmenter": HESTSegmenter,
@@ -72,6 +72,7 @@ def __getattr__(name):
             "RTLucassenSlideSegmenter": RTLucassenSlideSegmenter,
             "TRIDENTHESTSegmenter": TRIDENTHESTSegmenter,
             "TRIDENTGrandQCSegmenter": TRIDENTGrandQCSegmenter,
+            "BigPictureSegmenter": BigPictureSegmenter,
             "TRIDENTPathProfilerSegmenter": TRIDENTPathProfilerSegmenter,
         }[name]
     raise AttributeError(f"module 'segmenteer' has no attribute '{name}'")
@@ -102,6 +103,7 @@ __all__ = [
     "TRIDENTPathProfilerSegmenter",
     "FastSAMSegmenter",
     "RTLucassenSlideSegmenter",
+    "BigPictureSegmenter",
     "SupervisedMetrics",
     "UnsupervisedMetrics",
     "compute_dice",

@@ -1,8 +1,9 @@
 [project]
 name = "segmenteer"
 version = "0.1.0"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
+    "cucim-cu13>=26.2.1",
     "geojson>=3.2.0",
     "imagecodecs>=2025.3.30",
     "monai[cucim,openslide]",
@@ -15,6 +16,7 @@ dependencies = [
     "scipy>=1.15.3",
     "shapely>=2.1.2",
     "tifffile>=2025.5.10",
+    "tissue-segmentation",
     "trident",
     "wsidicom>=0.29.0",
 ]
@@ -70,6 +72,7 @@ large_image  = { index = "large_image"}
 monai = { git = "https://github.com/NikolasSchmitz/MONAI", rev = "ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4" }
 slidesegmenter = { git = "https://github.com/RTLucassen/slidesegmenter", rev = "9d9d690913d6e8520a24d678f54decccd59dce9e" }
 trident = { git = "https://github.com/mahmoodlab/trident.git", rev = "adf3b7e8fdd7c815f33bec79da0d8d265200c2d6"}
+tissue-segmentation = { git = "https://github.com/imi-bigpicture/tissue-segmentation.git", subdirectory = "tissue_segmentation", rev = "6d97a25a8255f591eb2c705611a32a5f56101a25"}
 
 [tool.uv]
 index-strategy = "unsafe-best-match"
