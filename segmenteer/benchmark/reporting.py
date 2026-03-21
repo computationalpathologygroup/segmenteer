@@ -1,9 +1,11 @@
+import json
+import math
+from dataclasses import asdict
 from pathlib import Path
 from typing import List, Union
-import json
-from dataclasses import asdict
-import math
+
 import numpy as np
+
 from segmenteer.benchmark.runner import BenchmarkResult
 
 
@@ -39,11 +41,13 @@ def export_results_json(results: List[BenchmarkResult], output_path: Union[str, 
 
         if result.supervised_metrics:
             result_dict["supervised_metrics"] = asdict(result.supervised_metrics)
+        if result.error:
+            result_dict["error"] = result.error
 
         data.append(result_dict)
 
     data = _sanitize_for_json(data)
-    
+
     with open(output_path, "w") as f:
         json.dump(data, f, indent=2)
 
@@ -65,25 +69,32 @@ def export_results_csv(results: List[BenchmarkResult], output_path: Union[str, P
         for result in results:
             u = result.unsupervised_metrics
             s = result.supervised_metrics
-            line = (
-                f"{result.method_name},"
-                f"{result.execution_time},"
-                f"{result.seconds_per_pixel},"
-                f"{u.num_objects},"
-                f"{u.total_area},"
-                f"{u.mean_area},"
-                f"{u.coverage_ratio},"
-                f"{s.dice},"
-                f"{s.iou},"
-                f"{s.precision},"
-                f"{s.recall},"
-                f"{s.hausdorff},"
-                f"{s.over_segmentation_rate},"
-                f"{s.under_segmentation_rate},"
-                f"{s.pixel_accuracy},"
-                f"{s.mae},"
-                f"{s.balanced_error_rate}"
-            )
+            if result.failed or s is None:
+                line = (
+                    f"{result.method_name},{result.execution_time},,"
+                    f"{u.num_objects},{u.total_area},{u.mean_area},{u.coverage_ratio},"
+                    f",,,,,,,,"
+                )
+            else:
+                line = (
+                    f"{result.method_name},"
+                    f"{result.execution_time},"
+                    f"{result.seconds_per_pixel},"
+                    f"{u.num_objects},"
+                    f"{u.total_area},"
+                    f"{u.mean_area},"
+                    f"{u.coverage_ratio},"
+                    f"{s.dice},"
+                    f"{s.iou},"
+                    f"{s.precision},"
+                    f"{s.recall},"
+                    f"{s.hausdorff},"
+                    f"{s.over_segmentation_rate},"
+                    f"{s.under_segmentation_rate},"
+                    f"{s.pixel_accuracy},"
+                    f"{s.mae},"
+                    f"{s.balanced_error_rate}"
+                )
             lines.append(line)
     else:
         header = (

@@ -1,68 +1,56 @@
-from segmenteer.core import (
-    Segmenter,
-    SegmentationResult,
-    mask_to_geojson,
-    geojson_to_mask,
-    downsample_image,
-    scale_geojson_coordinates,
-)
-from segmenteer.methods import (
-    OtsuSegmenter,
-    LiSegmenter,
-    YenSegmenter,
-    EntropyMaskerSegmenter,
-    MorphologicalSegmenter,
-    WatershedSegmenter,
-    BackgroundSubtractorMOG2Segmenter,
-    ODGMMSlideSegmenter,
-    HistomicsTKSegmenter,
-    FESISegmenter,
-)
-from segmenteer.metrics import (
-    SupervisedMetrics,
-    UnsupervisedMetrics,
-    compute_dice,
-    compute_iou,
-    compute_hausdorff,
-    compute_precision,
-    compute_recall,
-    compute_all_supervised_metrics,
-    compute_unsupervised_metrics,
-)
-from segmenteer.benchmark import (
-    BenchmarkRunner,
-    BenchmarkResult,
-    export_results_json,
-    export_results_csv,
-)
-from segmenteer.io import (
-    load_image,
-    save_geojson,
-    load_geojson,
-    create_timestamped_output_dir,
-)
-from segmenteer.visualization import (
-    create_thumbnail,
-    create_heatmap_overlay,
-    save_thumbnail,
-    save_heatmap_thumbnail,
-)
-from segmenteer.wsi import (
-    WSIMetadata,
-    get_wsi_metadata,
-    calculate_target_level,
-    resample_to_mpp,
-    load_wsi_at_mpp,
-    estimate_mpp_from_magnification,
-    calculate_scale_factor_for_coordinates,
-)
+from segmenteer.benchmark import (BenchmarkReporter, BenchmarkResult,
+                                  BenchmarkRunner, EnsembleOutputWriter,
+                                  export_results_csv, export_results_json,
+                                  load_ensemble_members, make_ensemble_run_id,
+                                  make_run_id)
+from segmenteer.core import (SegmentationResult, Segmenter, downsample_image,
+                             geojson_to_mask, mask_to_geojson,
+                             scale_geojson_coordinates)
+from segmenteer.core.base import load_segmenter
+from segmenteer.io import (create_timestamped_output_dir, load_geojson,
+                           load_ground_truths, load_image, save_geojson)
+from segmenteer.methods import (BackgroundSubtractorMOG2Segmenter,
+                                EntropyMaskerSegmenter, FESISegmenter,
+                                HistomicsTKSegmenter, HSVThresholdSegmenter,
+                                LiSegmenter, MorphologicalSegmenter,
+                                ODGMMSlideSegmenter, OtsuSegmenter,
+                                WatershedSegmenter, YenSegmenter)
+from segmenteer.metrics import (SupervisedMetrics, UnsupervisedMetrics,
+                                compute_all_supervised_metrics, compute_dice,
+                                compute_hausdorff, compute_iou,
+                                compute_precision, compute_recall,
+                                compute_unsupervised_metrics)
+from segmenteer.visualization import (create_heatmap_overlay, create_thumbnail,
+                                      save_heatmap_thumbnail, save_thumbnail,
+                                      save_vote_heatmap)
+from segmenteer.wsi import (WSIMetadata,
+                            calculate_scale_factor_for_coordinates,
+                            calculate_target_level,
+                            estimate_mpp_from_magnification, get_wsi_metadata,
+                            load_wsi_at_mpp, resample_to_mpp)
 
 __version__ = "0.1.0"
 
 
 def __getattr__(name):
-    if name in ("HESTSegmenter", "GrandQCSegmenter", "FastSAMSegmenter", "CPGSegmenter", "RTLucassenSlideSegmenter", "TRIDENTGrandQCSegmenter", "TRIDENTHESTSegmenter", "TRIDENTPathProfilerSegmenter", "BigPictureSegmenter"):
-        from segmenteer.methods.dl import HESTSegmenter, GrandQCSegmenter, FastSAMSegmenter, CPGSegmenter, RTLucassenSlideSegmenter, TRIDENTGrandQCSegmenter, TRIDENTHESTSegmenter, TRIDENTPathProfilerSegmenter, BigPictureSegmenter
+    if name in (
+        "HESTSegmenter",
+        "GrandQCSegmenter",
+        "FastSAMSegmenter",
+        "CPGSegmenter",
+        "RTLucassenSlideSegmenter",
+        "TRIDENTGrandQCSegmenter",
+        "TRIDENTHESTSegmenter",
+        "TRIDENTPathProfilerSegmenter",
+        "BigPictureSegmenter",
+    ):
+        from segmenteer.methods.dl import (BigPictureSegmenter, CPGSegmenter,
+                                           FastSAMSegmenter, GrandQCSegmenter,
+                                           HESTSegmenter,
+                                           RTLucassenSlideSegmenter,
+                                           TRIDENTGrandQCSegmenter,
+                                           TRIDENTHESTSegmenter,
+                                           TRIDENTPathProfilerSegmenter)
 
         return {
             "HESTSegmenter": HESTSegmenter,
@@ -79,6 +67,7 @@ def __getattr__(name):
 
 
 __all__ = [
+    "load_segmenter",
     "Segmenter",
     "SegmentationResult",
     "mask_to_geojson",
@@ -92,6 +81,7 @@ __all__ = [
     "MorphologicalSegmenter",
     "WatershedSegmenter",
     "BackgroundSubtractorMOG2Segmenter",
+    "HSVThresholdSegmenter",
     "ODGMMSlideSegmenter",
     "HistomicsTKSegmenter",
     "FESISegmenter",
@@ -115,16 +105,23 @@ __all__ = [
     "compute_unsupervised_metrics",
     "BenchmarkRunner",
     "BenchmarkResult",
+    "BenchmarkReporter",
+    "EnsembleOutputWriter",
+    "load_ensemble_members",
+    "make_ensemble_run_id",
+    "make_run_id",
     "export_results_json",
     "export_results_csv",
     "load_image",
     "save_geojson",
     "load_geojson",
+    "load_ground_truths",
     "create_timestamped_output_dir",
     "create_thumbnail",
     "create_heatmap_overlay",
     "save_thumbnail",
     "save_heatmap_thumbnail",
+    "save_vote_heatmap",
     "WSIMetadata",
     "get_wsi_metadata",
     "calculate_target_level",

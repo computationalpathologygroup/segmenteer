@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>segmenteer viewer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <!-- OpenSeadragon — deep zoom viewport -->
+  <script src="https://cdn.jsdelivr.net/npm/openseadragon@4.1/build/openseadragon/openseadragon.min.js"></script>
+</head>
+<body>
+
+<!-- ── Top bar ─────────────────────────────────────────────────────── -->
+<header id="topbar">
+  <div class="topbar-left">
+    <span class="logo">segmenteer</span>
+    <span id="run-label" class="run-label"></span>
+  </div>
+  <nav class="view-tabs">
+    <button class="tab active" data-view="overview">Overview</button>
+    <button class="tab" data-view="inspect">Inspect</button>
+  </nav>
+  <div class="topbar-right">
+    <span id="wsi-count" class="stat-chip"></span>
+    <span id="method-count" class="stat-chip"></span>
+  </div>
+</header>
+
+<!-- ── Body ────────────────────────────────────────────────────────── -->
+<div id="layout">
+
+  <!-- Sidebar: WSI list -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Slides</span>
+      <input id="search" type="text" placeholder="filter…" autocomplete="off">
+    </div>
+    <ul id="wsi-list"></ul>
+  </aside>
+
+  <!-- Main content: overview grid or OSD viewer -->
+  <main id="main">
+    <!-- Overview grid -->
+    <section id="view-overview">
+      <div class="overview-toolbar">
+        <label class="toolbar-label">Colour by</label>
+        <select id="metric-select"></select>
+        <a href="/api/report" class="btn-report" download>&#8595; Report</a>
+      </div>
+      <div class="overview-toggles-row">
+        <label class="toolbar-label">Overlays</label>
+        <div id="overview-method-bar"></div>
+      </div>
+      <div id="overview-grid"></div>
+    </section>
+
+    <!-- Inspect view -->
+    <section id="view-inspect" style="display:none">
+      <div id="osd-container">
+        <div id="osd-viewer"></div>
+        <!-- Canvas overlay is appended here by JS -->
+      </div>
+      <div id="inspect-empty">
+        <p>Select a slide from the sidebar to begin.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Right panel: method toggles + metrics -->
+  <aside id="panel">
+    <div id="panel-overview">
+      <p class="panel-hint">Click a slide to inspect it.</p>
+    </div>
+    <div id="panel-inspect" style="display:none">
+      <div class="panel-section">
+        <span class="panel-title" id="panel-stem"></span>
+      </div>
+      <div class="panel-section">
+        <div class="section-heading">Methods</div>
+        <div id="method-toggles"></div>
+      </div>
+      <div class="panel-section">
+        <div class="section-heading">Metrics</div>
+        <div id="metrics-table"></div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

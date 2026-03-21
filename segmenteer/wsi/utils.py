@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import Union, Tuple, Optional
+from typing import Optional, Tuple, Union
+
 import numpy as np
 from PIL import Image
 from skimage.transform import rescale

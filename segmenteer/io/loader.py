@@ -1,11 +1,11 @@
+import json
 from pathlib import Path
 from typing import Union
-import numpy as np
-import tifffile
-import json
+
 import geojson
+import numpy as np
+
 from segmenteer.core.utils import scale_geojson_coordinates
-import pyvips
 
 
 def is_dicom_directory(path: Path) -> bool:
@@ -108,6 +108,13 @@ def load_image(path: Union[str, Path], level: int = 0) -> np.ndarray:
     suffix = path.suffix.lower()
 
     if suffix in [".tif", ".tiff"]:
+        try:
+            import tifffile
+        except ImportError:
+            raise ImportError(
+                "tifffile is required to read TIFF files.\n"
+                "Install the wsi extra: pip install 'segmenteer[wsi]'"
+            ) from None
         return tifffile.imread(path)
     elif suffix == ".mrxs":
         try:
@@ -126,6 +133,13 @@ def load_image(path: Union[str, Path], level: int = 0) -> np.ndarray:
         except Exception:
             pass
 
+        try:
+            import pyvips
+        except ImportError:
+            raise ImportError(
+                "pyvips is required to read this image format.\n"
+                "Install the wsi extra: pip install 'segmenteer[wsi]'"
+            ) from None
         return np.array(pyvips.Image.new_from_file(path))
 
 
@@ -144,3 +158,49 @@ def load_geojson(path: Union[str, Path]) -> dict:
 
     with open(path, "r") as f:
         return geojson.load(f)
+
+
+def load_ground_truths(
+    images: list,
+    annotation_dir: Union[Path, None] = None,
+    suffix: str = "_gt.geojson",
+) -> dict:
+    """Discover and load GeoJSON ground-truth annotations for a list of images.
+
+    Looks for ``<image_stem><suffix>`` either next to each image (default) or
+    inside *annotation_dir* when provided.  Images without a matching file are
+    silently skipped and will run in unsupervised mode.
+
+    Parameters
+    ----------
+    images:
+        List of WSI :class:`~pathlib.Path` objects.
+    annotation_dir:
+        Directory containing annotation files.  Defaults to each image's own
+        parent directory.
+    suffix:
+        Filename suffix appended to the image stem (default ``_gt.geojson``).
+
+    Returns
+    -------
+    ``dict`` mapping each image :class:`~pathlib.Path` to its loaded GeoJSON
+    ``dict``.  Only images that have a matching annotation are included.
+
+    Examples
+    --------
+    Annotations next to images::
+
+        gts = seg.load_ground_truths(images)
+
+    Annotations in a separate folder::
+
+        gts = seg.load_ground_truths(images, annotation_dir=Path("annotations/"))
+    """
+    ground_truths: dict = {}
+    for img in images:
+        img = Path(img)
+        search_dir = Path(annotation_dir) if annotation_dir is not None else img.parent
+        ann_path = search_dir / f"{img.stem}{suffix}"
+        if ann_path.exists():
+            ground_truths[img] = load_geojson(ann_path)
+    return ground_truths

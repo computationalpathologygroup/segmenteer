@@ -1,13 +1,13 @@
 import numpy as np
-from sklearn.mixture import GaussianMixture
-from scipy.ndimage import binary_opening, binary_closing
-from skimage.measure import label
 import numpy.typing as npt
+from scipy.ndimage import binary_closing, binary_opening
+from skimage.measure import label
+from sklearn.mixture import GaussianMixture
+
 from segmenteer.core.base import NumpySegmenter
 
 
 class ODGMMSlideSegmenter(NumpySegmenter):
-
     APPLY_TO_GRAYSCALE = False
 
     def __init__(

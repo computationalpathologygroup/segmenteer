@@ -2,57 +2,122 @@
 name = "segmenteer"
 version = "0.1.0"
 requires-python = ">=3.12"
+# Minimal core — importable and functional for classical methods without any WSI backend.
+# Heavy backends (monai/pyvips/trident/torch/…) are all optional extras.
 dependencies = [
-    "cucim-cu13>=26.2.1",
     "geojson>=3.2.0",
-    "imagecodecs>=2025.3.30",
-    "monai[cucim,openslide]",
     "numpy>=2.2.6",
-    "opencv-python>=4.13.0.90",
     "pillow>=12.1.0",
-    "pyvips>=3.1.1.8.18.0",
+    "pyyaml>=6.0",
+    "rich>=13.0.0",
     "scikit-image>=0.25.2",
-    "scikit-learn>=1.7.2",
     "scipy>=1.15.3",
     "shapely>=2.1.2",
-    "tifffile>=2025.5.10",
-    "tissue-segmentation",
-    "trident",
-    "wsidicom>=0.29.0",
 ]
 
 [project.optional-dependencies]
-dev = [
-    "matplotlib>=3.10.8",
-    "pytest>=9.0.2",
-]
-entropymasker = [
-    "dask>=2024.10.0",
-]
-cpg = [
-    "docker>=7.1.0",
+# ── WSI reading backend ────────────────────────────────────────────────────
+# Required by NumpySegmenter / PathSegmenter to open slide files.
+# macOS: brew install vips  |  Linux: pyvips wheels are self-contained.
+wsi = [
+    "imagecodecs>=2025.3.30",
+    "monai",
+    "pyvips>=2.2.3",
+    "tifffile>=2025.5.10",
+    "wsidicom>=0.29.0",
 ]
 openslide = [
     "openslide-bin>=4.0.0.11",
     "openslide-python>=1.4.3.1",
+    "monai[openslide]",
 ]
-dl = [
-    "huggingface-hub>=0.36.0",
-    "segmentation-models-pytorch>=0.5.0",
-    "torch>=2.9.1",
-    "torchvision>=0.24.1",
-    "transformers>=4.57.6",
-    "ultralytics>=8.4.6",
+cucim = [
+    "cucim-cu13>=26.2.1",
+    "monai[cucim]",
 ]
-fastsam = [
-    "openai-clip>=1.0.1",
-    "ultralytics>=8.4.6",
+
+# ── Classical methods ──────────────────────────────────────────────────────
+background-subtractor = [
+    "opencv-python>=4.13.0.90",
 ]
 histomicstk = [
     "histomicstk>=1.4.0",
 ]
-slidesegmenter = [
+od-gmm = [
+    "scikit-learn>=1.7.2",
+]
+entropymasker = [
+    "dask>=2024.10.0",
+]
+
+# ── Deep-learning methods ──────────────────────────────────────────────────
+# Shared torch base (included by every DL method below).
+torch = [
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
+bigpicture = [
+    "tissue-segmentation",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
+cpg = [
+    "docker>=7.1.0",
+]
+fastsam = [
+    "openai-clip>=1.0.1",
+    "ultralytics>=8.4.6",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
+grandqc = [
+    "segmentation-models-pytorch>=0.5.0",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
+hest = [
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
+pathprofiler = [
+    "trident",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
+rtlucassen = [
     "slidesegmenter",
+]
+trident = [
+    "trident",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
+# All DL methods combined.
+dl = [
+    "huggingface-hub>=0.36.0",
+    "openai-clip>=1.0.1",
+    "segmentation-models-pytorch>=0.5.0",
+    "slidesegmenter",
+    "tissue-segmentation",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+    "transformers>=4.57.6",
+    "trident",
+    "ultralytics>=8.4.6",
+]
+
+# ── App / tooling ──────────────────────────────────────────────────────────
+app = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+]
+dev = [
+    "matplotlib>=3.10.8",
+    "pytest>=9.0.2",
+]
+# Install everything (except cuda/dicom backends).
+all = [
+    "segmenteer[wsi,openslide,background-subtractor,histomicstk,od-gmm,entropymasker,dl,app]",
 ]
 
 [build-system]
