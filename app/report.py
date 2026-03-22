@@ -309,7 +309,7 @@ def _summary_row(
                 f'</span>'
             )
         cells.append(
-            f'<td class="cm" style="--c:{html.escape(m.color)}">'
+            f'<td class="cm">'
             f'<div class="chips">{"".join(parts)}</div>'
             f'</td>'
         )
@@ -339,9 +339,8 @@ def _table_html(
         )
         prm_html = f'<div class="mprm">{prm}</div>' if prm else ""
         mth_ths.append(
-            f'<th class="cm" style="--c:{html.escape(m.color)}">'
+            f'<th class="cm">'
             f'<div class="mhdr">'
-            f'<span class="mdot" style="background:{html.escape(m.color)}"></span>'
             f'<span class="mnm">{html.escape(m.name)}</span>'
             f'</div>'
             f'{prm_html}'
@@ -381,7 +380,7 @@ def _table_html(
             rid_esc = html.escape(m.run_id)
             chips   = _chip_html(i, entry, win_sets)
             cells.append(
-                f'<td class="cm" style="--c:{html.escape(m.color)}">'
+                f'<td class="cm">'
                 f'<canvas class="cv" data-s="{si}" data-r="{rid_esc}"></canvas>'
                 f'<div class="chips">{chips}</div>'
                 f'</td>'
@@ -436,20 +435,18 @@ def generate_report(
         f'</head>\n'
         f'<body>\n'
         f'<header>\n'
-        f'  <div class="hdr">\n'
-        f'    <div class="hdr-left">\n'
-        f'      <span class="logo">segmenteer</span>\n'
-        f'      <span class="logo-sub">tissue segmentation benchmark</span>\n'
-        f'    </div>\n'
-        f'    <div class="hdr-right">\n'
-        f'      <span class="chip"><strong>{n_slides}</strong>\u2009slides</span>\n'
-        f'      <span class="chip"><strong>{n_methods}</strong>\u2009methods</span>\n'
-        f'      <span class="chip mono">{label_e}</span>\n'
-        f'      <span class="chip dim">{html.escape(generated)}</span>\n'
-        f'    </div>\n'
+        f'  <div class="topbar-left">\n'
+        f'    <span class="logo">segmenteer</span>\n'
+        f'    <span class="run-label">{label_e}</span>\n'
+        f'  </div>\n'
+        f'  <div class="report-badge"><span>Report</span></div>\n'
+        f'  <div class="topbar-right">\n'
+        f'    <span class="stat-chip"><strong>{n_slides}</strong>\u2009slides</span>\n'
+        f'    <span class="stat-chip"><strong>{n_methods}</strong>\u2009methods</span>\n'
+        f'    <span class="stat-chip">{html.escape(generated)}</span>\n'
         f'  </div>\n'
         f'</header>\n'
-        f'<div class="tbl-wrap">\n'
+        f'<div class="tbl-wrap" style="margin-top:var(--hdr-h)">\n'
         f'  <table class="cmp">{tbl}</table>\n'
         f'</div>\n'
         f'<footer>\n'
@@ -469,57 +466,69 @@ def generate_report(
 
 _CSS = """\
 :root{
-  --bg:#04070f;
-  --srf:#080e1c;
-  --srf2:#0d1428;
-  --b:rgba(148,163,184,.07);
-  --b2:rgba(148,163,184,.04);
-  --t:#dde6f0;
-  --t2:#7a90a8;
-  --t3:#3d5068;
-  --acc:#06d6a0;
-  --acc-dim:rgba(6,214,160,.10);
-  --acc-glow:rgba(6,214,160,.28);
-  --win:#06d6a0;
-  --hdr-h:64px;
+  --bg:#f8fafc;
+  --srf:#ffffff;
+  --srf2:#f1f5f9;
+  --b:#e2e8f0;
+  --b2:#f1f5f9;
+  --t:#0f172a;
+  --t2:#475569;
+  --t3:#94a3b8;
+  --acc:#059669;
+  --acc-dim:rgba(5,150,105,.08);
+  --acc-glow:rgba(5,150,105,.25);
+  --win:#059669;
+  --hdr-h:48px;
   --slide-col:188px;
   --mono:'JetBrains Mono','Cascadia Code','Fira Code',monospace;
   --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --radius:5px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--t);
   font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
 
-/* ── Header ── */
+/* ── Header — matches app topbar exactly ── */
 header{
-  position:sticky;top:0;z-index:200;
+  position:fixed;top:0;left:0;right:0;z-index:100;
   height:var(--hdr-h);
-  background:linear-gradient(180deg,rgba(2,5,16,.98) 0%,rgba(6,12,26,.96) 100%);
+  background:var(--srf);
   border-bottom:1px solid var(--b);
-  backdrop-filter:blur(12px);
-  box-shadow:0 1px 0 var(--b),0 4px 32px rgba(0,0,0,.5);
+  display:flex;align-items:center;
+  padding:0 16px;gap:16px;
+  box-shadow:var(--shadow);
 }
-.hdr{height:100%;padding:0 28px;display:flex;align-items:center;
-     justify-content:space-between;gap:16px}
-.hdr-left{display:flex;align-items:baseline;gap:12px}
-.logo{font-size:17px;font-weight:800;letter-spacing:-.5px;color:#fff}
-.logo-sub{font-size:11px;color:var(--t3);letter-spacing:.3px}
-.hdr-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.chip{padding:3px 10px;background:rgba(255,255,255,.04);border:1px solid var(--b);
-      border-radius:20px;font-size:10.5px;color:var(--t2)}
-.chip strong{color:var(--t);font-weight:600}
-.chip.mono{font-family:var(--mono);font-size:10px}
-.chip.dim{color:var(--t3)}
-
+.topbar-left{display:flex;align-items:center;gap:10px;flex:1}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.logo{font-weight:600;font-size:14px;letter-spacing:-.3px;color:var(--t)}
+.run-label{
+  font-family:var(--mono);font-size:11px;color:var(--t3);
+  background:var(--srf2);border:1px solid var(--b);
+  border-radius:var(--radius);padding:2px 8px;
+}
+.report-badge{
+  display:flex;gap:2px;background:var(--srf2);border:1px solid var(--b);
+  border-radius:var(--radius);padding:2px;
+}
+.report-badge span{
+  font-size:12px;font-weight:500;color:var(--t2);
+  padding:4px 14px;border-radius:calc(var(--radius) - 1px);
+  background:var(--srf);box-shadow:var(--shadow);
+}
+.stat-chip{
+  font-size:11px;color:var(--t2);background:var(--srf2);
+  border:1px solid var(--b);border-radius:12px;padding:2px 10px;
+}
 /* ── Scrollable table wrapper ── */
 .tbl-wrap{
   overflow-x:auto;overflow-y:auto;
   height:calc(100vh - var(--hdr-h) - 38px);
-  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent;
+  scrollbar-width:thin;scrollbar-color:rgba(15,23,42,.12) transparent;
 }
 .tbl-wrap::-webkit-scrollbar{width:6px;height:6px}
 .tbl-wrap::-webkit-scrollbar-track{background:transparent}
-.tbl-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px}
+.tbl-wrap::-webkit-scrollbar-thumb{background:rgba(15,23,42,.12);border-radius:3px}
 
 /* ── Table ── */
 .cmp{border-collapse:separate;border-spacing:0;min-width:max-content;font-size:12px}
@@ -532,18 +541,17 @@ thead th{
   text-align:left;
   background:var(--srf);
   border-bottom:1px solid var(--b);
-  border-right:1px solid var(--b2);
+  border-right:1px solid var(--b);
   white-space:nowrap;
 }
 thead th:last-child{border-right:none}
 .th-label{font-size:10px;font-weight:700;text-transform:uppercase;
           letter-spacing:.8px;color:var(--t3)}
-thead th.cm{border-top:2px solid var(--c,#333)}
-.mhdr{display:flex;align-items:center;gap:7px;margin-bottom:3px}
-.mdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+thead th.cm{border-top:2px solid var(--b)}
+.mhdr{display:flex;align-items:center;margin-bottom:3px}
 .mnm{font-size:12px;font-weight:600;color:var(--t);letter-spacing:-.1px}
 .mprm{font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:2px;
-      padding-left:16px;max-width:164px;white-space:normal}
+      padding-left:0;max-width:164px;white-space:normal}
 
 /* ── Sticky first column ── */
 .sticky{
@@ -558,8 +566,8 @@ thead th.sticky{z-index:150;background:var(--srf)}
 }
 
 /* ── Summary row ── */
-.sumrow{background:rgba(6,214,160,.03)}
-.sumrow .cs{background:rgba(4,7,15,.98)}
+.sumrow{background:rgba(5,150,105,.04)}
+.sumrow .cs{background:rgba(248,249,252,.99)}
 .sum-first{padding:0}
 .sum-inner{
   padding:16px 16px;
@@ -572,27 +580,27 @@ thead th.sticky{z-index:150;background:var(--srf)}
   border-radius:4px;padding:2px 6px;
 }
 .sum-nm{font-size:11px;font-weight:500;color:var(--t2)}
-.sumrow td.cm{border-bottom:1px solid rgba(6,214,160,.07)}
+.sumrow td.cm{border-bottom:1px solid rgba(5,150,105,.08)}
 
 /* ── Slide rows ── */
 .sr .cs{background:var(--bg)}
-.sr:hover td{background:rgba(255,255,255,.013)}
-.sr:hover .cs{background:#050914}
+.sr:hover td{background:rgba(15,23,42,.018)}
+.sr:hover .cs{background:#f2f4f8}
 
 /* cells */
 td.cs{
   padding:14px 16px;
-  border-bottom:1px solid var(--b2);
+  border-bottom:1px solid var(--b);
   vertical-align:top;
 }
 td.cm{
   padding:14px 16px;
-  border-bottom:1px solid var(--b2);
-  border-right:1px solid var(--b2);
+  border-bottom:1px solid var(--b);
+  border-right:1px solid var(--b);
   vertical-align:top;
 }
 td.cm:last-child{border-right:none}
-td.cm:hover{background:rgba(255,255,255,.01)}
+td.cm:hover{background:rgba(15,23,42,.012)}
 
 /* slide thumbnail in sticky col */
 .sl-img{
@@ -623,18 +631,18 @@ td.cm:hover{background:rgba(255,255,255,.01)}
 .mc{
   display:inline-flex;align-items:center;gap:3px;
   padding:2px 6px 2px 5px;border-radius:4px;
-  background:rgba(255,255,255,.035);border:1px solid var(--b);
+  background:var(--srf2);border:1px solid var(--b);
   font-size:9px;white-space:nowrap;
 }
 .mc.win{background:var(--acc-dim);border-color:var(--acc-glow)}
 .mk{font-family:var(--mono);font-weight:600;font-size:8px;letter-spacing:.3px;color:var(--t3)}
 .mv{color:var(--t2)}
 .mc.win .mv{color:var(--win);font-weight:700}
-.mc.win .mk{color:rgba(6,214,160,.6)}
+.mc.win .mk{color:rgba(5,150,105,.7)}
 
 /* ── Footer ── */
 footer{
-  height:38px;background:var(--bg);border-top:1px solid var(--b);
+  height:38px;background:var(--srf);border-top:1px solid var(--b);
   display:flex;align-items:center;
 }
 .ftr{
@@ -644,7 +652,14 @@ footer{
 .ftr strong{color:var(--t2)}
 .dim{color:var(--t3)}
 
-/* ── Print ── */
+/* ── Row / column crosshair highlight ── */
+.row-hl td{background:rgba(37,99,235,.04) !important}
+.row-hl .cs{background:rgba(37,99,235,.06) !important}
+.col-hl{background:rgba(37,99,235,.04) !important}
+thead th.col-hl{background:rgba(37,99,235,.07) !important}
+/* intersection cell */
+.row-hl .col-hl{background:rgba(37,99,235,.10) !important}
+
 @media print{
   body{background:#fff;color:#111}
   .tbl-wrap{height:auto;overflow:visible}
@@ -681,11 +696,11 @@ _JS = """\
   function drawRings(ctx, rings, sc, ox, oy) {
     if (!rings || !rings.length) return;
     ctx.save();
-    ctx.strokeStyle = '#06d6a0';
+    ctx.strokeStyle = '#059669';
     ctx.lineWidth   = 1.5;
-    ctx.fillStyle   = 'rgba(6,214,160,0.09)';
-    ctx.shadowColor = 'rgba(6,214,160,0.50)';
-    ctx.shadowBlur  = 5;
+    ctx.fillStyle   = 'rgba(5,150,105,0.10)';
+    ctx.shadowColor = 'rgba(5,150,105,0.35)';
+    ctx.shadowBlur  = 4;
     for (var i = 0; i < rings.length; i++) {
       var ring = rings[i];
       if (ring.length < 3) continue;
@@ -713,7 +728,7 @@ _JS = """\
     canvas.height = S;
     var ctx = canvas.getContext('2d');
 
-    ctx.fillStyle = '#080e1c';
+    ctx.fillStyle = '#f1f5f9';
     ctx.fillRect(0, 0, S, S);
 
     var rings = cell.rings || [];
@@ -749,6 +764,41 @@ _JS = """\
   var canvases = document.querySelectorAll('canvas.cv');
   for (var i = 0; i < canvases.length; i++) {
     io.observe(canvases[i]);
+  }
+
+  // ── Row + column crosshair highlight ────────────────────────────────
+  var table = document.querySelector('table.cmp');
+  if (table) {
+    var allRows = table.querySelectorAll('tbody tr');
+    var headCells = table.querySelectorAll('thead th');
+
+    function clearHighlight() {
+      for (var i = 0; i < allRows.length; i++) allRows[i].classList.remove('row-hl');
+      for (var i = 0; i < headCells.length; i++) headCells[i].classList.remove('col-hl');
+      var all = table.querySelectorAll('td.col-hl');
+      for (var i = 0; i < all.length; i++) all[i].classList.remove('col-hl');
+    }
+
+    table.addEventListener('mouseover', function(e) {
+      var td = e.target.closest('td');
+      if (!td) { clearHighlight(); return; }
+      var row = td.closest('tr');
+      var colIdx = Array.prototype.indexOf.call(row.children, td);
+
+      clearHighlight();
+
+      // highlight row
+      row.classList.add('row-hl');
+
+      // highlight column (header + all body cells at same index)
+      if (colIdx >= 0 && headCells[colIdx]) headCells[colIdx].classList.add('col-hl');
+      for (var i = 0; i < allRows.length; i++) {
+        var cell = allRows[i].children[colIdx];
+        if (cell) cell.classList.add('col-hl');
+      }
+    });
+
+    table.addEventListener('mouseleave', clearHighlight);
   }
 })();
 """

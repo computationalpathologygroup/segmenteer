@@ -21,7 +21,7 @@ dependencies = [
 # macOS: brew install vips  |  Linux: pyvips wheels are self-contained.
 wsi = [
     "imagecodecs>=2025.3.30",
-    "monai",
+    "monai @ git+https://github.com/NikolasSchmitz/MONAI@ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4",
     "pyvips>=2.2.3",
     "tifffile>=2025.5.10",
     "wsidicom>=0.29.0",
@@ -29,11 +29,11 @@ wsi = [
 openslide = [
     "openslide-bin>=4.0.0.11",
     "openslide-python>=1.4.3.1",
-    "monai[openslide]",
+    "monai[openslide] @ git+https://github.com/NikolasSchmitz/MONAI@ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4",
 ]
 cucim = [
     "cucim-cu13>=26.2.1",
-    "monai[cucim]",
+    "monai[cucim] @ git+https://github.com/NikolasSchmitz/MONAI@ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4",
 ]
 
 # ── Classical methods ──────────────────────────────────────────────────────
@@ -134,7 +134,6 @@ module-name = "segmenteer"
 
 [tool.uv.sources]
 large_image  = { index = "large_image"}
-monai = { git = "https://github.com/NikolasSchmitz/MONAI", rev = "ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4" }
 slidesegmenter = { git = "https://github.com/RTLucassen/slidesegmenter", rev = "9d9d690913d6e8520a24d678f54decccd59dce9e" }
 trident = { git = "https://github.com/mahmoodlab/trident.git", rev = "adf3b7e8fdd7c815f33bec79da0d8d265200c2d6"}
 tissue-segmentation = { git = "https://github.com/imi-bigpicture/tissue-segmentation.git", subdirectory = "tissue_segmentation", rev = "6d97a25a8255f591eb2c705611a32a5f56101a25"}
