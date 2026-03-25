@@ -1,4 +1,4 @@
-<h2 style="text-align: left; color: #02B0dd;">segmenteer</h2>
+<img src="docs/title.svg" alt="segmenteer" height="42">
 
 <h6 style="color: gray;">Currently under development. </h6>
 
@@ -11,7 +11,7 @@ Currently it can run classical and deep-learning methods side-by-side and produc
 
 First setup the environment [see below](#setup).
 
-<h4 style="color: #02B0dd;">Run methods</h4>
+#### Run methods
 
 Edit `run.py` — set your data path and comment out any methods that are not
 installed or not wanted to be used — then run:
@@ -33,7 +33,7 @@ viewer provide an interactive overview of the same data.
 Once you have run the methods, the following functionalities are available.
 **Ensemble fusion** is independent of report and viewer, but must be run first if you want the fused mask to appear as a method in them.
 
-<h4 style="color: #02B0dd;">Ensemble fusion</h4>
+#### Ensemble fusion
 
 Fuse predictions from multiple methods via soft weighted majority voting.
 Edit `postensemble.py` — point `member_dirs` at the method directories you
@@ -46,7 +46,7 @@ python postensemble.py
 The fused mask is written alongside the other method outputs in the same
 `outputs/<timestamp>/` directory.
 
-<h4 style="color: #02B0dd;">Report</h4>
+#### Report
 
 Generate a self-contained HTML report with thumbnails, overlays, and
 unsupervised metrics for every method:
@@ -55,7 +55,7 @@ unsupervised metrics for every method:
 python create_report.py --output outputs/<timestamp>
 ```
 
-<h4 style="color: #02B0dd;">Viewer</h4>
+#### Viewer
 
 Requires the `app` extra (`fastapi` + `uvicorn`) — install it if not already done:
 
