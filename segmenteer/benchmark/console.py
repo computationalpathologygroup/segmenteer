@@ -176,6 +176,23 @@ class BenchmarkReporter:
         self.console.print()
         self._print_quality_table(results)
         self.console.print()
+        failures = [r for r in results if r.failed]
+        if failures:
+            self._print_failures_section(failures)
+
+    def _print_failures_section(self, failures: list[BenchmarkResult]) -> None:
+        self.console.print(Rule("[bold red]Failures[/bold red]", style="red"))
+        self.console.print()
+        for r in failures:
+            self.console.print(
+                Panel(
+                    r.error or "(no details)",
+                    title=f"[bold red]✗ {r.method_name}[/bold red]",
+                    border_style="red",
+                    expand=False,
+                )
+            )
+        self.console.print()
 
     def _print_performance_table(self, results: list[BenchmarkResult]) -> None:
         table = Table(

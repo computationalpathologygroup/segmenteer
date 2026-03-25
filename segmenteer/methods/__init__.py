@@ -1,4 +1,5 @@
-from segmenteer.methods import classical, ml
+from segmenteer.methods import classical, ensemble, ml
+from segmenteer.methods.ensemble import fuse_members, run_ensemble
 from segmenteer.methods.classical import (EntropyMaskerSegmenter,
                                           FESISegmenter, HistomicsTKSegmenter,
                                           LiSegmenter, MorphologicalSegmenter,
@@ -28,6 +29,8 @@ except ImportError:
     dl = None
 
 __all__ = [
+    "fuse_members",
+    "run_ensemble",
     "OtsuSegmenter",
     "LiSegmenter",
     "YenSegmenter",

@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>segmenteer viewer</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='1' y='26' font-family='Inter,system-ui,sans-serif' font-weight='700' font-size='22' fill='%2302B0dd'>sg</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css?v=3">
   <!-- OpenSeadragon — deep zoom viewport -->
   <script src="https://cdn.jsdelivr.net/npm/openseadragon@4.1/build/openseadragon/openseadragon.min.js"></script>
 </head>
@@ -46,9 +47,9 @@
     <!-- Overview grid -->
     <section id="view-overview">
       <div class="overview-toolbar">
-        <label class="toolbar-label">Colour by</label>
+        <label class="toolbar-label">Select metric type</label>
         <select id="metric-select"></select>
-        <a href="/api/report" class="btn-report" download>&#8595; Report</a>
+        <a href="/api/report" class="btn-report" download>&#8595; Download segmentation report</a>
       </div>
       <div class="overview-toggles-row">
         <label class="toolbar-label">Overlays</label>
@@ -91,6 +92,6 @@
 
 </div>
 
-<script src="/static/app.js"></script>
+<script src="/static/app.js?v=3"></script>
 </body>
 </html>

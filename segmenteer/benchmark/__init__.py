@@ -6,6 +6,7 @@ from segmenteer.benchmark.reporting import (export_results_csv,
                                             export_results_json)
 from segmenteer.benchmark.runner import (BenchmarkResult, BenchmarkRunner,
                                          make_run_id)
+from segmenteer.benchmark.workflows import run_dataset, run_single_image
 
 __all__ = [
     "BenchmarkRunner",
@@ -17,4 +18,6 @@ __all__ = [
     "make_run_id",
     "export_results_json",
     "export_results_csv",
+    "run_single_image",
+    "run_dataset",
 ]

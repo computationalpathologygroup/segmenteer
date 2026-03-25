@@ -6,6 +6,7 @@ import os
 import tempfile
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, Union
 
@@ -60,15 +61,24 @@ __all__ = [
     "NumpySegmenter",
     "PathSegmenter",
     "SegmentationResult",
+    "WSIBackend",
     "WSI_READER",
     "load_segmenter",
     "segmenter_config_dict",
 ]
 
 
+class WSIBackend(StrEnum):
+    """MONAI WSIReader backend. Override the default with the WSI_READER env var."""
+
+    OPENSLIDE = "openslide"
+    CUCIM = "cucim"
+    TIFFFILE = "tifffile"
+
+
 # WSI reader backend used by MONAI.  Override with the WSI_READER env var,
-# e.g.: WSI_READER=cucim python ...   Supported values: "openslide", "cucim", "tifffile".
-WSI_READER = os.environ.get("WSI_READER", "openslide")
+# e.g.: WSI_READER=cucim python ...
+WSI_READER = WSIBackend(os.environ.get("WSI_READER", WSIBackend.OPENSLIDE))
 
 # Attributes that carry no useful hyperparameter information and should not be
 # included in config files or run-id slugs.
@@ -269,6 +279,16 @@ class TRIDENTSegmenter:
     def name(self) -> str:
         return "trident_" + self.segmenter.__class__.__name__.lower()
 
+    @staticmethod
+    def _best_device() -> str:
+        import torch
+
+        if torch.cuda.is_available():
+            return "cuda:0"
+        if torch.backends.mps.is_available():
+            return "mps"
+        return "cpu"
+
     def segment(self, path: Path) -> geojson.FeatureCollection:
         """Satisfies Segmenter protocol."""
         if not _TRIDENT_AVAILABLE:
@@ -283,8 +303,8 @@ class TRIDENTSegmenter:
                 target_mag=10,
                 holes_are_tissue=True,
                 batch_size=8,
-                device="cuda:0",
-                num_workers=None,
+                device=self._best_device(),
+                num_workers=0,  # >0 tries to pickle OpenSlide ctypes handles → fails on macOS
             ).to_json()
         )
 

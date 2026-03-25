@@ -2,11 +2,12 @@ from segmenteer.benchmark import (BenchmarkReporter, BenchmarkResult,
                                   BenchmarkRunner, EnsembleOutputWriter,
                                   export_results_csv, export_results_json,
                                   load_ensemble_members, make_ensemble_run_id,
-                                  make_run_id)
+                                  make_run_id, run_dataset, run_single_image)
+from segmenteer.methods.ensemble import fuse_members, run_ensemble
 from segmenteer.core import (SegmentationResult, Segmenter, downsample_image,
                              geojson_to_mask, mask_to_geojson,
                              scale_geojson_coordinates)
-from segmenteer.core.base import load_segmenter
+from segmenteer.core.base import WSIBackend, load_segmenter
 from segmenteer.io import (create_timestamped_output_dir, load_geojson,
                            load_ground_truths, load_image, save_geojson)
 from segmenteer.methods import (BackgroundSubtractorMOG2Segmenter,
@@ -112,6 +113,10 @@ __all__ = [
     "make_run_id",
     "export_results_json",
     "export_results_csv",
+    "run_single_image",
+    "run_dataset",
+    "fuse_members",
+    "run_ensemble",
     "load_image",
     "save_geojson",
     "load_geojson",

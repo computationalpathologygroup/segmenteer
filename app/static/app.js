@@ -276,6 +276,7 @@ async function toggleOverviewMethod(runId, btn) {
   if (S.overviewMethodSet.has(runId)) {
     S.overviewMethodSet.delete(runId);
     btn.classList.remove("active");
+    _updateCardScoreVisibility();
     redrawOverviewCanvases();
     return;
   }
@@ -283,11 +284,22 @@ async function toggleOverviewMethod(runId, btn) {
   // Add optimistically so the user sees immediate feedback
   btn.classList.add("active");
   S.overviewMethodSet.add(runId);
+  _updateCardScoreVisibility();
 
   // Fetch overlay data for every stem in parallel
   const stems = S.index.wsis.map((w) => w.stem);
   await Promise.all(stems.map((stem) => _fetchOverlay(stem, runId)));
   redrawOverviewCanvases();
+}
+
+function _updateCardScoreVisibility() {
+  const anyActive = S.overviewMethodSet.size > 0;
+  document.querySelectorAll(".card-scores-wrap").forEach((wrap) => {
+    wrap.style.display = anyActive ? "block" : "none";
+  });
+  document.querySelectorAll(".score-row[data-run-id]").forEach((row) => {
+    row.style.display = S.overviewMethodSet.has(row.dataset.runId) ? "flex" : "none";
+  });
 }
 
 function redrawOverviewCanvases() {
@@ -538,15 +550,6 @@ function renderOverview() {
   const { wsis, methods, scores } = S.index;
   const methodList = Object.values(methods);
 
-  const allVals = methodList.flatMap((m) =>
-    wsis
-      .map((w) => _getMetric(scores, w.stem, m.run_id, S.metricKey))
-      .filter((v) => v !== null)
-  );
-  const gMax = Math.max(...allVals, 1e-9);
-  const gMin = Math.min(...allVals, 0);
-  const norm = (v) => gMax === gMin ? 50 : ((v - gMin) / (gMax - gMin)) * 100;
-
   for (const { stem, thumbnail_url, has_wsi } of wsis) {
     const card = document.createElement("div");
     card.className = "wsi-card";
@@ -563,20 +566,24 @@ function renderOverview() {
     const scoreRows = methodList.map((m) => {
       const val = _getMetric(scores, stem, m.run_id, S.metricKey);
       if (val === null) return "";
-      const color = _metricColor(norm(val));
       const label = _fmtVal(val, S.metricKey);
-      return `<div class="score-row">
+      const visible = S.overviewMethodSet.has(m.run_id);
+      return `<div class="score-row" data-run-id="${m.run_id}" style="display:${visible ? 'flex' : 'none'}">
         <span class="score-dot" style="background:${m.color}"></span>
         <span class="score-name" title="${m.run_id}">${m.name}</span>
-        <span class="score-val" style="color:${color}">${label}</span>
+        <span class="score-val">${label}</span>
       </div>`;
     }).join("");
 
+    const anyVisible = S.overviewMethodSet.size > 0;
     card.innerHTML = `
       <div class="card-thumb">${thumbInner}</div>
       <div class="card-body">
         <div class="card-stem">${stem}</div>
-        <div class="card-scores">${scoreRows || "<span class='no-scores'>no scores</span>"}</div>
+        <div class="card-scores-wrap" style="display:${anyVisible ? 'block' : 'none'}">
+          <div class="card-scores-label">unsupervised metrics</div>
+          <div class="card-scores">${scoreRows || "<span class='no-scores'>no scores</span>"}</div>
+        </div>
       </div>`;
 
     // Open inspect when clicking the label area; OSD handles its own pan/zoom

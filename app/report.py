@@ -428,6 +428,7 @@ def generate_report(
         f'  <meta charset="utf-8">\n'
         f'  <meta name="viewport" content="width=device-width,initial-scale=1">\n'
         f'  <title>segmenteer \u00b7 {label_e}</title>\n'
+        f'  <link rel="icon" href="data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 32 32\'><text x=\'1\' y=\'26\' font-family=\'Inter,system-ui,sans-serif\' font-weight=\'700\' font-size=\'22\' fill=\'%2302B0dd\'>sg</text></svg>">\n'
         f'  <link rel="preconnect" href="https://fonts.googleapis.com">\n'
         f'  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900'
         f'&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">\n'
@@ -501,7 +502,7 @@ header{
 }
 .topbar-left{display:flex;align-items:center;gap:10px;flex:1}
 .topbar-right{display:flex;align-items:center;gap:8px}
-.logo{font-weight:600;font-size:14px;letter-spacing:-.3px;color:var(--t)}
+.logo{font-weight:600;font-size:14px;letter-spacing:-.3px;color:#02B0dd}
 .run-label{
   font-family:var(--mono);font-size:11px;color:var(--t3);
   background:var(--srf2);border:1px solid var(--b);

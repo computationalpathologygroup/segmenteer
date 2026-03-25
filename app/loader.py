@@ -6,23 +6,44 @@ converted to plain dicts at the API boundary via ``dataclasses.asdict``.
 
 from __future__ import annotations
 
+import colorsys
 import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-_PALETTE: tuple[str, ...] = (
-    "#2E86AB",  # cerulean
-    "#E05C4B",  # coral
-    "#3BB273",  # emerald
-    "#9B5DE5",  # amethyst
-    "#F4A417",  # amber
-    "#C15B78",  # raspberry
-    "#3D9A8B",  # teal
-    "#E87D3E",  # tangerine
-    "#5B7FA6",  # steel blue
-)
+
+def _generate_colors(n: int) -> list[str]:
+    """Return *n* perceptually-distinct hex colors.
+
+    Combines golden-ratio hue stepping (maximally spread hues for any n)
+    with three clearly separated lightness tracks so that even colors with
+    similar hues look different.
+
+      track 0 — vivid  (L=0.50, S=0.82)
+      track 1 — dark   (L=0.28, S=0.78)
+      track 2 — light  (L=0.66, S=0.68)
+
+    Lightness values are ~0.18–0.22 apart, giving unambiguous visual
+    separation even on tissue-image backgrounds.
+    """
+    if n == 0:
+        return []
+    golden = 0.6180339887  # 1/φ
+    tracks = [
+        (0.82, 0.50),  # (saturation, lightness) — vivid
+        (0.78, 0.28),  # dark
+        (0.68, 0.66),  # light
+    ]
+    colors: list[str] = []
+    h = 0.05  # starting hue (avoids near-red for first color)
+    for i in range(n):
+        s, l = tracks[i % 3]  # noqa: E741
+        r, g, b = colorsys.hls_to_rgb(h % 1.0, l, s)
+        colors.append(f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}")
+        h += golden
+    return colors
 
 _WSI_EXTENSIONS: tuple[str, ...] = (
     ".tiff",
@@ -83,6 +104,8 @@ def load_index(output_dir: Path, data_dir: Path | None = None) -> IndexData:
     scores: dict[str, dict[str, dict[str, Any]]] = {}
     image_paths: dict[str, Path] = {}
 
+    colors = _generate_colors(len(run_ids))
+
     for i, run_id in enumerate(run_ids):
         scores_dir = output_dir / run_id / "eval" / "scores"
         if not scores_dir.exists():
@@ -93,7 +116,7 @@ def load_index(output_dir: Path, data_dir: Path | None = None) -> IndexData:
             name=run_id.split("__")[0],
             mpp=_parse_mpp(run_id),
             params=_parse_params(run_id),
-            color=_PALETTE[i % len(_PALETTE)],
+            color=colors[i],
         )
 
         for score_file in sorted(scores_dir.glob("*.json")):

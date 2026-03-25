@@ -15,7 +15,7 @@ class RTLucassenSlideSegmenter(NumpySegmenter):
     def __init__(
         self,
         mpp: float = 7.04,  # 7.04 mpp corresponds to 1.25x magnification described in paper.
-        device: str = "cuda",
+        device: str | None = None,
         *args,
         **kwargs,
     ):
@@ -24,8 +24,12 @@ class RTLucassenSlideSegmenter(NumpySegmenter):
         except ImportError:
             raise ImportError(
                 "slidesegmenter is required for RTLucassenSlideSegmenter.\n"
-                "Install with: pip install 'segmenteer[rtlucassen]'"
+                "Install with: uv sync --extra rtlucassen"
             ) from None
+        if device is None:
+            import torch
+            # slidesegmenter does not support MPS — fall back to cpu on macOS
+            device = "cuda" if torch.cuda.is_available() else "cpu"
         super().__init__(*args, **kwargs)
         self.mpp = mpp
         self.segmenter = SlideSegmenter(

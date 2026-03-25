@@ -2,8 +2,6 @@
 name = "segmenteer"
 version = "0.1.0"
 requires-python = ">=3.12"
-# Minimal core — importable and functional for classical methods without any WSI backend.
-# Heavy backends (monai/pyvips/trident/torch/…) are all optional extras.
 dependencies = [
     "geojson>=3.2.0",
     "numpy>=2.2.6",
@@ -16,9 +14,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# ── WSI reading backend ────────────────────────────────────────────────────
-# Required by NumpySegmenter / PathSegmenter to open slide files.
-# macOS: brew install vips  |  Linux: pyvips wheels are self-contained.
 wsi = [
     "imagecodecs>=2025.3.30",
     "monai @ git+https://github.com/NikolasSchmitz/MONAI@ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4",
@@ -28,7 +23,7 @@ wsi = [
 ]
 openslide = [
     "openslide-bin>=4.0.0.11",
-    "openslide-python>=1.4.3.1",
+    "openslide-python>=1.3.0",
     "monai[openslide] @ git+https://github.com/NikolasSchmitz/MONAI@ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4",
 ]
 cucim = [
@@ -36,12 +31,9 @@ cucim = [
     "monai[cucim] @ git+https://github.com/NikolasSchmitz/MONAI@ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4",
 ]
 
-# ── Classical methods ──────────────────────────────────────────────────────
+# classical image processing methods
 background-subtractor = [
     "opencv-python>=4.13.0.90",
-]
-histomicstk = [
-    "histomicstk>=1.4.0",
 ]
 od-gmm = [
     "scikit-learn>=1.7.2",
@@ -50,17 +42,15 @@ entropymasker = [
     "dask>=2024.10.0",
 ]
 
-# ── Deep-learning methods ──────────────────────────────────────────────────
+# deep learning methods
 # Shared torch base (included by every DL method below).
 torch = [
     "torch>=2.9.1",
     "torchvision>=0.24.1",
 ]
-bigpicture = [
-    "tissue-segmentation",
-    "torch>=2.9.1",
-    "torchvision>=0.24.1",
-]
+# bigpicture: tensorflow and tissue-segmentation have no Python 3.12 wheels on PyPI.
+# Install manually with pip — see README.
+# bigpicture = [...]
 cpg = [
     "docker>=7.1.0",
 ]
@@ -92,13 +82,13 @@ trident = [
     "torch>=2.9.1",
     "torchvision>=0.24.1",
 ]
-# All DL methods combined.
+# all deep learning methods dependecies combined
+# (bigpicture excluded: tissue-segmentation requires tensorflow-cpu, no macOS ARM wheel)
 dl = [
     "huggingface-hub>=0.36.0",
     "openai-clip>=1.0.1",
     "segmentation-models-pytorch>=0.5.0",
     "slidesegmenter",
-    "tissue-segmentation",
     "torch>=2.9.1",
     "torchvision>=0.24.1",
     "transformers>=4.57.6",
@@ -106,7 +96,7 @@ dl = [
     "ultralytics>=8.4.6",
 ]
 
-# ── App / tooling ──────────────────────────────────────────────────────────
+# app - viewer
 app = [
     "fastapi>=0.115.0",
     "uvicorn[standard]>=0.32.0",
@@ -115,9 +105,10 @@ dev = [
     "matplotlib>=3.10.8",
     "pytest>=9.0.2",
 ]
-# Install everything (except cuda/dicom backends).
+# install everything (except cuda/dicom backends, histomicstk and bigpicture
+# which have platform-specific TF/mapnik deps — install those separately with pip)
 all = [
-    "segmenteer[wsi,openslide,background-subtractor,histomicstk,od-gmm,entropymasker,dl,app]",
+    "segmenteer[wsi,openslide,background-subtractor,od-gmm,entropymasker,dl,app]",
 ]
 
 [build-system]
@@ -127,6 +118,7 @@ build-backend = "uv_build"
 [[tool.uv.index]]
 name = "large_image"
 url = "https://girder.github.io/large_image_wheels"
+explicit = true
 
 [tool.uv.build-backend]
 module-root = ""
