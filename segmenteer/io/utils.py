@@ -1,5 +1,5 @@
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 def create_timestamped_output_dir(base_dir: str = "outputs") -> Path:

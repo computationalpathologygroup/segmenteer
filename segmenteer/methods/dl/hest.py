@@ -1,10 +1,18 @@
-import numpy as np
-import torch
-import torch.nn.functional as F
 from pathlib import Path
-from torchvision import transforms
-from torchvision.models.segmentation import deeplabv3_resnet50
+
+import numpy as np
+
 from segmenteer.core.base import NumpySegmenter
+
+try:
+    import torch
+    import torch.nn.functional as F
+    from torchvision import transforms
+    from torchvision.models.segmentation import deeplabv3_resnet50
+
+    _TORCH_AVAILABLE = True
+except ImportError:
+    _TORCH_AVAILABLE = False
 
 
 def get_model_cache_dir() -> Path:
@@ -14,7 +22,6 @@ def get_model_cache_dir() -> Path:
 
 
 class HESTSegmenter(NumpySegmenter):
-
     APPLY_TO_GRAYSCALE = False
 
     def __init__(
@@ -28,6 +35,11 @@ class HESTSegmenter(NumpySegmenter):
         *args,
         **kwargs,
     ):
+        if not _TORCH_AVAILABLE:
+            raise ImportError(
+                "torch and torchvision are required for HESTSegmenter.\n"
+                "Install with: pip install 'segmenteer[hest]'"
+            )
         super().__init__(*args, **kwargs)
         self.model_repo = model_repo
         self.model_file = model_file

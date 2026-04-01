@@ -3,56 +3,112 @@ name = "segmenteer"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "cucim-cu13>=26.2.1",
     "geojson>=3.2.0",
-    "imagecodecs>=2025.3.30",
-    "monai[cucim,openslide]",
     "numpy>=2.2.6",
-    "opencv-python>=4.13.0.90",
     "pillow>=12.1.0",
-    "pyvips>=3.1.1.8.18.0",
+    "pyyaml>=6.0",
+    "rich>=13.0.0",
     "scikit-image>=0.25.2",
-    "scikit-learn>=1.7.2",
     "scipy>=1.15.3",
     "shapely>=2.1.2",
-    "tifffile>=2025.5.10",
-    "tissue-segmentation",
-    "trident",
-    "wsidicom>=0.29.0",
 ]
 
 [project.optional-dependencies]
-dev = [
-    "matplotlib>=3.10.8",
-    "pytest>=9.0.2",
+wsi = [
+    "imagecodecs>=2025.3.30",
+    "monai @ git+https://github.com/NikolasSchmitz/MONAI@ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4",
+    "pyvips>=2.2.3",
+    "tifffile>=2025.5.10",
+    "wsidicom>=0.29.0",
+]
+openslide = [
+    "openslide-bin>=4.0.0.11",
+    "openslide-python>=1.3.0",
+    "monai[openslide] @ git+https://github.com/NikolasSchmitz/MONAI@ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4",
+]
+cucim = [
+    "cucim-cu13>=26.2.1",
+    "monai[cucim] @ git+https://github.com/NikolasSchmitz/MONAI@ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4",
+]
+
+# classical image processing methods
+background-subtractor = [
+    "opencv-python>=4.13.0.90",
+]
+od-gmm = [
+    "scikit-learn>=1.7.2",
 ]
 entropymasker = [
     "dask>=2024.10.0",
 ]
-cpg = [
-    "docker>=7.1.0",
-]
-openslide = [
-    "openslide-bin>=4.0.0.11",
-    "openslide-python>=1.4.3.1",
-]
-dl = [
-    "huggingface-hub>=0.36.0",
-    "segmentation-models-pytorch>=0.5.0",
+
+# deep learning methods
+# Shared torch base (included by every DL method below).
+torch = [
     "torch>=2.9.1",
     "torchvision>=0.24.1",
-    "transformers>=4.57.6",
-    "ultralytics>=8.4.6",
+]
+# bigpicture: tensorflow and tissue-segmentation have no Python 3.12 wheels on PyPI.
+# Install manually with pip — see README.
+# bigpicture = [...]
+cpg = [
+    "docker>=7.1.0",
 ]
 fastsam = [
     "openai-clip>=1.0.1",
     "ultralytics>=8.4.6",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
 ]
-histomicstk = [
-    "histomicstk>=1.4.0",
+grandqc = [
+    "segmentation-models-pytorch>=0.5.0",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
 ]
-slidesegmenter = [
+hest = [
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
+pathprofiler = [
+    "trident",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
+rtlucassen = [
     "slidesegmenter",
+]
+trident = [
+    "trident",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
+# all deep learning methods dependecies combined
+# (bigpicture excluded: tissue-segmentation requires tensorflow-cpu, no macOS ARM wheel)
+dl = [
+    "huggingface-hub>=0.36.0",
+    "openai-clip>=1.0.1",
+    "segmentation-models-pytorch>=0.5.0",
+    "slidesegmenter",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+    "transformers>=4.57.6",
+    "trident",
+    "ultralytics>=8.4.6",
+]
+
+# app - viewer
+app = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+]
+dev = [
+    "matplotlib>=3.10.8",
+    "pytest>=9.0.2",
+]
+# install everything (except cuda/dicom backends, histomicstk and bigpicture
+# which have platform-specific TF/mapnik deps — install those separately with pip)
+all = [
+    "segmenteer[wsi,openslide,background-subtractor,od-gmm,entropymasker,dl,app]",
 ]
 
 [build-system]
@@ -62,6 +118,7 @@ build-backend = "uv_build"
 [[tool.uv.index]]
 name = "large_image"
 url = "https://girder.github.io/large_image_wheels"
+explicit = true
 
 [tool.uv.build-backend]
 module-root = ""
@@ -69,7 +126,6 @@ module-name = "segmenteer"
 
 [tool.uv.sources]
 large_image  = { index = "large_image"}
-monai = { git = "https://github.com/NikolasSchmitz/MONAI", rev = "ece78c46ae263a2e24c9d1bc1d97f95e50eae2f4" }
 slidesegmenter = { git = "https://github.com/RTLucassen/slidesegmenter", rev = "9d9d690913d6e8520a24d678f54decccd59dce9e" }
 trident = { git = "https://github.com/mahmoodlab/trident.git", rev = "adf3b7e8fdd7c815f33bec79da0d8d265200c2d6"}
 tissue-segmentation = { git = "https://github.com/imi-bigpicture/tissue-segmentation.git", subdirectory = "tissue_segmentation", rev = "6d97a25a8255f591eb2c705611a32a5f56101a25"}

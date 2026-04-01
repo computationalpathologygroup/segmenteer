@@ -268,3 +268,6 @@ todo
 
 *.ndpi
 *.svs
+
+uv.toml
+overrides.txt

@@ -1,23 +1,24 @@
-import numpy as np
-from skimage.color import rgb2gray
-from skimage.filters import threshold_otsu
-from skimage.morphology import binary_opening, binary_closing, disk
-from scipy import ndimage as ndi
-from skimage.segmentation import watershed
-from skimage.feature import peak_local_max
-from segmenteer.core.utils import mask_to_geojson
-from segmenteer.core.base import NumpySegmenter
 import geojson
+import numpy as np
+from scipy import ndimage as ndi
+from skimage.color import rgb2gray
+from skimage.feature import peak_local_max
+from skimage.filters import threshold_otsu
+from skimage.morphology import binary_closing, binary_opening, disk
+from skimage.segmentation import watershed
+
+from segmenteer.core.base import NumpySegmenter
+from segmenteer.core.utils import mask_to_geojson
 
 
 class MorphologicalSegmenter(NumpySegmenter):
     def __init__(
-            self,
-            mpp: int = 10,
-            disk_size: int = 3,
-            *args,
-            **kargs,
-        ):
+        self,
+        mpp: int = 10,
+        disk_size: int = 3,
+        *args,
+        **kargs,
+    ):
         super().__init__(*args, **kargs)
         self.mpp = mpp
         self.disk_size = disk_size
@@ -25,7 +26,7 @@ class MorphologicalSegmenter(NumpySegmenter):
     @property
     def name(self) -> str:
         return f"morphological_disk{self.disk_size}"
-    
+
     def _segment_numpy(self, image):
         threshold = threshold_otsu(image)
         binary = image > threshold
@@ -36,12 +37,12 @@ class MorphologicalSegmenter(NumpySegmenter):
 
 class WatershedSegmenter(NumpySegmenter):
     def __init__(
-            self,
-            mpp: int = 10,
-            min_distance: int = 10,
-            *args,
-            **kargs,
-        ):
+        self,
+        mpp: int = 10,
+        min_distance: int = 10,
+        *args,
+        **kargs,
+    ):
         super().__init__(*args, **kargs)
         self.mpp = mpp
         self.min_distance = min_distance

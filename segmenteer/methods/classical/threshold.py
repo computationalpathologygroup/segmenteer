@@ -1,13 +1,14 @@
 import warnings
 from functools import partial
-from typing import Union, Optional
+from typing import Optional, Union
 
 import numpy as np
 import numpy.typing as npt
-from skimage.filters import threshold_otsu, threshold_li, threshold_yen
+from skimage.filters import threshold_li, threshold_otsu, threshold_yen
 from skimage.filters.rank import entropy
 from skimage.morphology import disk
 from skimage.util import apply_parallel
+
 from segmenteer.core.base import NumpySegmenter
 
 
@@ -19,7 +20,6 @@ warnings.simplefilter("once", DaskWarning)
 
 
 class OtsuSegmenter(NumpySegmenter):
-
     def __init__(self, mpp: float = 20, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mpp = mpp
@@ -76,12 +76,12 @@ class EntropyMaskerSegmenter(NumpySegmenter):
     """
 
     def __init__(
-            self,
-            footprint: npt.NDArray[np.int_] | None = None,
-            to_gray_func: Union[callable, None] = None,
-            *args,
-            **kwargs,
-        ) -> None:
+        self,
+        footprint: npt.NDArray[np.int_] | None = None,
+        to_gray_func: Union[callable, None] = None,
+        *args,
+        **kwargs,
+    ) -> None:
         if to_gray_func is None:
             to_gray_func = partial(np.max, axis=2)
         super().__init__(to_gray_func=to_gray_func, *args, **kwargs)

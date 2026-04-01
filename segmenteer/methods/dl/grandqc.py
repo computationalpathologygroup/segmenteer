@@ -1,9 +1,17 @@
-import numpy as np
-import torch
 from pathlib import Path
-from PIL import Image as PILImage
-from torchvision import transforms
+
+import numpy as np
+
 from segmenteer.core.base import NumpySegmenter
+
+try:
+    import torch
+    from PIL import Image as PILImage
+    from torchvision import transforms
+
+    _TORCH_AVAILABLE = True
+except ImportError:
+    _TORCH_AVAILABLE = False
 
 
 def get_model_cache_dir() -> Path:
@@ -26,6 +34,11 @@ class GrandQCSegmenter(NumpySegmenter):
         *args,
         **kwargs,
     ):
+        if not _TORCH_AVAILABLE:
+            raise ImportError(
+                "torch and torchvision are required for GrandQCSegmenter.\n"
+                "Install with: pip install 'segmenteer[grandqc]'"
+            )
         super().__init__(*args, **kwargs)
         self.mpp = mpp
         self.checkpoint_path = checkpoint_path
