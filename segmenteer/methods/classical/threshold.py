@@ -173,8 +173,8 @@ class ConnectedComponentSegmenter(NumpySegmenter):
     def _segment_numpy(self, image: npt.NDArray[np.uint8]) -> npt.NDArray[np.bool_]:
         from skimage.measure import label
 
-        # Apply Otsu thresholding
-        binary = image > threshold_otsu(image)
+        # Apply Otsu thresholding, treating darker tissue as foreground.
+        binary = image < threshold_otsu(image)
 
         # Label connected components
         labeled = label(binary, connectivity=self.connectivity)
