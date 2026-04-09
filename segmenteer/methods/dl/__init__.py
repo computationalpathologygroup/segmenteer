@@ -49,11 +49,6 @@ try:
 except ImportError:
     CPGSegmenter = None  # type: ignore[assignment]
 
-try:
-    from segmenteer.methods.dl.conch import CONCHGradCAMSegmenter
-except ImportError:
-    CONCHGradCAMSegmenter = None  # type: ignore[assignment]
-
 __all__ = [
     "AtlasPatchSAM2Segmenter",
     "CPGSegmenter",
@@ -66,5 +61,4 @@ __all__ = [
     "BigPictureSegmenter",
     "TRIDENTPathProfilerSegmenter",
     "SAM3Segmenter",
-    "CONCHGradCAMSegmenter",
 ]

@@ -1,4 +1,3 @@
-from segmenteer.pipeline import ContextDefiner, ContextualSegmenter, OllamaContextDefiner
 from segmenteer.benchmark import (BenchmarkReporter, BenchmarkResult,
                                   BenchmarkRunner, EnsembleOutputWriter,
                                   export_results_csv, export_results_json,
@@ -48,11 +47,9 @@ def __getattr__(name):
         "TRIDENTHESTSegmenter",
         "TRIDENTPathProfilerSegmenter",
         "BigPictureSegmenter",
-        "CONCHGradCAMSegmenter",
     ):
         from segmenteer.methods.dl import (AtlasPatchSAM2Segmenter,
-                                           BigPictureSegmenter, CONCHGradCAMSegmenter,
-                                           CPGSegmenter,
+                                           BigPictureSegmenter, CPGSegmenter,
                                            FastSAMSegmenter, GrandQCSegmenter,
                                            HESTSegmenter, SAM3Segmenter,
                                            RTLucassenSlideSegmenter,
@@ -71,16 +68,12 @@ def __getattr__(name):
             "TRIDENTHESTSegmenter": TRIDENTHESTSegmenter,
             "TRIDENTGrandQCSegmenter": TRIDENTGrandQCSegmenter,
             "BigPictureSegmenter": BigPictureSegmenter,
-            "CONCHGradCAMSegmenter": CONCHGradCAMSegmenter,
             "TRIDENTPathProfilerSegmenter": TRIDENTPathProfilerSegmenter,
         }[name]
     raise AttributeError(f"module 'segmenteer' has no attribute '{name}'")
 
 
 __all__ = [
-    "ContextDefiner",
-    "ContextualSegmenter",
-    "OllamaContextDefiner",
     "load_segmenter",
     "Segmenter",
     "SegmentationResult",
