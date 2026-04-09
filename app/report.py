@@ -461,7 +461,7 @@ def generate_report(
     )
 
     thumb_map: dict[str, str | None] = {
-        w.stem: _thumb(w.stem, output_path)[0] for w in wsis
+        w.stem: _thumb(w.stem, output_path, w.image_path)[0] for w in wsis
     }
     tbl = _table_html(methods, wsis, scores, thumb_map)
     rdata = _build_payload(index, output_path)
