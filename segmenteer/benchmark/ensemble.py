@@ -208,6 +208,12 @@ class EnsembleOutputWriter:
         annotations_rel = f"{result.run_id}/{PREDICTIONS_DIR}/{image_stem}.geojson"
         save_geojson(result.geojson, predictions_dir / f"{image_stem}.geojson")
 
+        # 1b. Prompt → prompts/<image_stem>.txt (only for contextual segmenters)
+        if result.prompt is not None:
+            prompts_dir = method_dir / "prompts"
+            prompts_dir.mkdir(parents=True, exist_ok=True)
+            (prompts_dir / f"{image_stem}.txt").write_text(result.prompt, encoding="utf-8")
+
         # 2. Config YAML → <run_id>/config.yaml (once per method) --------------
         config_rel = f"{result.run_id}/{CONFIG_FILE}"
         config_path = method_dir / CONFIG_FILE

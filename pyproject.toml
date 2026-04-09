@@ -55,8 +55,18 @@ cpg = [
     "docker>=7.1.0",
 ]
 fastsam = [
-    "openai-clip>=1.0.1",
     "ultralytics>=8.4.6",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+    # Text prompt support requires the ultralytics CLIP fork and setuptools:
+    # uv pip install setuptools "git+https://github.com/ultralytics/CLIP.git"
+]
+sam3 = [
+    # SAM 3 weights (sam3.pt) must be downloaded manually from:
+    # https://huggingface.co/facebook/sam3
+    # Text prompt support requires the ultralytics CLIP fork and setuptools:
+    # uv pip install setuptools "git+https://github.com/ultralytics/CLIP.git"
+    "ultralytics>=8.3.237",
     "torch>=2.9.1",
     "torchvision>=0.24.1",
 ]
@@ -82,17 +92,29 @@ trident = [
     "torch>=2.9.1",
     "torchvision>=0.24.1",
 ]
+atlaspatch-sam2 = [
+    # SAM2 must be installed from source:
+    # uv pip install atlas-patch 'git+https://github.com/facebookresearch/sam2.git'
+    "atlas-patch",
+]
+conch = [
+    "conch",
+    "huggingface-hub>=0.36.0",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
 # all deep learning methods dependecies combined
 # (bigpicture excluded: tissue-segmentation requires tensorflow-cpu, no macOS ARM wheel)
 dl = [
+    "atlas-patch",
     "huggingface-hub>=0.36.0",
-    "openai-clip>=1.0.1",
     "segmentation-models-pytorch>=0.5.0",
     "slidesegmenter",
     "torch>=2.9.1",
     "torchvision>=0.24.1",
     "transformers>=4.57.6",
     "trident",
+    "conch",
     "ultralytics>=8.4.6",
 ]
 
@@ -128,6 +150,7 @@ module-name = "segmenteer"
 large_image  = { index = "large_image"}
 slidesegmenter = { git = "https://github.com/RTLucassen/slidesegmenter", rev = "9d9d690913d6e8520a24d678f54decccd59dce9e" }
 trident = { git = "https://github.com/mahmoodlab/trident.git", rev = "adf3b7e8fdd7c815f33bec79da0d8d265200c2d6"}
+conch = { git = "https://github.com/mahmoodlab/CONCH.git" }
 tissue-segmentation = { git = "https://github.com/imi-bigpicture/tissue-segmentation.git", subdirectory = "tissue_segmentation", rev = "6d97a25a8255f591eb2c705611a32a5f56101a25"}
 
 [tool.uv]

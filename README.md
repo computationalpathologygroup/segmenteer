@@ -108,6 +108,7 @@ uv sync --extra rtlucassen
 uv sync --extra bigpicture
 uv sync --extra fastsam
 uv sync --extra trident
+uv sync --extra conch
 
 # All DL methods at once
 uv sync --extra dl
@@ -116,6 +117,36 @@ uv sync --extra dl
 > **Always use `uv sync --extra <name>`, not `pip install` or `uv pip install`.**
 > Several packages (Trident, SlideSegmenter, tissue-segmentation) are pinned to
 > specific git commits and are only resolved correctly through `uv sync`.
+
+#### CONCH (CONCHGradCAMSegmenter)
+
+CONCH is a vision-language model trained on histopathology image-caption pairs
+(Lu et al., *Nature Medicine* 2024). It is included in the `dl` and `all` extras.
+Re-run whichever sync you already use to pick it up alongside everything else:
+
+```bash
+uv sync --extra all   # recommended: installs everything including CONCH
+# or, if you only want the DL methods:
+uv sync --extra dl
+```
+
+The model weights must be downloaded manually (the repo is gated):
+
+1. Accept the licence at <https://huggingface.co/MahmoodLab/conch>
+2. Download `pytorch_model.bin` from the *Files* tab
+3. Place it at `models/conch/pytorch_model.bin`
+
+A custom path can be supplied via `weights_path=` when constructing `CONCHGradCAMSegmenter`.
+
+#### FastSAM text prompts
+
+The `fastsam` extra installs everything needed when using FastSAM without a text prompt. To use the `text_prompt` parameter, two additional packages are required that cannot be declared in `pyproject.toml` because the ultralytics CLIP fork is not on PyPI:
+
+```bash
+uv pip install setuptools "git+https://github.com/ultralytics/CLIP.git"
+```
+
+Without these, passing any `text_prompt` will fail with `ModuleNotFoundError: No module named 'pkg_resources'`. FastSAM without a text prompt works with `uv sync --extra fastsam` alone.
 
 #### HistomicsTK and BigPicture (uv pip installs)
 

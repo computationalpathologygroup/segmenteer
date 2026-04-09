@@ -14,6 +14,8 @@ from segmenteer.methods.classical.morphological import (
 )
 from segmenteer.methods.classical.od_gmm import ODGMMSlideSegmenter
 from segmenteer.methods.classical.threshold import (
+    ConnectedComponentSegmenter,
+    EdgeBasedSegmenter,
     EntropyMaskerSegmenter,
     LiSegmenter,
     OtsuSegmenter,
@@ -37,6 +39,8 @@ __all__ = [
     "LiSegmenter",
     "YenSegmenter",
     "EntropyMaskerSegmenter",
+    "ConnectedComponentSegmenter",
+    "EdgeBasedSegmenter",
     "MorphologicalSegmenter",
     "WatershedSegmenter",
     "BackgroundSubtractorMOG2Segmenter",

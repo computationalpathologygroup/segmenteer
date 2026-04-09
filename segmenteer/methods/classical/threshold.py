@@ -8,6 +8,8 @@ from skimage.filters import threshold_li, threshold_otsu, threshold_yen
 from skimage.filters.rank import entropy
 from skimage.morphology import disk
 from skimage.util import apply_parallel
+from skimage.feature import canny
+from scipy import ndimage as ndi
 
 from segmenteer.core.base import NumpySegmenter
 
@@ -29,7 +31,9 @@ class OtsuSegmenter(NumpySegmenter):
         return "otsu"
 
     def _segment_numpy(self, image: npt.NDArray[np.uint8]) -> npt.NDArray[np.bool_]:
-        return image > threshold_otsu(image)
+        # Tissue is darker than the near-white glass background, so foreground
+        # pixels lie *below* the Otsu threshold (not above).
+        return image < threshold_otsu(image)
 
 
 class LiSegmenter(NumpySegmenter):
@@ -137,3 +141,120 @@ def entropy_masker(
     threshold: float = threshold_otsu(ent)
     mask: npt.NDArray[np.bool_] = ent >= threshold
     return mask
+
+
+class ConnectedComponentSegmenter(NumpySegmenter):
+    """Extracts foreground by thresholding and connected component labeling.
+
+    Applies Otsu thresholding to create a binary image, then identifies connected
+    components and returns all components above the minimum area threshold.
+
+    Parameters
+    ----------
+    connectivity : int, default=2
+        Connectivity for labeling: 1 for 4-connectivity, 2 for 8-connectivity.
+    """
+
+    def __init__(
+        self,
+        mpp: float = 20,
+        connectivity: int = 2,
+        *args,
+        **kwargs,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.mpp = mpp
+        self.connectivity = connectivity
+
+    @property
+    def name(self) -> str:
+        return f"connected_components_c{self.connectivity}"
+
+    def _segment_numpy(self, image: npt.NDArray[np.uint8]) -> npt.NDArray[np.bool_]:
+        from skimage.measure import label
+
+        # Apply Otsu thresholding
+        binary = image > threshold_otsu(image)
+
+        # Label connected components
+        labeled = label(binary, connectivity=self.connectivity)
+
+        # Filter components by minimum area
+        mask = np.zeros_like(binary)
+        for component_id in np.unique(labeled):
+            if component_id == 0:  # Skip background
+                continue
+            component = labeled == component_id
+            if component.sum() >= self.min_area:
+                mask |= component
+
+        return mask.astype(bool)
+
+
+class EdgeBasedSegmenter(NumpySegmenter):
+    """Extracts foreground using edge detection (Canny or Sobel).
+
+    Detects edges in the image and identifies regions between edges via
+    connected component labeling. Edges act as boundaries between foreground
+    and background regions.
+
+    Parameters
+    ----------
+    method : str, default='canny'
+        Edge detection method: 'canny' or 'sobel'.
+    sigma : float, default=1.0
+        Standard deviation for Gaussian blur (Canny only). Controls edge smoothness.
+    sobel_threshold : float or None, default=None
+        Manual threshold for Sobel magnitude. If None, uses Otsu on magnitude.
+    """
+
+    def __init__(
+        self,
+        mpp: float = 20,
+        method: str = "canny",
+        sigma: float = 1.0,
+        sobel_threshold: Optional[float] = None,
+        *args,
+        **kwargs,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.mpp = mpp
+        if method not in ("canny", "sobel"):
+            raise ValueError(f"method must be 'canny' or 'sobel', got '{method}'")
+        self.method = method
+        self.sigma = sigma
+        self.sobel_threshold = sobel_threshold
+
+    @property
+    def name(self) -> str:
+        return f"edge_based_{self.method}"
+
+    def _segment_numpy(self, image: npt.NDArray[np.uint8]) -> npt.NDArray[np.bool_]:
+        from skimage.filters import sobel
+        from skimage.measure import label
+
+        if self.method == "canny":
+            edges = canny(image, sigma=self.sigma)
+        else:  # sobel
+            sobel_mag = sobel(image)
+            if self.sobel_threshold is not None:
+                edges = sobel_mag > self.sobel_threshold
+            else:
+                edges = sobel_mag > threshold_otsu(sobel_mag)
+
+        # Invert edges: non-edges become 255, edges become 0
+        inverted_edges = ~edges
+
+        # Label connected components in inverted edge space
+        labeled = label(inverted_edges)
+
+        # Build mask from components, filtering by minimum area
+        mask = np.zeros_like(inverted_edges)
+        for component_id in np.unique(labeled):
+            if component_id == 0:  # Skip background (edges)
+                continue
+            component = labeled == component_id
+            if component.sum() >= self.min_area:
+                mask |= component
+
+        return mask.astype(bool)

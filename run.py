@@ -36,6 +36,7 @@ SEGMENTERS = [
     seg.FastSAMSegmenter(mpp=10),
     seg.RTLucassenSlideSegmenter(),
     seg.HistomicsTKSegmenter(mpp=10, **kw),
+    seg.AtlasPatchSAM2Segmenter(),                    # AtlasPatch + SAM2 tissue detection
     # seg.CPGSegmenter(
     #     docker_image="dodrio1.umcn.nl/daangeijs/tissueseg:latest", min_area=10
     # ),

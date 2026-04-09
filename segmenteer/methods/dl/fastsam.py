@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 
 from segmenteer.core.base import NumpySegmenter
-from segmenteer.core.utils import mask_to_geojson
+from segmenteer.core.utils import mask_to_geojson  # noqa: F401 (kept for potential subclass use)
 
 
 def get_model_cache_dir() -> Path:
@@ -111,7 +111,7 @@ class FastSAMSegmenter(NumpySegmenter):
             )
 
         if not results or len(results) == 0:
-            return mask_to_geojson(np.zeros(image.shape[:2], dtype=bool), self.min_area)
+            return np.zeros(image.shape[:2], dtype=bool)
 
         result = results[0]
 
@@ -120,7 +120,7 @@ class FastSAMSegmenter(NumpySegmenter):
             or result.masks is None
             or len(result.masks) == 0
         ):
-            return mask_to_geojson(np.zeros(image.shape[:2], dtype=bool), self.min_area)
+            return np.zeros(image.shape[:2], dtype=bool)
 
         masks = result.masks.data.cpu().numpy()
 

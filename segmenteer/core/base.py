@@ -31,20 +31,50 @@ except ImportError:
     _WSIReader = None  # type: ignore[assignment,misc]
     _MONAI_AVAILABLE = False
 
-try:
+# TRIDENT is imported lazily on first use to avoid downloading models unnecessarily
+_TRIDENT_AVAILABLE: bool | None = None
+TRIDENTSegmentationModel = None  # type: ignore[assignment]
+_TridentWSI = None  # type: ignore[assignment]
+
+if TYPE_CHECKING:
     from trident.segmentation_models.load import (
         SegmentationModel as TRIDENTSegmentationModel,
     )
     from trident.wsi_objects.OpenSlideWSI import OpenSlideWSI as _TridentWSI
 
-    _TRIDENT_AVAILABLE = True
-except ImportError:
-    TRIDENTSegmentationModel = object  # type: ignore[assignment,misc]
-    _TridentWSI = None  # type: ignore[assignment]
-    _TRIDENT_AVAILABLE = False
-
 if TYPE_CHECKING:
     from monai.data.wsi_reader import WSIReader
+
+
+def _require_trident():
+    """Lazy import TRIDENT. Downloads models on first use only."""
+    global _TRIDENT_AVAILABLE, TRIDENTSegmentationModel, _TridentWSI
+
+    if _TRIDENT_AVAILABLE is not None:
+        # Already attempted import
+        if not _TRIDENT_AVAILABLE:
+            raise ImportError(
+                "trident is required for TRIDENT segmenters.\n"
+                "Install the trident extra: pip install 'segmenteer[trident]'"
+            )
+        return TRIDENTSegmentationModel, _TridentWSI
+
+    try:
+        from trident.segmentation_models.load import (
+            SegmentationModel as _TSM,
+        )
+        from trident.wsi_objects.OpenSlideWSI import OpenSlideWSI as _TWSI
+
+        TRIDENTSegmentationModel = _TSM
+        _TridentWSI = _TWSI
+        _TRIDENT_AVAILABLE = True
+        return TRIDENTSegmentationModel, _TridentWSI
+    except ImportError:
+        _TRIDENT_AVAILABLE = False
+        raise ImportError(
+            "trident is required for TRIDENT segmenters.\n"
+            "Install the trident extra: pip install 'segmenteer[trident]'"
+        ) from None
 
 
 def _require_wsi_reader():
@@ -273,7 +303,7 @@ class NumpySegmenter(ABC):
 class TRIDENTSegmenter:
     """Base class for segmenters that work on numpy arrays."""
 
-    segmenter: TRIDENTSegmentationModel
+    segmenter: Any  # TRIDENTSegmentationModel, imported lazily on first use
 
     @property
     def name(self) -> str:
@@ -291,11 +321,9 @@ class TRIDENTSegmenter:
 
     def segment(self, path: Path) -> geojson.FeatureCollection:
         """Satisfies Segmenter protocol."""
-        if not _TRIDENT_AVAILABLE:
-            raise ImportError(
-                "trident is required for TRIDENTSegmenter.\n"
-                "Install the trident extra: pip install 'segmenteer[trident]'"
-            )
+        _require_trident()  # Lazy import and validation
+        # Access globals set by _require_trident()
+        global _TridentWSI
         wsi = _TridentWSI(path)
         return geojson.loads(
             wsi.segment_tissue(

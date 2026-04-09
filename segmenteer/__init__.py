@@ -1,3 +1,4 @@
+from segmenteer.pipeline import ContextDefiner, ContextualSegmenter, OllamaContextDefiner
 from segmenteer.benchmark import (BenchmarkReporter, BenchmarkResult,
                                   BenchmarkRunner, EnsembleOutputWriter,
                                   export_results_csv, export_results_json,
@@ -11,6 +12,7 @@ from segmenteer.core.base import WSIBackend, load_segmenter
 from segmenteer.io import (create_timestamped_output_dir, load_geojson,
                            load_ground_truths, load_image, save_geojson)
 from segmenteer.methods import (BackgroundSubtractorMOG2Segmenter,
+                                ConnectedComponentSegmenter, EdgeBasedSegmenter,
                                 EntropyMaskerSegmenter, FESISegmenter,
                                 HistomicsTKSegmenter, HSVThresholdSegmenter,
                                 LiSegmenter, MorphologicalSegmenter,
@@ -35,39 +37,50 @@ __version__ = "0.1.0"
 
 def __getattr__(name):
     if name in (
+        "AtlasPatchSAM2Segmenter",
         "HESTSegmenter",
         "GrandQCSegmenter",
         "FastSAMSegmenter",
+        "SAM3Segmenter",
         "CPGSegmenter",
         "RTLucassenSlideSegmenter",
         "TRIDENTGrandQCSegmenter",
         "TRIDENTHESTSegmenter",
         "TRIDENTPathProfilerSegmenter",
         "BigPictureSegmenter",
+        "CONCHGradCAMSegmenter",
     ):
-        from segmenteer.methods.dl import (BigPictureSegmenter, CPGSegmenter,
+        from segmenteer.methods.dl import (AtlasPatchSAM2Segmenter,
+                                           BigPictureSegmenter, CONCHGradCAMSegmenter,
+                                           CPGSegmenter,
                                            FastSAMSegmenter, GrandQCSegmenter,
-                                           HESTSegmenter,
+                                           HESTSegmenter, SAM3Segmenter,
                                            RTLucassenSlideSegmenter,
                                            TRIDENTGrandQCSegmenter,
                                            TRIDENTHESTSegmenter,
                                            TRIDENTPathProfilerSegmenter)
 
         return {
+            "AtlasPatchSAM2Segmenter": AtlasPatchSAM2Segmenter,
             "HESTSegmenter": HESTSegmenter,
             "GrandQCSegmenter": GrandQCSegmenter,
             "FastSAMSegmenter": FastSAMSegmenter,
+            "SAM3Segmenter": SAM3Segmenter,
             "CPGSegmenter": CPGSegmenter,
             "RTLucassenSlideSegmenter": RTLucassenSlideSegmenter,
             "TRIDENTHESTSegmenter": TRIDENTHESTSegmenter,
             "TRIDENTGrandQCSegmenter": TRIDENTGrandQCSegmenter,
             "BigPictureSegmenter": BigPictureSegmenter,
+            "CONCHGradCAMSegmenter": CONCHGradCAMSegmenter,
             "TRIDENTPathProfilerSegmenter": TRIDENTPathProfilerSegmenter,
         }[name]
     raise AttributeError(f"module 'segmenteer' has no attribute '{name}'")
 
 
 __all__ = [
+    "ContextDefiner",
+    "ContextualSegmenter",
+    "OllamaContextDefiner",
     "load_segmenter",
     "Segmenter",
     "SegmentationResult",
@@ -79,6 +92,8 @@ __all__ = [
     "LiSegmenter",
     "YenSegmenter",
     "EntropyMaskerSegmenter",
+    "ConnectedComponentSegmenter",
+    "EdgeBasedSegmenter",
     "MorphologicalSegmenter",
     "WatershedSegmenter",
     "BackgroundSubtractorMOG2Segmenter",
@@ -86,6 +101,7 @@ __all__ = [
     "ODGMMSlideSegmenter",
     "HistomicsTKSegmenter",
     "FESISegmenter",
+    "AtlasPatchSAM2Segmenter",
     "CPGSegmenter",
     "HESTSegmenter",
     "TRIDENTHESTSegmenter",
@@ -93,6 +109,7 @@ __all__ = [
     "TRIDENTGrandQCSegmenter",
     "TRIDENTPathProfilerSegmenter",
     "FastSAMSegmenter",
+    "SAM3Segmenter",
     "RTLucassenSlideSegmenter",
     "BigPictureSegmenter",
     "SupervisedMetrics",

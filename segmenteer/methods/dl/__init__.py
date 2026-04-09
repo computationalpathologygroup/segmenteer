@@ -1,4 +1,9 @@
 try:
+    from segmenteer.methods.dl.atlaspatch_sam2 import AtlasPatchSAM2Segmenter
+except ImportError:
+    AtlasPatchSAM2Segmenter = None  # type: ignore[assignment]
+
+try:
     from segmenteer.methods.dl.bigpicture import BigPictureSegmenter
 except ImportError:
     BigPictureSegmenter = None  # type: ignore[assignment]
@@ -7,6 +12,11 @@ try:
     from segmenteer.methods.dl.fastsam import FastSAMSegmenter
 except ImportError:
     FastSAMSegmenter = None  # type: ignore[assignment]
+
+try:
+    from segmenteer.methods.dl.sam3 import SAM3Segmenter
+except ImportError:
+    SAM3Segmenter = None  # type: ignore[assignment]
 
 try:
     from segmenteer.methods.dl.grandqc import GrandQCSegmenter
@@ -39,7 +49,13 @@ try:
 except ImportError:
     CPGSegmenter = None  # type: ignore[assignment]
 
+try:
+    from segmenteer.methods.dl.conch import CONCHGradCAMSegmenter
+except ImportError:
+    CONCHGradCAMSegmenter = None  # type: ignore[assignment]
+
 __all__ = [
+    "AtlasPatchSAM2Segmenter",
     "CPGSegmenter",
     "HESTSegmenter",
     "GrandQCSegmenter",
@@ -49,4 +65,6 @@ __all__ = [
     "TRIDENTGrandQCSegmenter",
     "BigPictureSegmenter",
     "TRIDENTPathProfilerSegmenter",
+    "SAM3Segmenter",
+    "CONCHGradCAMSegmenter",
 ]

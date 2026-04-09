@@ -103,19 +103,69 @@ def _winners(vals: list[float | None], key: str) -> set[int]:
 # ── Thumbnail helper ──────────────────────────────────────────────────────────
 
 
-def _thumb(stem: str, output_path: Path) -> tuple[str | None, int, int]:
-    """Return (data_uri, width_px, height_px) for the PNG thumbnail."""
+def _thumb(stem: str, output_path: Path, wsi_path: str | None = None) -> tuple[str | None, int, int]:
+    """Return (data_uri, width_px, height_px) for the PNG thumbnail.
+
+    If the pre-saved thumbnail PNG is absent but *wsi_path* points to an
+    accessible WSI file, a thumbnail is generated on-the-fly at ~512 px on the
+    long edge using openslide (preferred) or tifffile + PIL as a fallback.
+    """
+    import io as _io
+
+    from PIL import Image as _PIL
+
     p = output_path / "thumbnails" / f"{stem}.png"
-    if not p.exists():
+
+    if p.exists():
+        raw = p.read_bytes()
+        uri = "data:image/png;base64," + base64.b64encode(raw).decode("ascii")
+        try:
+            w, h = _PIL.open(p).size
+        except Exception:
+            w = h = 0
+        return uri, w, h
+
+    if not wsi_path:
         return None, 0, 0
-    raw = p.read_bytes()
-    uri = "data:image/png;base64," + base64.b64encode(raw).decode("ascii")
+
+    wsi_file = Path(wsi_path)
+    if not wsi_file.exists():
+        return None, 0, 0
+
+    _MAX = 512
     try:
-        from PIL import Image as _PIL
-        w, h = _PIL.open(p).size
+        try:
+            import openslide as _os
+
+            slide = _os.OpenSlide(str(wsi_file))
+            full_w, full_h = slide.dimensions
+            scale = _MAX / max(full_w, full_h)
+            thumb_w, thumb_h = max(1, int(full_w * scale)), max(1, int(full_h * scale))
+            img: _PIL.Image = slide.get_thumbnail((thumb_w, thumb_h))
+            slide.close()
+        except Exception:
+            import tifffile as _tf
+
+            tif = _tf.TiffFile(str(wsi_file))
+            series = tif.series[0]
+            # Use the smallest available level for speed
+            best = series.levels[-1]
+            page = best.pages[0]
+            arr = page.asarray()
+            tif.close()
+            img = _PIL.fromarray(arr)
+            scale = _MAX / max(img.width, img.height)
+            img = img.resize(
+                (max(1, int(img.width * scale)), max(1, int(img.height * scale))),
+                _PIL.LANCZOS,
+            )
+        buf = _io.BytesIO()
+        img.save(buf, format="PNG")
+        raw = buf.getvalue()
+        uri = "data:image/png;base64," + base64.b64encode(raw).decode("ascii")
+        return uri, img.width, img.height
     except Exception:
-        w = h = 0
-    return uri, w, h
+        return None, 0, 0
 
 
 # ── Geometry helpers ──────────────────────────────────────────────────────────
@@ -188,7 +238,7 @@ def _build_payload(index: IndexData, output_path: Path) -> dict[str, Any]:
 
     for w in index.wsis:
         stem = w.stem
-        uri, tw, th = _thumb(stem, output_path)
+        uri, tw, th = _thumb(stem, output_path, w.image_path)
 
         # Infer WSI pixel dimensions from GeoJSON coordinate extents
         ww = wh = 0.0

@@ -43,6 +43,7 @@ class BenchmarkResult:
     supervised_metrics: Optional[SupervisedMetrics] = None
     segmenter_config: Optional[dict] = None
     error: Optional[str] = None
+    prompt: Optional[str] = None
 
     @property
     def failed(self) -> bool:
@@ -166,6 +167,7 @@ class BenchmarkRunner:
         try:
             geojson_result = segmenter.segment(image)
             execution_time = time.perf_counter() - start_time
+            prompt = getattr(segmenter, "_last_prompt", None)
 
             self._log(f"  Segmentation completed in {execution_time:.4f}s")
 
@@ -203,6 +205,7 @@ class BenchmarkRunner:
                 supervised_metrics=supervised,
                 segmenter_config=segmenter_config_dict(segmenter),
                 image_path=image_path,
+                prompt=prompt,
             )
 
         except Exception as exc:  # noqa: BLE001

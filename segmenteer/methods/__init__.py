@@ -1,6 +1,8 @@
 from segmenteer.methods import classical, ensemble, ml
 from segmenteer.methods.ensemble import fuse_members, run_ensemble
-from segmenteer.methods.classical import (EntropyMaskerSegmenter,
+from segmenteer.methods.classical import (ConnectedComponentSegmenter,
+                                          EdgeBasedSegmenter,
+                                          EntropyMaskerSegmenter,
                                           FESISegmenter, HistomicsTKSegmenter,
                                           LiSegmenter, MorphologicalSegmenter,
                                           ODGMMSlideSegmenter, OtsuSegmenter,
@@ -35,6 +37,8 @@ __all__ = [
     "LiSegmenter",
     "YenSegmenter",
     "EntropyMaskerSegmenter",
+    "ConnectedComponentSegmenter",
+    "EdgeBasedSegmenter",
     "MorphologicalSegmenter",
     "WatershedSegmenter",
     "ODGMMSlideSegmenter",
