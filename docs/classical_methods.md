@@ -26,7 +26,7 @@ Automatic global thresholding using Otsu's method. Computes an optimal threshold
 **How it works:**
 1. Computes histogram of the grayscale image
 2. Calculates optimal threshold that maximizes variance between background and foreground classes
-3. Returns binary mask where pixels above threshold are foreground
+3. Returns binary mask where pixels below threshold are foreground (tissue is assumed to be darker than background)
 
 ---
 
