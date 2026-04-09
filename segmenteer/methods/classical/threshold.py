@@ -4,12 +4,12 @@ from typing import Optional, Union
 
 import numpy as np
 import numpy.typing as npt
+from scipy import ndimage as ndi
+from skimage.feature import canny
 from skimage.filters import threshold_li, threshold_otsu, threshold_yen
 from skimage.filters.rank import entropy
 from skimage.morphology import disk
 from skimage.util import apply_parallel
-from skimage.feature import canny
-from scipy import ndimage as ndi
 
 from segmenteer.core.base import NumpySegmenter
 

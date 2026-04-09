@@ -212,7 +212,9 @@ class EnsembleOutputWriter:
         if result.prompt is not None:
             prompts_dir = method_dir / "prompts"
             prompts_dir.mkdir(parents=True, exist_ok=True)
-            (prompts_dir / f"{image_stem}.txt").write_text(result.prompt, encoding="utf-8")
+            (prompts_dir / f"{image_stem}.txt").write_text(
+                result.prompt, encoding="utf-8"
+            )
 
         # 2. Config YAML → <run_id>/config.yaml (once per method) --------------
         config_rel = f"{result.run_id}/{CONFIG_FILE}"
@@ -327,13 +329,17 @@ class EnsembleOutputWriter:
             Optional ground-truth FeatureCollection for supervised metrics.
         """
         from segmenteer.io.loader import save_geojson
-        from segmenteer.metrics.supervised import compute_all_supervised_metrics
-        from segmenteer.metrics.unsupervised import compute_unsupervised_metrics
+        from segmenteer.metrics.supervised import \
+            compute_all_supervised_metrics
+        from segmenteer.metrics.unsupervised import \
+            compute_unsupervised_metrics
         from segmenteer.visualization.heatmaps import save_heatmap_thumbnail
 
         image_path = Path(image_path)
         image_stem = image_path.stem
-        run_id = make_ensemble_run_id(member_run_ids, strategy=strategy, threshold=threshold)
+        run_id = make_ensemble_run_id(
+            member_run_ids, strategy=strategy, threshold=threshold
+        )
 
         method_dir = self.output_dir / run_id
         predictions_dir = method_dir / PREDICTIONS_DIR
@@ -348,16 +354,20 @@ class EnsembleOutputWriter:
         # 2. Config (JSON, not YAML — no segmenter class to serialise) ----------
         config_path = method_dir / "config.json"
         if not config_path.exists():
-            _write_json(config_path, {
-                "type": "ensemble",
-                "strategy": strategy,
-                "threshold": threshold,
-                "n_members": len(member_run_ids),
-                "member_run_ids": member_run_ids,
-            })
+            _write_json(
+                config_path,
+                {
+                    "type": "ensemble",
+                    "strategy": strategy,
+                    "threshold": threshold,
+                    "n_members": len(member_run_ids),
+                    "member_run_ids": member_run_ids,
+                },
+            )
 
         # 3. Metrics -----------------------------------------------------------
         from monai.data.wsi_reader import WSIReader
+
         from segmenteer.core.base import WSI_READER
 
         reader = WSIReader(WSI_READER)

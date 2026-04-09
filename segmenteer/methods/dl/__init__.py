@@ -34,11 +34,9 @@ except ImportError:
     RTLucassenSlideSegmenter = None  # type: ignore[assignment]
 
 try:
-    from segmenteer.methods.dl.trident import (
-        TRIDENTGrandQCSegmenter,
-        TRIDENTHESTSegmenter,
-        TRIDENTPathProfilerSegmenter,
-    )
+    from segmenteer.methods.dl.trident import (TRIDENTGrandQCSegmenter,
+                                               TRIDENTHESTSegmenter,
+                                               TRIDENTPathProfilerSegmenter)
 except ImportError:
     TRIDENTGrandQCSegmenter = None  # type: ignore[assignment]
     TRIDENTHESTSegmenter = None  # type: ignore[assignment]

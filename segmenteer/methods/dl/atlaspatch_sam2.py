@@ -37,7 +37,8 @@ class AtlasPatchSAM2Segmenter:
         if self._service is None:
             import atlas_patch
             from atlas_patch.core.config import SegmentationConfig
-            from atlas_patch.services.segmentation import SAM2SegmentationService
+            from atlas_patch.services.segmentation import \
+                SAM2SegmentationService
 
             pkg_dir = Path(atlas_patch.__file__).parent
             config_path = pkg_dir / "configs" / "sam2.1_hiera_t.yaml"
@@ -61,7 +62,7 @@ class AtlasPatchSAM2Segmenter:
             wsi.cleanup()
 
         # mask_result.data: float32 (H, W), aspect ratio preserved (no squaring)
-        mask = (mask_result.data >= self.mask_threshold)
+        mask = mask_result.data >= self.mask_threshold
 
         # scaling_factor < 1: maps mask pixel coords → level-0 WSI coords
         scaling_factor = mask.shape[1] / wsi_width  # mask_width / wsi_width

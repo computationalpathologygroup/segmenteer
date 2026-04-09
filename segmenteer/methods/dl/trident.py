@@ -6,15 +6,14 @@ os.environ["TRIDENT_HOME"] = str(
 )
 
 try:
-    from trident.segmentation_models.load import (
-        GrandQCSegmenter as LIBTRIDENTGrandQCSegmenter,
-    )
-    from trident.segmentation_models.load import (
-        HESTSegmenter as LIBTRIDENTHESTSegmenter,
-    )
+    from trident.segmentation_models.load import \
+        GrandQCSegmenter as LIBTRIDENTGrandQCSegmenter
+    from trident.segmentation_models.load import \
+        HESTSegmenter as LIBTRIDENTHESTSegmenter
 
     from segmenteer.core.base import TRIDENTSegmenter
-    from segmenteer.methods.dl.pathprofiler import LIBTRIDENTPathProfilerSegmenter
+    from segmenteer.methods.dl.pathprofiler import \
+        LIBTRIDENTPathProfilerSegmenter
 
     TRIDENTGrandQCSegmenter = TRIDENTSegmenter(LIBTRIDENTGrandQCSegmenter())
     TRIDENTHESTSegmenter = TRIDENTSegmenter(LIBTRIDENTHESTSegmenter())

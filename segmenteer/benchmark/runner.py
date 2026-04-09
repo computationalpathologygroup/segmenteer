@@ -212,9 +212,13 @@ class BenchmarkRunner:
             execution_time = time.perf_counter() - start_time
             full_tb = traceback.format_exc()
             error_msg = f"{type(exc).__name__}: {exc}\n\n{full_tb}"
-            self._log(f"  ✗ FAILED after {execution_time:.2f}s — {type(exc).__name__}: {exc}")
+            self._log(
+                f"  ✗ FAILED after {execution_time:.2f}s — {type(exc).__name__}: {exc}"
+            )
             if self.reporter:
-                self.reporter.print_method_failed(display, f"{type(exc).__name__}: {exc}")
+                self.reporter.print_method_failed(
+                    display, f"{type(exc).__name__}: {exc}"
+                )
             result = BenchmarkResult(
                 method_name=segmenter.name,
                 run_id=run_id,

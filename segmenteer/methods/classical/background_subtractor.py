@@ -32,6 +32,7 @@ class BackgroundSubtractorMOG2Segmenter(NumpySegmenter):
 
     def _segment_numpy(self, image):
         import cv2
+
         bg_subtractor = cv2.createBackgroundSubtractorMOG2(
             history=self.history,
             varThreshold=self.var_threshold,
@@ -48,6 +49,7 @@ class BackgroundSubtractorMOG2Segmenter(NumpySegmenter):
 
         if len(image_uint8.shape) == 2:
             import cv2
+
             image_uint8 = cv2.cvtColor(image_uint8, cv2.COLOR_GRAY2BGR)
 
         # Create white background - use zeros then add 255 to avoid issues with large arrays

@@ -32,22 +32,24 @@ _KEYS: list[str] = [
     "execution_time_s",
 ]
 _LABELS: dict[str, str] = {
-    "coverage_ratio":   "Coverage",
+    "coverage_ratio": "Coverage",
     "mean_compactness": "Compactness",
-    "mean_solidity":    "Solidity",
-    "num_objects":      "Objects",
-    "mean_area":        "Area",
+    "mean_solidity": "Solidity",
+    "num_objects": "Objects",
+    "mean_area": "Area",
     "execution_time_s": "Time",
 }
 _ABBR: dict[str, str] = {
-    "coverage_ratio":   "COV",
+    "coverage_ratio": "COV",
     "mean_compactness": "CMP",
-    "mean_solidity":    "SLD",
-    "num_objects":      "OBJ",
-    "mean_area":        "AREA",
+    "mean_solidity": "SLD",
+    "num_objects": "OBJ",
+    "mean_area": "AREA",
     "execution_time_s": "TIME",
 }
-_HI: frozenset[str] = frozenset({"coverage_ratio", "mean_compactness", "mean_solidity", "mean_area"})
+_HI: frozenset[str] = frozenset(
+    {"coverage_ratio", "mean_compactness", "mean_solidity", "mean_area"}
+)
 _LO: frozenset[str] = frozenset({"execution_time_s"})
 
 _CELL_PX: int = 160  # canvas width/height in logical pixels
@@ -103,7 +105,9 @@ def _winners(vals: list[float | None], key: str) -> set[int]:
 # ── Thumbnail helper ──────────────────────────────────────────────────────────
 
 
-def _thumb(stem: str, output_path: Path, wsi_path: str | None = None) -> tuple[str | None, int, int]:
+def _thumb(
+    stem: str, output_path: Path, wsi_path: str | None = None
+) -> tuple[str | None, int, int]:
     """Return (data_uri, width_px, height_px) for the PNG thumbnail.
 
     If the pre-saved thumbnail PNG is absent but *wsi_path* points to an
@@ -173,10 +177,14 @@ def _thumb(stem: str, output_path: Path, wsi_path: str | None = None) -> tuple[s
 
 def _all_coords(geometry: dict[str, Any]) -> list[tuple[float, float]]:
     gtype = geometry.get("type", "")
-    raw   = geometry.get("coordinates", [])
+    raw = geometry.get("coordinates", [])
     depth = {
-        "Point": 0, "MultiPoint": 1, "LineString": 1,
-        "MultiLineString": 2, "Polygon": 2, "MultiPolygon": 3,
+        "Point": 0,
+        "MultiPoint": 1,
+        "LineString": 1,
+        "MultiLineString": 2,
+        "Polygon": 2,
+        "MultiPolygon": 3,
     }.get(gtype, 2)
     out: list[tuple[float, float]] = []
 
@@ -192,7 +200,7 @@ def _all_coords(geometry: dict[str, Any]) -> list[tuple[float, float]]:
 
 
 def _exterior_rings(geometry: dict[str, Any]) -> list[list[list[float]]]:
-    gtype  = geometry.get("type", "")
+    gtype = geometry.get("type", "")
     coords = geometry.get("coordinates", [])
     rings: list[list[list[float]]] = []
     if gtype == "Polygon" and coords:
@@ -211,6 +219,7 @@ def _simplify_rings(
         return rings
     try:
         from shapely.geometry import Polygon as _Poly  # type: ignore[import]
+
         out: list[list[list[float]]] = []
         for ring in rings:
             if len(ring) < 4:
@@ -267,39 +276,40 @@ def _build_payload(index: IndexData, output_path: Path) -> dict[str, Any]:
         cells: dict[str, Any] = {}
 
         for m in methods:
-            rid  = m.run_id
+            rid = m.run_id
             pred = output_path / rid / "predictions" / f"{stem}.geojson"
             rings: list[list[list[float]]] = []
             if pred.exists():
                 try:
-                    gj  = json.loads(pred.read_text(encoding="utf-8"))
+                    gj = json.loads(pred.read_text(encoding="utf-8"))
                     raw: list[list[list[float]]] = []
                     for feat in gj.get("features", []):
                         raw.extend(_exterior_rings(feat.get("geometry", {})))
                     rings = _simplify_rings(raw, tol)
                 except Exception:
                     pass
-            entry  = stem_scores.get(rid, {})
+            entry = stem_scores.get(rid, {})
             scores = {k: _get(entry, k) for k in _KEYS}
             cells[rid] = {"rings": rings, "scores": scores}
 
-        slides_out.append({
-            "stem": stem,
-            "thumb": uri,
-            "tw": tw,
-            "th": th,
-            "ww": ww,
-            "wh": wh,
-            "cells": cells,
-        })
+        slides_out.append(
+            {
+                "stem": stem,
+                "thumb": uri,
+                "tw": tw,
+                "th": th,
+                "ww": ww,
+                "wh": wh,
+                "cells": cells,
+            }
+        )
 
     return {
         "cell_px": _CELL_PX,
         "metric_keys": _KEYS,
         "metric_abbr": _ABBR,
         "methods": [
-            {"run_id": m.run_id, "name": m.name,
-             "color": m.color, "params": m.params}
+            {"run_id": m.run_id, "name": m.name, "color": m.color, "params": m.params}
             for m in methods
         ],
         "slides": slides_out,
@@ -313,12 +323,12 @@ def _chip_html(idx: int, entry: dict[str, Any], win_sets: dict[str, set[int]]) -
     parts: list[str] = []
     for k in _KEYS:
         val = _get(entry, k)
-        wc  = " win" if idx in win_sets.get(k, set()) else ""
+        wc = " win" if idx in win_sets.get(k, set()) else ""
         parts.append(
             f'<span class="mc{wc}">'
             f'<span class="mk">{html.escape(_ABBR[k])}</span>'
             f'<span class="mv">{html.escape(_fmt(val, k))}</span>'
-            f'</span>'
+            f"</span>"
         )
     return "".join(parts)
 
@@ -342,8 +352,7 @@ def _summary_row(
         means.append(d)
 
     win_sets = {
-        k: _winners([means[i].get(k) for i in range(len(methods))], k)
-        for k in _KEYS
+        k: _winners([means[i].get(k) for i in range(len(methods))], k) for k in _KEYS
     }
 
     cells: list[str] = []
@@ -351,26 +360,22 @@ def _summary_row(
         parts: list[str] = []
         for k in _KEYS:
             val = means[i].get(k)
-            wc  = " win" if i in win_sets.get(k, set()) else ""
+            wc = " win" if i in win_sets.get(k, set()) else ""
             parts.append(
                 f'<span class="mc{wc}">'
                 f'<span class="mk">{html.escape(_ABBR[k])}</span>'
                 f'<span class="mv">{html.escape(_fmt(val, k))}</span>'
-                f'</span>'
+                f"</span>"
             )
-        cells.append(
-            f'<td class="cm">'
-            f'<div class="chips">{"".join(parts)}</div>'
-            f'</td>'
-        )
+        cells.append(f'<td class="cm"><div class="chips">{"".join(parts)}</div></td>')
 
     first = (
         '<td class="cs sticky sum-first">'
         '<div class="sum-inner">'
         '<span class="sum-tag">avg</span>'
         '<span class="sum-nm">Dataset\u202fmean</span>'
-        '</div>'
-        '</td>'
+        "</div>"
+        "</td>"
     )
     return f'<tr class="sumrow">{first}{"".join(cells)}</tr>'
 
@@ -392,23 +397,21 @@ def _table_html(
             f'<th class="cm">'
             f'<div class="mhdr">'
             f'<span class="mnm">{html.escape(m.name)}</span>'
-            f'</div>'
-            f'{prm_html}'
-            f'</th>'
+            f"</div>"
+            f"{prm_html}"
+            f"</th>"
         )
-    thead = f'<thead><tr>{img_th}{"".join(mth_ths)}</tr></thead>'
+    thead = f"<thead><tr>{img_th}{''.join(mth_ths)}</tr></thead>"
 
     tbody_rows: list[str] = [_summary_row(methods, wsis, scores)]
 
     for si, w in enumerate(wsis):
-        stem        = w.stem
+        stem = w.stem
         stem_scores = scores.get(stem, {})
-        uri         = thumb_map.get(stem)
+        uri = thumb_map.get(stem)
 
         win_sets = {
-            k: _winners(
-                [_get(stem_scores.get(m.run_id, {}), k) for m in methods], k
-            )
+            k: _winners([_get(stem_scores.get(m.run_id, {}), k) for m in methods], k)
             for k in _KEYS
         }
 
@@ -419,27 +422,26 @@ def _table_html(
         )
         first = (
             f'<td class="cs sticky">'
-            f'{thumb_tag}'
+            f"{thumb_tag}"
             f'<span class="sl-nm" title="{html.escape(stem)}">{html.escape(stem)}</span>'
-            f'</td>'
+            f"</td>"
         )
 
         cells: list[str] = []
         for i, m in enumerate(methods):
-            entry   = stem_scores.get(m.run_id, {})
+            entry = stem_scores.get(m.run_id, {})
             rid_esc = html.escape(m.run_id)
-            chips   = _chip_html(i, entry, win_sets)
+            chips = _chip_html(i, entry, win_sets)
             cells.append(
                 f'<td class="cm">'
                 f'<canvas class="cv" data-s="{si}" data-r="{rid_esc}"></canvas>'
                 f'<div class="chips">{chips}</div>'
-                f'</td>'
+                f"</td>"
             )
 
         tbody_rows.append(f'<tr class="sr">{first}{"".join(cells)}</tr>')
 
-    return f'{thead}<tbody>{"".join(tbody_rows)}</tbody>'
-
+    return f"{thead}<tbody>{''.join(tbody_rows)}</tbody>"
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
@@ -450,16 +452,18 @@ def generate_report(
     output_path: Path,
 ) -> str:
     """Return a fully self-contained HTML report string."""
-    methods   = list(index.methods.values())
-    wsis      = index.wsis
-    scores    = index.scores
-    label     = Path(index.output_dir).name
-    generated = datetime.now(timezone.utc).strftime("%Y\u2011%m\u2011%d\u2002%H:%M\u202fUTC")
+    methods = list(index.methods.values())
+    wsis = index.wsis
+    scores = index.scores
+    label = Path(index.output_dir).name
+    generated = datetime.now(timezone.utc).strftime(
+        "%Y\u2011%m\u2011%d\u2002%H:%M\u202fUTC"
+    )
 
     thumb_map: dict[str, str | None] = {
         w.stem: _thumb(w.stem, output_path)[0] for w in wsis
     }
-    tbl   = _table_html(methods, wsis, scores, thumb_map)
+    tbl = _table_html(methods, wsis, scores, thumb_map)
     rdata = _build_payload(index, output_path)
 
     # Prevent </script> closing the tag while embedded in JSON
@@ -467,49 +471,49 @@ def generate_report(
         "</", "<\\/"
     )
 
-    label_e   = html.escape(label)
-    n_slides  = len(wsis)
+    label_e = html.escape(label)
+    n_slides = len(wsis)
     n_methods = len(methods)
 
     return (
-        f'<!DOCTYPE html>\n'
+        f"<!DOCTYPE html>\n"
         f'<html lang="en">\n'
-        f'<head>\n'
+        f"<head>\n"
         f'  <meta charset="utf-8">\n'
         f'  <meta name="viewport" content="width=device-width,initial-scale=1">\n'
-        f'  <title>segmenteer \u00b7 {label_e}</title>\n'
-        f'  <link rel="icon" href="data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 32 32\'><text x=\'1\' y=\'26\' font-family=\'Inter,system-ui,sans-serif\' font-weight=\'700\' font-size=\'22\' fill=\'%2302B0dd\'>sg</text></svg>">\n'
+        f"  <title>segmenteer \u00b7 {label_e}</title>\n"
+        f"  <link rel=\"icon\" href=\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='1' y='26' font-family='Inter,system-ui,sans-serif' font-weight='700' font-size='22' fill='%2302B0dd'>sg</text></svg>\">\n"
         f'  <link rel="preconnect" href="https://fonts.googleapis.com">\n'
         f'  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900'
         f'&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">\n'
-        f'  <style>{_CSS}</style>\n'
-        f'</head>\n'
-        f'<body>\n'
-        f'<header>\n'
+        f"  <style>{_CSS}</style>\n"
+        f"</head>\n"
+        f"<body>\n"
+        f"<header>\n"
         f'  <div class="topbar-left">\n'
         f'    <span class="logo">segmenteer</span>\n'
         f'    <span class="run-label">{label_e}</span>\n'
-        f'  </div>\n'
+        f"  </div>\n"
         f'  <div class="report-badge"><span>Report</span></div>\n'
         f'  <div class="topbar-right">\n'
         f'    <span class="stat-chip"><strong>{n_slides}</strong>\u2009slides</span>\n'
         f'    <span class="stat-chip"><strong>{n_methods}</strong>\u2009methods</span>\n'
         f'    <span class="stat-chip">{html.escape(generated)}</span>\n'
-        f'  </div>\n'
-        f'</header>\n'
+        f"  </div>\n"
+        f"</header>\n"
         f'<div class="tbl-wrap" style="margin-top:var(--hdr-h)">\n'
         f'  <table class="cmp">{tbl}</table>\n'
-        f'</div>\n'
-        f'<footer>\n'
+        f"</div>\n"
+        f"<footer>\n"
         f'  <div class="ftr">\n'
-        f'    <span>Generated by <strong>segmenteer</strong></span>\n'
+        f"    <span>Generated by <strong>segmenteer</strong></span>\n"
         f'    <span class="dim">{html.escape(generated)}</span>\n'
-        f'  </div>\n'
-        f'</footer>\n'
-        f'<script>const R={r_json};</script>\n'
-        f'<script>{_JS}</script>\n'
-        f'</body>\n'
-        f'</html>'
+        f"  </div>\n"
+        f"</footer>\n"
+        f"<script>const R={r_json};</script>\n"
+        f"<script>{_JS}</script>\n"
+        f"</body>\n"
+        f"</html>"
     )
 
 
@@ -853,4 +857,3 @@ _JS = """\
   }
 })();
 """
-

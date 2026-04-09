@@ -93,9 +93,9 @@ class LIBTRIDENTPathProfilerSegmenter:
 
             def forward(self, image: torch.Tensor) -> torch.Tensor:
                 # input should be of shape (batch_size, C, H, W)
-                assert (
-                    len(image.shape) == 4
-                ), f"Input must be 4D image tensor (shape: batch_size, C, H, W), got {image.shape} instead"
+                assert len(image.shape) == 4, (
+                    f"Input must be 4D image tensor (shape: batch_size, C, H, W), got {image.shape} instead"
+                )
                 softmax_output = self.model(image).softmax(1)
                 predictions = (softmax_output[:, 1, :, :] > self.confidence_thresh).to(
                     torch.uint8

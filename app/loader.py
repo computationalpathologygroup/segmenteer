@@ -41,9 +41,10 @@ def _generate_colors(n: int) -> list[str]:
     for i in range(n):
         s, l = tracks[i % 3]  # noqa: E741
         r, g, b = colorsys.hls_to_rgb(h % 1.0, l, s)
-        colors.append(f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}")
+        colors.append(f"#{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}")
         h += golden
     return colors
+
 
 _WSI_EXTENSIONS: tuple[str, ...] = (
     ".tiff",

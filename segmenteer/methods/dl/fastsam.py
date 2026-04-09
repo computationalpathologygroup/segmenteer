@@ -3,7 +3,8 @@ from pathlib import Path
 import numpy as np
 
 from segmenteer.core.base import NumpySegmenter
-from segmenteer.core.utils import mask_to_geojson  # noqa: F401 (kept for potential subclass use)
+from segmenteer.core.utils import \
+    mask_to_geojson  # noqa: F401 (kept for potential subclass use)
 
 
 def get_model_cache_dir() -> Path:

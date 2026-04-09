@@ -21,7 +21,7 @@ import segmenteer as seg
 if __name__ == "__main__":
     seg.run_ensemble(
         manifest_path=None,  # or: Path("outputs/.../ensemble_manifest.json")
-        threshold=0.5,       # 0.0 = union  |  0.5 = majority  |  1.0 = intersection
+        threshold=0.5,  # 0.0 = union  |  0.5 = majority  |  1.0 = intersection
         max_size=2048,
         min_area=50,
         image_stem=None,

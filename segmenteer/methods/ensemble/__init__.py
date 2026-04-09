@@ -29,7 +29,8 @@ from skimage.draw import polygon as sk_polygon
 
 from segmenteer.core.utils import mask_to_geojson
 from segmenteer.io.loader import save_geojson
-from segmenteer.visualization.heatmaps import save_vote_heatmap as _save_vote_heatmap_img
+from segmenteer.visualization.heatmaps import \
+    save_vote_heatmap as _save_vote_heatmap_img
 
 __all__ = ["fuse_members", "run_ensemble", "quality_weight"]
 
@@ -168,8 +169,7 @@ def fuse_members(
         if geom["type"] != "Polygon":
             continue
         scaled_rings = [
-            [_rescale_coord(c[0], c[1]) for c in ring]
-            for ring in geom["coordinates"]
+            [_rescale_coord(c[0], c[1]) for c in ring] for ring in geom["coordinates"]
         ]
         out_features.append(
             geojson.Feature(
@@ -334,6 +334,7 @@ def run_ensemble(
     Returns the output root directory.
     """
     import yaml
+
     import segmenteer as seg  # local import to avoid circular at module level
 
     resolved_dirs: list[Path] | None = (
@@ -353,7 +354,11 @@ def run_ensemble(
             manifest = json.load(fh)
         mode = manifest.get("mode", "single")
         all_stems = (
-            [s for s in manifest.get("images", []) if image_stem is None or s == image_stem]
+            [
+                s
+                for s in manifest.get("images", [])
+                if image_stem is None or s == image_stem
+            ]
             if mode == "dataset"
             else [None]
         )
@@ -392,7 +397,8 @@ def run_ensemble(
             if resolved_dirs is not None:
                 dir_strs = {str(d) for d in resolved_dirs}
                 members = [
-                    m for m in members
+                    m
+                    for m in members
                     if str(Path(m["member_dir"]).resolve()) in dir_strs
                 ]
         else:

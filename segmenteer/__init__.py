@@ -3,7 +3,6 @@ from segmenteer.benchmark import (BenchmarkReporter, BenchmarkResult,
                                   export_results_csv, export_results_json,
                                   load_ensemble_members, make_ensemble_run_id,
                                   make_run_id, run_dataset, run_single_image)
-from segmenteer.methods.ensemble import fuse_members, run_ensemble
 from segmenteer.core import (SegmentationResult, Segmenter, downsample_image,
                              geojson_to_mask, mask_to_geojson,
                              scale_geojson_coordinates)
@@ -11,12 +10,14 @@ from segmenteer.core.base import WSIBackend, load_segmenter
 from segmenteer.io import (create_timestamped_output_dir, load_geojson,
                            load_ground_truths, load_image, save_geojson)
 from segmenteer.methods import (BackgroundSubtractorMOG2Segmenter,
-                                ConnectedComponentSegmenter, EdgeBasedSegmenter,
-                                EntropyMaskerSegmenter, FESISegmenter,
-                                HistomicsTKSegmenter, HSVThresholdSegmenter,
-                                LiSegmenter, MorphologicalSegmenter,
-                                ODGMMSlideSegmenter, OtsuSegmenter,
-                                WatershedSegmenter, YenSegmenter)
+                                ConnectedComponentSegmenter,
+                                EdgeBasedSegmenter, EntropyMaskerSegmenter,
+                                FESISegmenter, HistomicsTKSegmenter,
+                                HSVThresholdSegmenter, LiSegmenter,
+                                MorphologicalSegmenter, ODGMMSlideSegmenter,
+                                OtsuSegmenter, WatershedSegmenter,
+                                YenSegmenter)
+from segmenteer.methods.ensemble import fuse_members, run_ensemble
 from segmenteer.metrics import (SupervisedMetrics, UnsupervisedMetrics,
                                 compute_all_supervised_metrics, compute_dice,
                                 compute_hausdorff, compute_iou,
@@ -51,8 +52,9 @@ def __getattr__(name):
         from segmenteer.methods.dl import (AtlasPatchSAM2Segmenter,
                                            BigPictureSegmenter, CPGSegmenter,
                                            FastSAMSegmenter, GrandQCSegmenter,
-                                           HESTSegmenter, SAM3Segmenter,
+                                           HESTSegmenter,
                                            RTLucassenSlideSegmenter,
+                                           SAM3Segmenter,
                                            TRIDENTGrandQCSegmenter,
                                            TRIDENTHESTSegmenter,
                                            TRIDENTPathProfilerSegmenter)

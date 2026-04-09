@@ -1,5 +1,4 @@
 from segmenteer.methods import classical, ensemble, ml
-from segmenteer.methods.ensemble import fuse_members, run_ensemble
 from segmenteer.methods.classical import (ConnectedComponentSegmenter,
                                           EdgeBasedSegmenter,
                                           EntropyMaskerSegmenter,
@@ -7,6 +6,7 @@ from segmenteer.methods.classical import (ConnectedComponentSegmenter,
                                           LiSegmenter, MorphologicalSegmenter,
                                           ODGMMSlideSegmenter, OtsuSegmenter,
                                           WatershedSegmenter, YenSegmenter)
+from segmenteer.methods.ensemble import fuse_members, run_ensemble
 
 # opencv-dependent methods — graceful fallback if cv2 is absent
 try:

@@ -28,6 +28,7 @@ class RTLucassenSlideSegmenter(NumpySegmenter):
             ) from None
         if device is None:
             import torch
+
             # slidesegmenter does not support MPS — fall back to cpu on macOS
             device = "cuda" if torch.cuda.is_available() else "cpu"
         super().__init__(*args, **kwargs)

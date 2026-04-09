@@ -23,10 +23,10 @@ SEGMENTERS = [
     seg.ODGMMSlideSegmenter(mpp=10, **kw),
     seg.MorphologicalSegmenter(mpp=10, **kw),
     seg.WatershedSegmenter(mpp=10, **kw),
-    seg.FESISegmenter(**kw),                     # improved=True, mpp=20
-    seg.FESISegmenter(improved=False, **kw),     # different params → separate dir
+    seg.FESISegmenter(**kw),  # improved=True, mpp=20
+    seg.FESISegmenter(improved=False, **kw),  # different params → separate dir
     seg.BackgroundSubtractorMOG2Segmenter(mpp=20, **kw),
-    seg.HSVThresholdSegmenter(mpp=10, **kw),     # HSV colour-range (H&E purple-pink)
+    seg.HSVThresholdSegmenter(mpp=10, **kw),  # HSV colour-range (H&E purple-pink)
     seg.HESTSegmenter(mpp=1),
     seg.GrandQCSegmenter(mpp=8),
     seg.BigPictureSegmenter(),  # requires: uv pip install tensorflow tissue-segmentation @ git+...
@@ -36,7 +36,7 @@ SEGMENTERS = [
     seg.FastSAMSegmenter(mpp=10),
     seg.RTLucassenSlideSegmenter(),
     seg.HistomicsTKSegmenter(mpp=10, **kw),
-    seg.AtlasPatchSAM2Segmenter(),                    # AtlasPatch + SAM2 tissue detection
+    seg.AtlasPatchSAM2Segmenter(),  # AtlasPatch + SAM2 tissue detection
     # seg.CPGSegmenter(
     #     docker_image="dodrio1.umcn.nl/daangeijs/tissueseg:latest", min_area=10
     # ),
@@ -56,9 +56,7 @@ if __name__ == "__main__":
     # seg.run_single_image(SEGMENTERS, Path("example.tiff"), ground_truth=gt)
 
     # --- dataset, unsupervised ---
-    images = sorted(
-        Path("/dataset/wsis/").glob("*.tiff")
-    )
+    images = sorted(Path("/dataset/wsis/").glob("*.tiff"))
     seg.run_dataset(SEGMENTERS, images, save_thumbnails=False)
 
     # --- dataset, supervised (annotations sit next to images) ---

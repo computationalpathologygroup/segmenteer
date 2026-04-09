@@ -55,12 +55,18 @@ def main() -> None:
     if not output_path.exists():
         parser.error(f"Output directory not found: {output_path}")
 
-    out_file = Path(args.out) if args.out else Path(f"segmenteer_report_{output_path.name}.html")
+    out_file = (
+        Path(args.out)
+        if args.out
+        else Path(f"segmenteer_report_{output_path.name}.html")
+    )
 
     print(f"Loading index from {output_path} …")
     index = load_index(output_path, data_path)
 
-    print(f"Generating report for {len(index.wsis)} slide(s) × {len(index.methods)} method(s) …")
+    print(
+        f"Generating report for {len(index.wsis)} slide(s) × {len(index.methods)} method(s) …"
+    )
     html_content = generate_report(index, output_path)
 
     out_file.write_text(html_content, encoding="utf-8")

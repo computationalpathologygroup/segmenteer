@@ -11,8 +11,10 @@ from pathlib import Path
 from typing import Optional
 
 from segmenteer.benchmark.console import BenchmarkReporter
-from segmenteer.benchmark.ensemble import EnsembleOutputWriter, load_ensemble_members
-from segmenteer.benchmark.reporting import export_results_csv, export_results_json
+from segmenteer.benchmark.ensemble import (EnsembleOutputWriter,
+                                           load_ensemble_members)
+from segmenteer.benchmark.reporting import (export_results_csv,
+                                            export_results_json)
 from segmenteer.benchmark.runner import BenchmarkRunner
 from segmenteer.io import create_timestamped_output_dir
 from segmenteer.visualization import save_thumbnail
@@ -50,7 +52,7 @@ def run_single_image(
     """
     path = Path(path)
     output_dir = create_timestamped_output_dir("outputs")
-    
+
     if save_thumbnails:
         thumbnails_dir = output_dir / "thumbnails"
         thumbnails_dir.mkdir(parents=True, exist_ok=True)
@@ -70,7 +72,12 @@ def run_single_image(
     reporter.print_saved(
         output_dir,
         (
-            [f"thumbnails/{path.stem}.png", "results.csv", "results.json", manifest.name]
+            [
+                f"thumbnails/{path.stem}.png",
+                "results.csv",
+                "results.json",
+                manifest.name,
+            ]
             if save_thumbnails
             else ["results.csv", "results.json", manifest.name]
         )
@@ -108,7 +115,7 @@ def run_dataset(
         Whether to save image thumbnails to the output directory.
     """
     output_dir = create_timestamped_output_dir("outputs")
-    
+
     if save_thumbnails:
         thumbnails_dir = output_dir / "thumbnails"
         thumbnails_dir.mkdir(parents=True, exist_ok=True)

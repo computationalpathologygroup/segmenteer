@@ -37,9 +37,8 @@ TRIDENTSegmentationModel = None  # type: ignore[assignment]
 _TridentWSI = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:
-    from trident.segmentation_models.load import (
-        SegmentationModel as TRIDENTSegmentationModel,
-    )
+    from trident.segmentation_models.load import \
+        SegmentationModel as TRIDENTSegmentationModel
     from trident.wsi_objects.OpenSlideWSI import OpenSlideWSI as _TridentWSI
 
 if TYPE_CHECKING:
@@ -60,9 +59,7 @@ def _require_trident():
         return TRIDENTSegmentationModel, _TridentWSI
 
     try:
-        from trident.segmentation_models.load import (
-            SegmentationModel as _TSM,
-        )
+        from trident.segmentation_models.load import SegmentationModel as _TSM
         from trident.wsi_objects.OpenSlideWSI import OpenSlideWSI as _TWSI
 
         TRIDENTSegmentationModel = _TSM
@@ -85,6 +82,7 @@ def _require_wsi_reader():
             "Install the wsi extra: pip install 'segmenteer[wsi]'"
         )
     return _WSIReader
+
 
 __all__ = [
     "Segmenter",
@@ -254,7 +252,9 @@ class NumpySegmenter(ABC):
         self.mpp = mpp
         self.min_area = min_area
         self.to_gray_func = to_gray_func
-        self.reader = reader if reader is not None else _require_wsi_reader()(WSI_READER)
+        self.reader = (
+            reader if reader is not None else _require_wsi_reader()(WSI_READER)
+        )
 
     @property
     @abstractmethod
@@ -350,7 +350,9 @@ class PathSegmenter(ABC):
         reader: WSIReader | None = None,
     ):
         self.min_area = min_area
-        self.reader = reader if reader is not None else _require_wsi_reader()(WSI_READER)
+        self.reader = (
+            reader if reader is not None else _require_wsi_reader()(WSI_READER)
+        )
 
     @property
     @abstractmethod
