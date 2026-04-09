@@ -59,7 +59,7 @@ if __name__ == "__main__":
     images = sorted(
         Path("/dataset/wsis/").glob("*.tiff")
     )
-    seg.run_dataset(SEGMENTERS, images)
+    seg.run_dataset(SEGMENTERS, images, save_thumbnails=False)
 
     # --- dataset, supervised (annotations sit next to images) ---
     # images = sorted(Path("dataset/").glob("*.tiff"))
