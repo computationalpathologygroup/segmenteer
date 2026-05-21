@@ -15,14 +15,19 @@ try:
 
     from segmenteer.core.base import TRIDENTSegmenter
     from segmenteer.methods.dl.pathprofiler import LIBTRIDENTPathProfilerSegmenter
-    from segmenteer.methods.dl.cpg import LIBTRIDENTCPGSegmenter
 
     TRIDENTGrandQCSegmenter = TRIDENTSegmenter(LIBTRIDENTGrandQCSegmenter())
     TRIDENTHESTSegmenter = TRIDENTSegmenter(LIBTRIDENTHESTSegmenter())
     TRIDENTPathProfilerSegmenter = TRIDENTSegmenter(LIBTRIDENTPathProfilerSegmenter())
-    TRIDENTCPGSegmenter = TRIDENTSegmenter(LIBTRIDENTCPGSegmenter())
 except ImportError:
     TRIDENTGrandQCSegmenter = None  # type: ignore[assignment]
     TRIDENTHESTSegmenter = None  # type: ignore[assignment]
     TRIDENTPathProfilerSegmenter = None  # type: ignore[assignment]
+
+try:
+    from segmenteer.core.base import TRIDENTSegmenter
+    from segmenteer.methods.dl.cpg import LIBTRIDENTCPGSegmenter
+
+    TRIDENTCPGSegmenter = TRIDENTSegmenter(LIBTRIDENTCPGSegmenter())
+except ImportError:
     TRIDENTCPGSegmenter = None  # type: ignore[assignment]

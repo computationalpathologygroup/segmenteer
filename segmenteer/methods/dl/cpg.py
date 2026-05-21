@@ -18,8 +18,6 @@ try:
 except ImportError:
     _ONNX_AVAILABLE = False
 
-from segmenteer.core.base import TRIDENTSegmentationModel
-
 
 def get_model_cache_dir() -> Path:
     cache_dir = Path(__file__).parent.parent.parent.parent / "models" / "cpg"
@@ -47,6 +45,14 @@ class LIBTRIDENTCPGSegmenter(TRIDENTSegmentationModel):
 
         model_ckpt_name = "cpg.onnx"
         weights_path = get_model_cache_dir() / Path(model_ckpt_name)
+
+        if not weights_path.exists():
+            raise FileNotFoundError(
+                f"CPG model weights not found at '{weights_path}'. "
+                "Expected ONNX weights file 'models/cpg/cpg.onnx'. "
+                "Ensure the model assets are present and installed correctly before "
+                "initializing LIBTRIDENTCPGSegmenter."
+            )
 
         self.ort_session = onnxruntime.InferenceSession(
             weights_path, providers=["CPUExecutionProvider"]
@@ -76,7 +82,7 @@ class LIBTRIDENTCPGSegmenter(TRIDENTSegmentationModel):
             image.shape[1] == 3
         ), f"Input must have 3 channels (C), got {image.shape[1]} instead"
         assert (
-            image.shape[2] == self.input_size and image.shape[3] == 224
+            image.shape[2] == self.input_size and image.shape[3] == self.input_size
         ), f"Input must be of shape (batch_size, 3, {self.input_size}, {self.input_size}), got {image.shape} instead"
         onnx_inputs = [image.numpy(force=True)]
         onnxruntime_input = {input_arg.name: input_value for input_arg, input_value in zip(self.ort_session.get_inputs(), onnx_inputs)}
@@ -85,4 +91,4 @@ class LIBTRIDENTCPGSegmenter(TRIDENTSegmentationModel):
             torch.as_tensor(onnxruntime_outputs, dtype=torch.float),  # The output is (b, 2, 224, 224), note the 2. The foreground and background class need argmax to select the most likely class.
             dim=1,
         )
-        return torch.argmax(out, axis=1).to(torch.uint8)
+        return torch.argmax(out, dim=1).to(torch.uint8)
