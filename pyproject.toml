@@ -53,6 +53,7 @@ torch = [
 # bigpicture = [...]
 cpg = [
     "docker>=7.1.0",
+    "onnxruntime>=1.24.4",
 ]
 fastsam = [
     "openai-clip>=1.0.1",

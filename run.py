@@ -36,9 +36,7 @@ SEGMENTERS = [
     seg.FastSAMSegmenter(mpp=10),
     seg.RTLucassenSlideSegmenter(),
     seg.HistomicsTKSegmenter(mpp=10, **kw),
-    # seg.CPGSegmenter(
-    #     docker_image="dodrio1.umcn.nl/daangeijs/tissueseg:latest", min_area=10
-    # ),
+    seg.TRIDENTCPGSegmenter,
 ]
 
 # ---------------------------------------------------------------------------
@@ -56,7 +54,7 @@ if __name__ == "__main__":
 
     # --- dataset, unsupervised ---
     images = sorted(
-        Path("/dataset/wsis/").glob("*.tiff")
+        Path("dataset/wsis/").glob("*.tiff")
     )
     seg.run_dataset(SEGMENTERS, images)
 
