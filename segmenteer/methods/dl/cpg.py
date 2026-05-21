@@ -54,8 +54,14 @@ class LIBTRIDENTCPGSegmenter(TRIDENTSegmentationModel):
                 "initializing LIBTRIDENTCPGSegmenter."
             )
 
+        available_providers = onnxruntime.get_available_providers()
+        # Prefer CUDA when available, but keep CPU as a fallback.
+        providers = ["CPUExecutionProvider"]
+        if "CUDAExecutionProvider" in available_providers:
+            providers.insert(0, "CUDAExecutionProvider")
+
         self.ort_session = onnxruntime.InferenceSession(
-            weights_path, providers=["CPUExecutionProvider"]
+            weights_path, providers=providers
         )
 
         # Store configuration
