@@ -52,7 +52,10 @@ torch = [
 # Install manually with pip — see README.
 # bigpicture = [...]
 cpg = [
-    "docker>=7.1.0",
+    "onnxruntime>=1.24.4",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+    "trident",
 ]
 fastsam = [
     "openai-clip>=1.0.1",

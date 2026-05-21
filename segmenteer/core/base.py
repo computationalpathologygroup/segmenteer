@@ -274,6 +274,10 @@ class TRIDENTSegmenter:
     """Base class for segmenters that work on numpy arrays."""
 
     segmenter: TRIDENTSegmentationModel
+    target_mag: int = 10
+    holes_are_tissue: bool = True
+    batch_size: int = 8
+    num_workers: int = 0
 
     @property
     def name(self) -> str:
@@ -300,11 +304,11 @@ class TRIDENTSegmenter:
         return geojson.loads(
             wsi.segment_tissue(
                 segmentation_model=self.segmenter,
-                target_mag=10,
-                holes_are_tissue=True,
-                batch_size=8,
+                target_mag=self.target_mag,
+                holes_are_tissue=self.holes_are_tissue,
+                batch_size=self.batch_size,
                 device=self._best_device(),
-                num_workers=0,  # >0 tries to pickle OpenSlide ctypes handles → fails on macOS
+                num_workers=self.num_workers,  # >0 tries to pickle OpenSlide ctypes handles → fails on macOS
             ).to_json()
         )
 

@@ -1,88 +1,100 @@
 from pathlib import Path
+from typing import Any
 
-from segmenteer.core.base import PathSegmenter
+from segmenteer.core.base import TRIDENTSegmentationModel
+
+try:
+    import torch
+    from torch import nn
+    from torchvision import transforms
+
+    _TORCH_AVAILABLE = True
+except ImportError:
+    _TORCH_AVAILABLE = False
+
+try:
+    import onnxruntime
+    _ONNX_AVAILABLE = True
+except ImportError:
+    _ONNX_AVAILABLE = False
 
 
-class CPGSegmenter(PathSegmenter):
-    def __init__(
-        self,
-        docker_image: str = "dodrio1.umcn.nl/daangeijs/tissueseg:latest",
-        device: str | None = None,
-        *args,
-        **kwargs,
-    ):
-        super().__init__(*args, **kwargs)
-        self.docker_image = docker_image
-        self.device = device
-        self._validate_dependencies()
-        import docker
+def get_model_cache_dir() -> Path:
+    cache_dir = Path(__file__).parent.parent.parent.parent / "models" / "cpg"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    return cache_dir
 
-        self._client = docker.from_env()
-
-    def _validate_dependencies(self):
-        """Check if docker and pyvips are available, raise helpful error if not."""
-        try:
-            import docker
-        except ImportError:
+class LIBTRIDENTCPGSegmenter(TRIDENTSegmentationModel):
+    def __init__(self, **build_kwargs: dict[str, Any]):
+        if not _TORCH_AVAILABLE or not _ONNX_AVAILABLE:
             raise ImportError(
-                "docker is required for CPGSegmenter but not installed. "
-                "Install it with: pip install 'segmenteer[cpg]'"
+                "torch, torchvision, trident, and onnxruntime are required for CPG tissue segmenter.\n"
+                "Install with: pip install 'segmenteer[cpg]'"
             )
-        try:
-            import pyvips
-        except ImportError:
-            raise ImportError(
-                "pyvips is required for CPGSegmenter but not installed. "
-                "Install it with: pip install 'segmenteer[cpg]'"
+        super().__init__(**build_kwargs)
+
+    def _build(self) -> tuple[nn.Module, transforms.Compose]:
+        """
+        Build and load CPGSegmenter model.
+
+        Returns
+        -------
+        Tuple[nn.Module, transforms.Compose]
+            Model and preprocessing transforms.
+        """
+
+        model_ckpt_name = "cpg.onnx"
+        weights_path = get_model_cache_dir() / Path(model_ckpt_name)
+
+        if not weights_path.exists():
+            raise FileNotFoundError(
+                f"CPG model weights not found at '{weights_path}'. "
+                "Expected ONNX weights file 'models/cpg/cpg.onnx'. "
+                "Ensure the model assets are present and installed correctly before "
+                "initializing LIBTRIDENTCPGSegmenter."
             )
 
-    @property
-    def name(self) -> str:
-        return "cpg_tissuemasker"
+        available_providers = onnxruntime.get_available_providers()
+        # Prefer CUDA when available, but keep CPU as a fallback.
+        providers = ["CPUExecutionProvider"]
+        if "CUDAExecutionProvider" in available_providers:
+            providers.insert(0, "CUDAExecutionProvider")
 
-    def _segment_path(self, image_path: Path, output_path: Path) -> None:
-        import docker
+        self.ort_session = onnxruntime.InferenceSession(
+            weights_path, providers=providers
+        )
 
-        command = [
-            "-c",
-            f"sh /home/user/run.sh /data/{image_path.name} /output/{output_path.name}",
-        ]
+        # Store configuration
+        self.input_size = 224  # This cannot be changed because of onnx export constraints
+        self.precision = torch.float32
+        self.target_mag = 4
 
-        if self.device is not None:
-            raise NotImplementedError("Only GPU support is implemented.")
-        device_requests = [
-            docker.types.DeviceRequest(device_ids=["0"], capabilities=[["gpu"]])
-        ]
+        eval_transforms = transforms.Compose(
+            [
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+            ]
+        )
+        self.softmax_fn = torch.nn.LogSoftmax(dim=1)
 
-        # NOTE: Container is run from scratch, so has to load weights too every time.
-        # NOTE: Sometimes it hangs if it cannot find the necessary 4.0 mpp (0.25 mpp tolerance) spacing.
-        try:
-            container = self._client.containers.run(
-                self.docker_image,
-                command,
-                volumes={
-                    str(image_path.parent.resolve()): {"bind": "/data", "mode": "rw"},
-                    str(output_path.parent.resolve()): {
-                        "bind": "/output",
-                        "mode": "rw",
-                    },
-                },
-                remove=True,
-                detach=True,
-                entrypoint="/bin/bash",
-                device_requests=device_requests,
-                auto_remove=True,
-            )
-        except docker.errors.DockerException as e:
-            raise RuntimeError(
-                "Error running Docker container for CPGSegmenter. "
-                "Make sure Docker is installed and running."
-            ) from e
-        for line in container.logs(stream=True):
-            decoded = line.decode()
-            print(decoded, end="")
-            if "digitalpathology.errors.imageerrors.PixelSpacingLevelError" in decoded:
-                raise RuntimeError(
-                    "CPGSegmenter failed due to missing required MPP level. "
-                    "Make sure the WSI contains a level close to 4.0 MPP."
-                )
+        return nn.Module(), eval_transforms
+
+    def forward(self, image: torch.Tensor) -> torch.Tensor:
+        # input should be of shape (batch_size, C, H, W)
+        assert (
+            len(image.shape) == 4
+        ), f"Input must be 4D image tensor (shape: batch_size, C, H, W), got {image.shape} instead"
+        assert (
+            image.shape[1] == 3
+        ), f"Input must have 3 channels (C), got {image.shape[1]} instead"
+        assert (
+            image.shape[2] == self.input_size and image.shape[3] == self.input_size
+        ), f"Input must be of shape (batch_size, 3, {self.input_size}, {self.input_size}), got {image.shape} instead"
+        onnx_inputs = [image.numpy(force=True)]
+        onnxruntime_input = {input_arg.name: input_value for input_arg, input_value in zip(self.ort_session.get_inputs(), onnx_inputs)}
+        onnxruntime_outputs = self.ort_session.run(None, onnxruntime_input)[0]
+        out = torch.nn.functional.log_softmax(
+            torch.as_tensor(onnxruntime_outputs, dtype=torch.float),  # The output is (b, 2, 224, 224), note the 2. The foreground and background class need argmax to select the most likely class.
+            dim=1,
+        )
+        return torch.argmax(out, dim=1).to(torch.uint8)

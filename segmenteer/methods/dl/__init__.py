@@ -28,19 +28,15 @@ try:
         TRIDENTGrandQCSegmenter,
         TRIDENTHESTSegmenter,
         TRIDENTPathProfilerSegmenter,
+        TRIDENTCPGSegmenter
     )
 except ImportError:
     TRIDENTGrandQCSegmenter = None  # type: ignore[assignment]
     TRIDENTHESTSegmenter = None  # type: ignore[assignment]
     TRIDENTPathProfilerSegmenter = None  # type: ignore[assignment]
-
-try:
-    from segmenteer.methods.dl.cpg import CPGSegmenter
-except ImportError:
-    CPGSegmenter = None  # type: ignore[assignment]
+    TRIDENTCPGSegmenter = None  # type: ignore[assignment]
 
 __all__ = [
-    "CPGSegmenter",
     "HESTSegmenter",
     "GrandQCSegmenter",
     "FastSAMSegmenter",
@@ -49,4 +45,5 @@ __all__ = [
     "TRIDENTGrandQCSegmenter",
     "BigPictureSegmenter",
     "TRIDENTPathProfilerSegmenter",
+    "TRIDENTCPGSegmenter",
 ]

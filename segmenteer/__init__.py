@@ -38,31 +38,32 @@ def __getattr__(name):
         "HESTSegmenter",
         "GrandQCSegmenter",
         "FastSAMSegmenter",
-        "CPGSegmenter",
         "RTLucassenSlideSegmenter",
         "TRIDENTGrandQCSegmenter",
         "TRIDENTHESTSegmenter",
         "TRIDENTPathProfilerSegmenter",
+        "TRIDENTCPGSegmenter",
         "BigPictureSegmenter",
     ):
-        from segmenteer.methods.dl import (BigPictureSegmenter, CPGSegmenter,
+        from segmenteer.methods.dl import (BigPictureSegmenter,
                                            FastSAMSegmenter, GrandQCSegmenter,
                                            HESTSegmenter,
                                            RTLucassenSlideSegmenter,
                                            TRIDENTGrandQCSegmenter,
                                            TRIDENTHESTSegmenter,
-                                           TRIDENTPathProfilerSegmenter)
+                                           TRIDENTPathProfilerSegmenter,
+                                           TRIDENTCPGSegmenter)
 
         return {
             "HESTSegmenter": HESTSegmenter,
             "GrandQCSegmenter": GrandQCSegmenter,
             "FastSAMSegmenter": FastSAMSegmenter,
-            "CPGSegmenter": CPGSegmenter,
             "RTLucassenSlideSegmenter": RTLucassenSlideSegmenter,
             "TRIDENTHESTSegmenter": TRIDENTHESTSegmenter,
             "TRIDENTGrandQCSegmenter": TRIDENTGrandQCSegmenter,
             "BigPictureSegmenter": BigPictureSegmenter,
             "TRIDENTPathProfilerSegmenter": TRIDENTPathProfilerSegmenter,
+            "TRIDENTCPGSegmenter": TRIDENTCPGSegmenter,
         }[name]
     raise AttributeError(f"module 'segmenteer' has no attribute '{name}'")
 
@@ -86,12 +87,12 @@ __all__ = [
     "ODGMMSlideSegmenter",
     "HistomicsTKSegmenter",
     "FESISegmenter",
-    "CPGSegmenter",
     "HESTSegmenter",
     "TRIDENTHESTSegmenter",
     "GrandQCSegmenter",
     "TRIDENTGrandQCSegmenter",
     "TRIDENTPathProfilerSegmenter",
+    "TRIDENTCPGSegmenter",
     "FastSAMSegmenter",
     "RTLucassenSlideSegmenter",
     "BigPictureSegmenter",
