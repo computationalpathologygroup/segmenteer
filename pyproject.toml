@@ -13,6 +13,9 @@ dependencies = [
     "shapely>=2.1.2",
 ]
 
+[project.scripts]
+segmenteer = "segmenteer.cli:main"
+
 [project.optional-dependencies]
 wsi = [
     "imagecodecs>=2025.3.30",
