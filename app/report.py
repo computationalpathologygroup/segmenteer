@@ -141,40 +141,63 @@ def _all_coords(geometry: dict[str, Any]) -> list[tuple[float, float]]:
     return out
 
 
-def _exterior_rings(geometry: dict[str, Any]) -> list[list[list[float]]]:
+def _polygon_rings(geometry: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return a list of polygons, each as {'exterior': [...], 'holes': [[...], ...]}.
+
+    Handles Polygon and MultiPolygon. Each ring is a list of [x, y] pairs.
+    """
     gtype  = geometry.get("type", "")
     coords = geometry.get("coordinates", [])
-    rings: list[list[list[float]]] = []
+    polys: list[dict[str, Any]] = []
+
+    def _ring_to_xy(ring: list[Any]) -> list[list[float]]:
+        return [[c[0], c[1]] for c in ring]
+
     if gtype == "Polygon" and coords:
-        rings.append([[c[0], c[1]] for c in coords[0]])
+        exterior = _ring_to_xy(coords[0])
+        holes = [_ring_to_xy(r) for r in coords[1:] if r]
+        polys.append({"exterior": exterior, "holes": holes})
     elif gtype == "MultiPolygon":
         for poly in coords:
-            if poly:
-                rings.append([[c[0], c[1]] for c in poly[0]])
-    return rings
+            if not poly:
+                continue
+            exterior = _ring_to_xy(poly[0])
+            holes = [_ring_to_xy(r) for r in poly[1:] if r]
+            polys.append({"exterior": exterior, "holes": holes})
+
+    return polys
 
 
-def _simplify_rings(
-    rings: list[list[list[float]]], tol: float
-) -> list[list[list[float]]]:
-    if tol <= 0 or not rings:
-        return rings
+def _simplify_polygons(
+    polys: list[dict[str, Any]], tol: float
+) -> list[dict[str, Any]]:
+    if tol <= 0 or not polys:
+        return polys
     try:
         from shapely.geometry import Polygon as _Poly  # type: ignore[import]
-        out: list[list[list[float]]] = []
-        for ring in rings:
-            if len(ring) < 4:
-                out.append(ring)
-                continue
-            try:
-                p = _Poly(ring).simplify(tol, preserve_topology=True)
-                if not p.is_empty:
-                    out.append([[c[0], c[1]] for c in p.exterior.coords])
-            except Exception:
-                out.append(ring)
-        return out
     except ImportError:
-        return rings
+        return polys
+
+    out: list[dict[str, Any]] = []
+    for poly in polys:
+        ext = poly["exterior"]
+        holes = poly["holes"]
+        if len(ext) < 4:
+            out.append(poly)
+            continue
+        try:
+            shp = _Poly(ext, holes).simplify(tol, preserve_topology=True)
+            if shp.is_empty:
+                continue
+            # simplify can return a MultiPolygon in rare degenerate cases
+            geoms = shp.geoms if shp.geom_type == "MultiPolygon" else [shp]
+            for g in geoms:
+                new_ext = [[c[0], c[1]] for c in g.exterior.coords]
+                new_holes = [[[c[0], c[1]] for c in ring.coords] for ring in g.interiors]
+                out.append({"exterior": new_ext, "holes": new_holes})
+        except Exception:
+            out.append(poly)
+    return out
 
 
 # ── JSON payload ──────────────────────────────────────────────────────────────
@@ -223,15 +246,15 @@ def _build_payload(index: IndexData, output_path: Path) -> dict[str, Any]:
             if pred.exists():
                 try:
                     gj  = json.loads(pred.read_text(encoding="utf-8"))
-                    raw: list[list[list[float]]] = []
+                    raw_polys: list[dict[str, Any]] = []
                     for feat in gj.get("features", []):
-                        raw.extend(_exterior_rings(feat.get("geometry", {})))
-                    rings = _simplify_rings(raw, tol)
+                        raw_polys.extend(_polygon_rings(feat.get("geometry", {})))
+                    polys = _simplify_polygons(raw_polys, tol)
                 except Exception:
                     pass
             entry  = stem_scores.get(rid, {})
             scores = {k: _get(entry, k) for k in _KEYS}
-            cells[rid] = {"rings": rings, "scores": scores}
+            cells[rid] = {"polys": polys, "scores": scores}
 
         slides_out.append({
             "stem": stem,
@@ -694,30 +717,76 @@ _JS = """\
     return { ww: mx * 1.02 || S, wh: my * 1.02 || S };
   }
 
-  function drawRings(ctx, rings, sc, ox, oy) {
-    if (!rings || !rings.length) return;
-    ctx.save();
-    ctx.strokeStyle = '#059669';
-    ctx.lineWidth   = 1.5;
-    ctx.fillStyle   = 'rgba(5,150,105,0.10)';
+function extentFromPolys(polys) {
+  var mx = 0, my = 0;
+  for (var i = 0; i < polys.length; i++) {
+    var rings = [polys[i].exterior].concat(polys[i].holes || []);
+    for (var k = 0; k < rings.length; k++) {
+      var r = rings[k];
+      for (var j = 0; j < r.length; j++) {
+        if (r[j][0] > mx) mx = r[j][0];
+        if (r[j][1] > my) my = r[j][1];
+      }
+    }
+  }
+  return { ww: mx * 1.02 || S, wh: my * 1.02 || S };
+}
+
+function drawPolys(ctx, polys, sc, ox, oy) {
+  if (!polys || !polys.length) return;
+  ctx.save();
+
+  for (var i = 0; i < polys.length; i++) {
+    var poly = polys[i];
+    var ext  = poly.exterior;
+    var holes = poly.holes || [];
+    if (!ext || ext.length < 3) continue;
+
+    // exterior + holes in ONE path, evenodd punches the holes out
+    ctx.beginPath();
+    ctx.moveTo(ext[0][0] * sc + ox, ext[0][1] * sc + oy);
+    for (var j = 1; j < ext.length; j++) ctx.lineTo(ext[j][0] * sc + ox, ext[j][1] * sc + oy);
+    ctx.closePath();
+    for (var h = 0; h < holes.length; h++) {
+      var ring = holes[h];
+      if (ring.length < 3) continue;
+      ctx.moveTo(ring[0][0] * sc + ox, ring[0][1] * sc + oy);
+      for (var j = 1; j < ring.length; j++) ctx.lineTo(ring[j][0] * sc + ox, ring[j][1] * sc + oy);
+      ctx.closePath();
+    }
+
+    // fill + stroke the EXTERIOR (with shadow, since it's the visible glow you want)
     ctx.shadowColor = 'rgba(5,150,105,0.35)';
     ctx.shadowBlur  = 4;
-    for (var i = 0; i < rings.length; i++) {
-      var ring = rings[i];
+    ctx.fillStyle   = 'rgba(5,150,105,0.10)';
+    ctx.fill('evenodd');
+
+    // stroke WITHOUT shadow so the hole's inner edge stays crisp, not glow-smeared
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = '#059669';
+    ctx.lineWidth = 1;          // thinner than exterior stroke, since holes are tiny
+    for (var h = 0; h < holes.length; h++) {
+      var ring = holes[h];
       if (ring.length < 3) continue;
       ctx.beginPath();
       ctx.moveTo(ring[0][0] * sc + ox, ring[0][1] * sc + oy);
-      for (var j = 1; j < ring.length; j++) {
-        ctx.lineTo(ring[j][0] * sc + ox, ring[j][1] * sc + oy);
-      }
+      for (var j = 1; j < ring.length; j++) ctx.lineTo(ring[j][0] * sc + ox, ring[j][1] * sc + oy);
       ctx.closePath();
-      ctx.fill();
       ctx.stroke();
     }
-    ctx.restore();
-  }
 
-  function renderCanvas(canvas) {
+    // re-stroke exterior boundary crisply too (separate from the shadowed fill)
+    ctx.beginPath();
+    ctx.moveTo(ext[0][0] * sc + ox, ext[0][1] * sc + oy);
+    for (var j = 1; j < ext.length; j++) ctx.lineTo(ext[j][0] * sc + ox, ext[j][1] * sc + oy);
+    ctx.closePath();
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function renderCanvas(canvas) {
     var si   = parseInt(canvas.dataset.s, 10);
     var rid  = canvas.dataset.r;
     var slide = R.slides[si];
@@ -732,13 +801,13 @@ _JS = """\
     ctx.fillStyle = '#f1f5f9';
     ctx.fillRect(0, 0, S, S);
 
-    var rings = cell.rings || [];
-    var ww = slide.ww > 0 ? slide.ww : extentFromRings(rings).ww;
-    var wh = slide.wh > 0 ? slide.wh : extentFromRings(rings).wh;
+    var polys = cell.polys || [];
+    var ww = slide.ww > 0 ? slide.ww : extentFromPolys(polys).ww;
+    var wh = slide.wh > 0 ? slide.wh : extentFromPolys(polys).wh;
     var fit = containFit(ww, wh);
 
     function paintOverlay() {
-      drawRings(ctx, rings, fit.scale, fit.ox, fit.oy);
+      drawPolys(ctx, polys, fit.scale, fit.ox, fit.oy);
     }
 
     if (slide.thumb) {
@@ -752,8 +821,7 @@ _JS = """\
     } else {
       paintOverlay();
     }
-  }
-
+}
   var io = new IntersectionObserver(function (entries) {
     for (var i = 0; i < entries.length; i++) {
       if (!entries[i].isIntersecting) continue;

@@ -1,10 +1,11 @@
 import geojson
 import numpy as np
 from shapely import affinity
-from shapely.geometry import Polygon, mapping
+from shapely.geometry import Polygon, Point, mapping
 from shapely.geometry import shape as shapely_shape
 from skimage.measure import find_contours, label
 from skimage.transform import rescale
+from shapely.validation import make_valid
 
 
 def downsample_image(image: np.ndarray, factor: int) -> np.ndarray:
@@ -79,21 +80,36 @@ def mask_to_geojson(
         if len(contours) == 0:
             continue
 
-        largest_contour = max(contours, key=len)
+        contours = sorted(contours, key=len, reverse=True)
 
-        if len(largest_contour) < 3:
+        exterior_contour = contours[0]
+        if len(exterior_contour) < 3:
             continue
 
         # Adjust coordinates back to original image space by removing padding offset
-        coords = [
-            (float(x - pad_width), float(y - pad_width)) for y, x in largest_contour
+        exterior_coords = [
+            (float(x - pad_width), float(y - pad_width)) for y, x in exterior_contour
         ]
 
-        if len(coords) < 3:
-            continue
+        # Find interior contours (holes) that are fully contained within the exterior
+        holes = []
+        for contour in contours[1:]:
+            if len(contour) < 3:
+                continue
+            # Check if the contour is inside the exterior contour
+            # Use a point-in-polygon test for the first point of the contour
+            test_point = (contour[0, 1] - pad_width, contour[0, 0] - pad_width)
+            if Polygon(exterior_coords).contains(Point(test_point)):
+                hole_coords = [
+                    (float(x - pad_width), float(y - pad_width))
+                    for y, x in contour
+                ]
+                holes.append(hole_coords)
 
         try:
-            polygon = Polygon(coords)
+            polygon = Polygon(exterior_coords, holes=holes)
+            if not polygon.is_valid:
+                polygon = make_valid(polygon)
             if not polygon.is_valid:
                 polygon = polygon.buffer(0)
 
@@ -145,9 +161,12 @@ def geojson_to_mask(geojson_data: dict, shape: tuple) -> np.ndarray:
                 continue
 
             for poly in polygons:
-                coords = list(poly.exterior.coords)
-                coords_tuples = [(x, y) for x, y in coords]
-                draw.polygon(coords_tuples, outline=255, fill=255)
+                ext_coords = [(x, y) for x, y in poly.exterior.coords]
+                draw.polygon(ext_coords, outline=255, fill=255)
+
+                for interior in poly.interiors:
+                    hole_coords = [(x, y) for x, y in interior.coords]
+                    draw.polygon(hole_coords, outline=0, fill=0)
 
         except Exception:
             continue

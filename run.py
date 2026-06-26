@@ -26,17 +26,17 @@ SEGMENTERS = [
     seg.FESISegmenter(**kw),                     # improved=True, mpp=20
     seg.FESISegmenter(improved=False, **kw),     # different params → separate dir
     seg.BackgroundSubtractorMOG2Segmenter(mpp=20, **kw),
-    seg.HSVThresholdSegmenter(mpp=10, **kw),     # HSV colour-range (H&E purple-pink)
-    seg.HESTSegmenter(mpp=1),
-    seg.GrandQCSegmenter(mpp=8),
-    seg.BigPictureSegmenter(),  # requires: uv pip install tensorflow tissue-segmentation @ git+...
-    seg.TRIDENTHESTSegmenter,
-    seg.TRIDENTGrandQCSegmenter,
-    seg.TRIDENTPathProfilerSegmenter,
+    # seg.HSVThresholdSegmenter(mpp=10, **kw),     # HSV colour-range (H&E purple-pink)
+    # seg.HESTSegmenter(mpp=1),
+    # seg.GrandQCSegmenter(mpp=8),
+    # seg.BigPictureSegmenter(),  # requires: uv pip install tensorflow tissue-segmentation @ git+...
+    # seg.TRIDENTHESTSegmenter,
+    # seg.TRIDENTGrandQCSegmenter,
+    # seg.TRIDENTPathProfilerSegmenter,
     seg.FastSAMSegmenter(mpp=10),
-    seg.RTLucassenSlideSegmenter(),
-    seg.HistomicsTKSegmenter(mpp=10, **kw),
-    seg.TRIDENTCPGSegmenter,
+    # seg.RTLucassenSlideSegmenter(),
+    # seg.HistomicsTKSegmenter(mpp=10, **kw),
+    # seg.TRIDENTCPGSegmenter,
 ]
 
 # ---------------------------------------------------------------------------
@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     # --- dataset, unsupervised ---
     images = sorted(
-        Path("dataset/wsis/").glob("*.tiff")
+        Path("/mnt/c/Users/z405155/Downloads/doi-10.34894-zzyu9m/HHG/").glob("*.tiff")
     )
     seg.run_dataset(SEGMENTERS, images)
 

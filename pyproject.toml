@@ -102,9 +102,11 @@ dl = [
 # app - viewer
 app = [
     "fastapi>=0.115.0",
+    "imagecodecs>=2026.3.6",
     "uvicorn[standard]>=0.32.0",
 ]
 dev = [
+    "geopandas>=1.1.3",
     "matplotlib>=3.10.8",
     "pytest>=9.0.2",
 ]
