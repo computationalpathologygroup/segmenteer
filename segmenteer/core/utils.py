@@ -161,9 +161,12 @@ def geojson_to_mask(geojson_data: dict, shape: tuple) -> np.ndarray:
                 continue
 
             for poly in polygons:
-                coords = list(poly.exterior.coords)
-                coords_tuples = [(x, y) for x, y in coords]
-                draw.polygon(coords_tuples, outline=255, fill=255)
+                ext_coords = [(x, y) for x, y in poly.exterior.coords]
+                draw.polygon(ext_coords, outline=255, fill=255)
+
+                for interior in poly.interiors:
+                    hole_coords = [(x, y) for x, y in interior.coords]
+                    draw.polygon(hole_coords, outline=0, fill=0)
 
         except Exception:
             continue
