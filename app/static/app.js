@@ -454,16 +454,15 @@ function drawOverlays() {
   }
 }
 
-/** Batch all polygons for one method — one beginPath/stroke call per method. */
 function _drawFeatureCollection(ctx, features, color, scale, viewer = S.viewer) {
   if (!features?.length || scale == null || !viewer) return;
   ctx.beginPath();
   for (const { geometry } of features) {
     if (!geometry) continue;
     if (geometry.type === "Polygon") {
-      _tracePoly(ctx, geometry.coordinates[0], scale, viewer);
+      _tracePolyWithHoles(ctx, geometry.coordinates, scale, viewer);
     } else if (geometry.type === "MultiPolygon") {
-      for (const poly of geometry.coordinates) _tracePoly(ctx, poly[0], scale, viewer);
+      for (const poly of geometry.coordinates) _tracePolyWithHoles(ctx, poly, scale, viewer);
     }
   }
   ctx.strokeStyle = color;
@@ -472,7 +471,20 @@ function _drawFeatureCollection(ctx, features, color, scale, viewer = S.viewer) 
   ctx.stroke();
   ctx.fillStyle   = _hexToRgba(color, 0.08);
   ctx.globalAlpha = 1;
-  ctx.fill();
+  ctx.fill("evenodd");   // was ctx.fill() — nonzero default doesn't subtract holes
+}
+
+/**
+ * Trace exterior + all hole rings of ONE polygon into ctx's current path.
+ * `rings` is a GeoJSON Polygon's full coordinates array: rings[0] = exterior,
+ * rings[1:] = holes. Caller must call ctx.beginPath() once before the whole
+ * batch and ctx.fill('evenodd')/stroke() once after — this only adds subpaths.
+ */
+function _tracePolyWithHoles(ctx, rings, scale, viewer = S.viewer) {
+  if (!rings?.length || !viewer) return;
+  for (const ring of rings) {
+    _tracePoly(ctx, ring, scale, viewer);
+  }
 }
 
 function _tracePoly(ctx, ring, scale, viewer = S.viewer) {
