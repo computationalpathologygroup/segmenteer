@@ -1,10 +1,4 @@
-"""Official-results aggregate metrics for the dedicated viewer.
-
-This summary is intentionally narrower than the generic segmenteer viewer:
-only official evaluation metrics are reported, and the official CSV cohort is
-treated as the dataset definition.  Prediction morphology, pixel metrics,
-runtime metrics, and Hausdorff distance are omitted from the UI summaries.
-"""
+"""Aggregate optional evaluator metrics for the output-first viewer."""
 
 from __future__ import annotations
 
@@ -17,7 +11,6 @@ from typing import Any
 
 from app.loader import IndexData
 
-
 METRIC_SPECS: tuple[dict[str, str], ...] = (
     {"key": "dice", "label": "Dice", "group": "Evaluation", "source": "supervised"},
     {"key": "iou", "label": "IoU", "group": "Evaluation", "source": "supervised"},
@@ -25,6 +18,12 @@ METRIC_SPECS: tuple[dict[str, str], ...] = (
     {"key": "recall", "label": "Recall", "group": "Evaluation", "source": "supervised"},
     {"key": "over_segmentation_rate", "label": "Over-segmentation", "group": "Evaluation", "source": "supervised"},
     {"key": "under_segmentation_rate", "label": "Under-segmentation", "group": "Evaluation", "source": "supervised"},
+    {"key": "num_objects", "label": "Objects", "group": "Reference-free", "source": "unsupervised"},
+    {"key": "total_area", "label": "Total area", "group": "Reference-free", "source": "unsupervised"},
+    {"key": "mean_area", "label": "Mean area", "group": "Reference-free", "source": "unsupervised"},
+    {"key": "mean_compactness", "label": "Compactness", "group": "Reference-free", "source": "unsupervised"},
+    {"key": "mean_solidity", "label": "Solidity", "group": "Reference-free", "source": "unsupervised"},
+    {"key": "coverage_ratio", "label": "Coverage", "group": "Reference-free", "source": "unsupervised"},
 )
 
 
@@ -46,21 +45,19 @@ class DatasetCounts:
     slides_discovered: int
     ground_truth_available_slides: int
     prediction_only_slides: int
-    skipped_no_ground_truth: int
-    not_run_slides: int
+    supervised_slides: int
+    unsupervised_slides: int
 
 
 def dataset_counts(index: IndexData) -> DatasetCounts:
-    slides = len({wsi.stem for wsi in index.wsis})
-    # Retain generic fields for backwards compatibility with older frontend code,
-    # but the official UI displays only slides_in_dataset.
+    wsis = index.wsis
     return DatasetCounts(
-        slides_in_dataset=slides,
-        slides_discovered=slides,
-        ground_truth_available_slides=slides,
-        prediction_only_slides=0,
-        skipped_no_ground_truth=0,
-        not_run_slides=0,
+        slides_in_dataset=len(wsis),
+        slides_discovered=len(wsis),
+        ground_truth_available_slides=sum(wsi.has_ground_truth for wsi in wsis),
+        prediction_only_slides=sum(wsi.run_status == "prediction_only" for wsi in wsis),
+        supervised_slides=sum(wsi.run_status == "supervised" for wsi in wsis),
+        unsupervised_slides=sum(wsi.run_status == "unsupervised" for wsi in wsis),
     )
 
 
@@ -74,14 +71,7 @@ def _finite_number(value: Any) -> float | None:
     return number if math.isfinite(number) else None
 
 
-def _metric_value(entry: dict[str, Any], key: str) -> float | None:
-    supervised = entry.get("metrics", {}).get("supervised", {})
-    if not isinstance(supervised, dict):
-        return None
-    return _finite_number(supervised.get(key))
-
-
-def supervised_summary(index: IndexData) -> list[SummaryCell]:
+def metric_summary(index: IndexData) -> list[SummaryCell]:
     stems = [wsi.stem for wsi in index.wsis]
     rows: list[SummaryCell] = []
     for method in index.methods.values():
@@ -91,19 +81,24 @@ def supervised_summary(index: IndexData) -> list[SummaryCell]:
                 entry = index.scores.get(stem, {}).get(method.run_id)
                 if not isinstance(entry, dict):
                     continue
-                value = _metric_value(entry, spec["key"])
+                group = entry.get("metrics", {}).get(spec["source"], {})
+                if not isinstance(group, dict):
+                    continue
+                value = _finite_number(group.get(spec["key"]))
                 if value is not None:
                     values.append(value)
+            if not values:
+                continue
             n = len(values)
             rows.append(
                 SummaryCell(
-                    method_name=method.name,
+                    method_name=method.label,
                     run_id=method.run_id,
                     metric_key=spec["key"],
                     metric_label=spec["label"],
                     metric_group=spec["group"],
                     n=n,
-                    mean=statistics.fmean(values) if values else None,
+                    mean=statistics.fmean(values),
                     standard_deviation=statistics.stdev(values) if n >= 2 else None,
                 )
             )
@@ -112,10 +107,10 @@ def supervised_summary(index: IndexData) -> list[SummaryCell]:
 
 def summary_payload(index: IndexData) -> dict[str, Any]:
     return {
-        "scope": "official evaluation cohort",
+        "scope": "viewer metrics file",
         "standard_deviation": "sample SD (n - 1); blank when n < 2",
         "counts": asdict(dataset_counts(index)),
-        "rows": [asdict(row) for row in supervised_summary(index)],
+        "rows": [asdict(row) for row in metric_summary(index)],
     }
 
 
@@ -123,23 +118,13 @@ def summary_csv(index: IndexData) -> str:
     output = io.StringIO(newline="")
     writer = csv.writer(output)
     writer.writerow([
-        "scope",
-        "method_name",
-        "run_id",
-        "metric_group",
-        "metric",
-        "n_evaluated_slides",
-        "mean",
-        "sample_standard_deviation",
+        "scope", "method_name", "run_id", "metric_group", "metric",
+        "n_slides", "mean", "sample_standard_deviation",
     ])
-    for row in supervised_summary(index):
+    for row in metric_summary(index):
         writer.writerow([
-            "official evaluation cohort",
-            row.method_name,
-            row.run_id,
-            row.metric_group,
-            row.metric_label,
-            row.n,
+            "viewer metrics file", row.method_name, row.run_id, row.metric_group,
+            row.metric_label, row.n,
             "" if row.mean is None else f"{row.mean:.12g}",
             "" if row.standard_deviation is None else f"{row.standard_deviation:.12g}",
         ])

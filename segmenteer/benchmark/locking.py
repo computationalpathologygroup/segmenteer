@@ -98,7 +98,7 @@ def claim_method_locks(
     output_dir = Path(output_dir)
     unique_run_ids = sorted(set(run_ids), key=str.casefold)
     if len(unique_run_ids) != len(run_ids):
-        raise ValueError("SEGMENTERS contains duplicate method configurations.")
+        raise ValueError("methods contains duplicate method configurations.")
 
     with ExitStack() as stack:
         for run_id in unique_run_ids:

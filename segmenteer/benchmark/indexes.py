@@ -1,4 +1,4 @@
-"""Validation helpers for rebuilding shared dataset indexes from disk."""
+"""Disk indexes for inference-only runner artifacts."""
 
 from __future__ import annotations
 
@@ -7,120 +7,49 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterator
 
+import yaml
+
 PREDICTIONS_DIR = "predictions"
-EVAL_SCORES_DIR = "eval/scores"
-EVAL_COMPLETED_DIR = "eval/completed"
-CURRENT_ARTIFACT_SCHEMA_VERSION = 2
+CONFIG_FILE = "config.yaml"
 
 
 @dataclass(frozen=True)
 class CompletedArtifact:
-    """One fully committed, valid prediction/score pair on disk."""
-
     run_id: str
     image_stem: str
     method_dir: Path
     prediction_path: Path
-    score_path: Path
-    completion_path: Path
-    score: dict
-
-
-def _read_json(path: Path) -> object | None:
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
-        return None
-
-
-def _valid_geojson(payload: object) -> bool:
-    return (
-        isinstance(payload, dict)
-        and payload.get("type") == "FeatureCollection"
-        and isinstance(payload.get("features"), list)
-    )
-
-
-def _completion_is_valid(
-    completion_path: Path,
-    *,
-    run_id: str,
-    image_stem: str,
-    score: dict,
-) -> bool:
-    completion = _read_json(completion_path)
-    if not isinstance(completion, dict):
-        return False
-    if completion.get("run_id") != run_id or completion.get("image_stem") != image_stem:
-        return False
-    if completion.get("segmenter_config_fingerprint") != score.get(
-        "segmenter_config_fingerprint"
-    ):
-        return False
-    return True
+    config: dict
+    geojson: dict
 
 
 def iter_completed_artifacts(output_dir: Path | str) -> Iterator[CompletedArtifact]:
-    """Yield committed dataset artifacts, skipping partial/corrupt files.
-
-    Schema-v2 artifacts always require a valid completion marker.  Pre-v2
-    artifacts remain readable for backwards-compatible resume/index rebuilds.
-    """
-    output_dir = Path(output_dir)
-    if not output_dir.is_dir():
+    """Yield valid prediction/config pairs from one runner experiment."""
+    root = Path(output_dir)
+    if not root.is_dir():
         return
-
-    for method_dir in sorted(output_dir.iterdir(), key=lambda item: item.name.casefold()):
-        if not method_dir.is_dir() or method_dir.name.startswith("."):
+    for method_dir in sorted(root.iterdir(), key=lambda path: path.name.casefold()):
+        predictions = method_dir / PREDICTIONS_DIR
+        if not method_dir.is_dir() or not predictions.is_dir():
             continue
-        predictions_dir = method_dir / PREDICTIONS_DIR
-        scores_dir = method_dir / EVAL_SCORES_DIR
-        if not predictions_dir.is_dir() or not scores_dir.is_dir():
-            continue
-
-        run_id = method_dir.name
-        for score_path in sorted(scores_dir.glob("*.json"), key=lambda item: item.name.casefold()):
-            image_stem = score_path.stem
-            prediction_path = predictions_dir / f"{image_stem}.geojson"
-            completion_path = method_dir / EVAL_COMPLETED_DIR / f"{image_stem}.json"
-            if not prediction_path.is_file():
-                continue
-
-            score = _read_json(score_path)
-            prediction = _read_json(prediction_path)
-            if (
-                not isinstance(score, dict)
-                or not _valid_geojson(prediction)
-                or score.get("run_id") != run_id
-                or score.get("image_stem") != image_stem
-            ):
-                continue
-
-            schema_version = score.get("artifact_schema_version", 1)
+        try:
+            config = yaml.safe_load((method_dir / CONFIG_FILE).read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, yaml.YAMLError):
+            config = {}
+        if not isinstance(config, dict):
+            config = {}
+        for prediction_path in sorted(predictions.glob("*.geojson"), key=lambda path: path.name.casefold()):
             try:
-                schema_version = int(schema_version)
-            except (TypeError, ValueError):
+                geojson = json.loads(prediction_path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeDecodeError, json.JSONDecodeError):
                 continue
-
-            if completion_path.exists():
-                if not _completion_is_valid(
-                    completion_path,
-                    run_id=run_id,
-                    image_stem=image_stem,
-                    score=score,
-                ):
-                    continue
-            elif schema_version >= CURRENT_ARTIFACT_SCHEMA_VERSION:
-                # A score is not visible to a shared index until the writer has
-                # committed the final marker after every dependent artifact.
+            if not isinstance(geojson, dict) or geojson.get("type") != "FeatureCollection":
                 continue
-
             yield CompletedArtifact(
-                run_id=run_id,
-                image_stem=image_stem,
+                run_id=method_dir.name,
+                image_stem=prediction_path.stem,
                 method_dir=method_dir,
                 prediction_path=prediction_path,
-                score_path=score_path,
-                completion_path=completion_path,
-                score=score,
+                config=config,
+                geojson=geojson,
             )

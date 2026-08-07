@@ -1,20 +1,19 @@
 /**
- * segmenteer official evaluation viewer.
+ * segmenteer decoupled viewer.
  *
- * Geometry contract
- * -----------------
- * Predictions, GT, and on-demand TP/FP/FN layers are served as level-0 GeoJSON.
- * The API adds ``scale_to_viewport = 1 / slide_width`` so the browser draws
- * every layer in exactly the same OpenSeadragon coordinate space.
+ * Predictions are the primary runner artifact. Ground truth is an optional
+ * GeoJSON overlay. Metrics are optional evaluator artifacts. The viewer never
+ * never computes benchmark metrics. TP/FP/FN are transient visual comparisons
+ * computed on demand for only the currently inspected slide + method.
  */
 
 "use strict";
 
 const COLORS = {
-  ground_truth: "#2563eb",   // blue
-  true_positive: "#16a34a",  // green
-  false_positive: "#dc2626", // red
-  false_negative: "#f59e0b", // orange
+  ground_truth: "#2563eb",   // fixed GT blue
+  true_positive: "#16a34a",
+  false_positive: "#dc2626",
+  false_negative: "#f59e0b",
 };
 
 const ERROR_LAYERS = [
@@ -33,14 +32,21 @@ const EVALUATION_COLS = [
 ];
 
 const SUPERVISED_COLS = EVALUATION_COLS;
-const UNSUPERVISED_COLS = [];
+const UNSUPERVISED_COLS = [
+  { key: "num_objects", label: "Objects" },
+  { key: "total_area", label: "Total area" },
+  { key: "mean_area", label: "Mean area" },
+  { key: "mean_compactness", label: "Compactness" },
+  { key: "mean_solidity", label: "Solidity" },
+  { key: "coverage_ratio", label: "Coverage" },
+];
 
 const METRIC_LABELS = Object.fromEntries(
-  EVALUATION_COLS.map(({ key, label }) => [key, label])
+  [...EVALUATION_COLS, ...UNSUPERVISED_COLS].map(({ key, label }) => [key, label])
 );
 
 const S = {
-  view: "inspect",
+  view: "overview",
   index: null,
   summary: null,
   activeStem: null,
@@ -49,25 +55,29 @@ const S = {
   overviewGroundTruthVisible: false,
   predictionCache: {},          // stem -> runId -> {features, scale}
   groundTruthCache: {},         // stem -> {features, scale}
-  evaluationCache: {},          // stem -> runId -> kind -> {features, scale}
+  evaluationCache: {},          // transient stem -> runId -> layer -> {features, scale}
   overviewViewers: {},
   viewer: null,
   overlayCanvas: null,
-  metricKey: "coverage_ratio",
+  metricKey: "num_objects",
+  overviewSort: "default",
   gtVisible: false,
+  evaluationRunId: null,
   evaluationVisible: {
     true_positive: false,
     false_positive: false,
     false_negative: false,
   },
-  evaluationRunId: null,
 };
 
 async function init() {
   try {
     const res = await fetch("/api/index");
     if (!res.ok) throw new Error(res.statusText);
-    S.index = await res.json();
+    S.index = normaliseIndexPayload(await res.json());
+    if (S.index.viewer_build !== "20260807_18") {
+      throw new Error(`Viewer frontend/backend build mismatch (frontend 20260807_18, backend ${S.index.viewer_build || "unknown"}). Reload the page.`);
+    }
   } catch (err) {
     document.body.innerHTML = `<p style="padding:2rem;color:#dc2626">Failed to load viewer index: ${escapeHtml(String(err))}</p>`;
     return;
@@ -77,18 +87,16 @@ async function init() {
   if (_hasAnySupervisedMetric()) S.metricKey = "dice";
 
   document.getElementById("run-label").textContent = outputDir.split("/").at(-1);
-  // Do not display slide/method counts in the navbar; the official cohort size
-  // is defined by the selected metrics CSVs and should not distract from review.
-
-  // Official-results mode: keep first paint cheap. Do not build the overview
-  // grid, do not load the summary table, and do not open any WSI/GeoJSON until
-  // the user explicitly asks for the overview or a slide/layer.
+  document.getElementById("slide-count").textContent = String(wsis.length);
+  // Keep first paint cheap: do not open WSI/GeoJSON until requested.
   S.summary = null;
+  configureOptionalUI();
   buildSidebar();
-  buildMetricSelect();
+  if (S.index.metrics_available) buildMetricSelect();
   buildOverviewToggles();
-  buildOverviewSummary();
-  await switchView("inspect");
+  if (S.index.metrics_available) buildDiceSortControl();
+  if (S.index.metrics_available) buildOverviewSummary();
+  await switchView("overview");
 
   document.querySelectorAll(".tab").forEach((btn) => {
     btn.addEventListener("click", () => switchView(btn.dataset.view));
@@ -99,6 +107,57 @@ async function init() {
       item.classList.toggle("hidden", !item.dataset.stem.toLowerCase().includes(query));
     });
   });
+  document.getElementById("download-overview-html").addEventListener("click", downloadOverviewHtml);
+}
+
+function normaliseIndexPayload(raw) {
+  const source = raw && typeof raw === "object" ? raw : {};
+  const methods = {};
+  const entries = Array.isArray(source.methods)
+    ? source.methods.map((method, index) => [method?.run_id ?? method?.id ?? String(index), method])
+    : Object.entries(source.methods ?? {});
+
+  for (const [key, candidate] of entries) {
+    const method = candidate && typeof candidate === "object" ? candidate : {};
+    const runId = String(method.run_id ?? method.id ?? key ?? "").trim();
+    if (!runId) continue;
+    const name = String(
+      method.name ?? method.display_name ?? method.formal_name ?? method.label ?? runId
+    ).trim() || runId;
+    const label = String(
+      method.label ?? method.display_name ?? method.formal_name ?? name
+    ).trim() || name;
+    methods[runId] = {
+      ...method,
+      run_id: runId,
+      name,
+      label,
+      details: String(method.details ?? "").trim(),
+      color: String(method.color ?? "#64748b"),
+    };
+  }
+
+  return {
+    ...source,
+    wsis: Array.isArray(source.wsis) ? source.wsis : [],
+    methods,
+    scores: source.scores && typeof source.scores === "object" ? source.scores : {},
+    available_metrics: Array.isArray(source.available_metrics) ? source.available_metrics : [],
+    metrics_available: Boolean(source.metrics_available),
+    ground_truth_available: Boolean(source.ground_truth_available),
+    viewer_build: String(source.viewer_build ?? ""),
+  };
+}
+
+function configureOptionalUI() {
+  const hasMetrics = Boolean(S.index.metrics_available);
+  const hasGroundTruth = Boolean(S.index.ground_truth_available);
+  document.getElementById("metrics-overview-controls").hidden = !hasMetrics;
+  document.getElementById("metrics-overview-panel").hidden = !hasMetrics;
+  document.getElementById("metrics-panel").hidden = !hasMetrics;
+  document.getElementById("spatial-evaluation-panel").hidden = !hasGroundTruth;
+  document.getElementById("overview-ground-truth-control").hidden = !hasGroundTruth;
+  document.getElementById("ground-truth-panel").hidden = !hasGroundTruth;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -108,13 +167,14 @@ async function init() {
 function buildSidebar() {
   const list = document.getElementById("wsi-list");
   list.innerHTML = "";
-  for (const wsi of S.index.wsis) {
+  for (const wsi of _orderedWsis()) {
     const item = document.createElement("li");
     item.dataset.stem = wsi.stem;
+    item.classList.toggle("active", S.activeStem === wsi.stem);
     item.innerHTML = `
       <span class="wsi-dot ${wsi.has_wsi ? "has-wsi" : ""}"></span>
       <span class="wsi-stem" title="${escapeAttr(wsi.stem)}">${escapeHtml(wsi.stem)}</span>
-      ${wsi.has_ground_truth ? '<span class="gt-badge" title="Valid ground truth used">GT</span>' : ""}
+      ${wsi.has_ground_truth ? '<span class="gt-badge" title="Ground truth available">GT</span>' : ""}
       ${_runStatusBadge(wsi, true)}`;
     item.addEventListener("click", () => selectStem(wsi.stem));
     list.appendChild(item);
@@ -122,14 +182,18 @@ function buildSidebar() {
 }
 
 function _runStatusBadge(wsi, compact) {
-  const info = {
-    supervised: { label: compact ? "EVAL" : "evaluated", title: "Legacy result with supervised metrics" },
-    ground_truth_available: { label: compact ? "GT" : "GT available", title: "Valid ground truth is saved; run evaluate_outputs.py to calculate metrics" },
-    prediction_only: { label: compact ? "PRED" : "prediction-only", title: "Prediction-only: no usable ground truth was paired" },
-    skipped_no_ground_truth: { label: compact ? "SKIP" : "skipped", title: "Skipped because no usable ground truth was paired" },
-    not_run: { label: compact ? "—" : "not run", title: "No result was generated for this slide" },
-  }[wsi.run_status] ?? { label: compact ? "—" : "unknown", title: "Run status unavailable" };
-  return `<span class="run-status status-${escapeAttr(wsi.run_status ?? "unknown")}" title="${escapeAttr(info.title)}">${escapeHtml(info.label)}</span>`;
+  if (!S.index.metrics_available) return "";
+  const perSlide = S.index.scores?.[wsi.stem] ?? {};
+  const hasSupervised = Object.values(perSlide).some((entry) => Boolean(entry?.metrics?.supervised && Object.keys(entry.metrics.supervised).length));
+  const hasUnsupervised = Object.values(perSlide).some((entry) => Boolean(entry?.metrics?.unsupervised && Object.keys(entry.metrics.unsupervised).length));
+  const status = hasSupervised ? "supervised" : hasUnsupervised ? "unsupervised" : null;
+  const info = status === "supervised"
+    ? { label: compact ? "EVAL" : "evaluated", title: "Supervised evaluator metrics are loaded" }
+    : status === "unsupervised"
+      ? { label: compact ? "UNSUP" : "reference-free", title: "Reference-free evaluator metrics are loaded" }
+      : null;
+  if (!info) return "";
+  return `<span class="run-status status-${escapeAttr(status)}" title="${escapeAttr(info.title)}">${escapeHtml(info.label)}</span>`;
 }
 
 function updateSidebarActive(stem) {
@@ -144,7 +208,7 @@ async function selectStem(stem) {
   document.querySelectorAll(".wsi-card").forEach((card) => {
     card.classList.toggle("active", card.dataset.stem === stem);
   });
-  if (S.view === "inspect") await openInspect(stem);
+  await switchView("inspect");
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -159,23 +223,19 @@ async function openInspect(stem) {
   document.getElementById("panel-overview").style.display = "none";
   document.getElementById("panel-inspect").style.display = "flex";
 
-  // Official-results mode: opening a slide should not fetch polygons yet.
-  // Predictions and ground truth are loaded only when their layer buttons are clicked.
+  // Opening a slide does not fetch polygons until a layer is selected.
   S.activeMethodSet = new Set();
   S.gtVisible = false;
-  S.evaluationVisible = {
-    true_positive: false,
-    false_positive: false,
-    false_negative: false,
-  };
-  S.evaluationRunId = _supervisedRunIds(stem)[0] ?? null;
+  S.evaluationRunId = null;
+  S.evaluationVisible = { true_positive: false, false_positive: false, false_negative: false };
 
   buildMethodToggles(stem);
-  buildEvaluationControls(stem);
-  buildMetricsTable(stem);
+  if (S.index.ground_truth_available) buildGroundTruthControl(stem);
+  if (S.index.ground_truth_available) buildSpatialEvaluationControls(stem);
+  if (S.index.metrics_available) buildMetricsTable(stem);
 
   _refreshMethodToggles();
-  _refreshEvaluationControls(stem);
+  if (S.index.ground_truth_available) _refreshGroundTruthControl();
 
   const empty = document.getElementById("inspect-empty");
   const osdElement = document.getElementById("osd-viewer");
@@ -229,7 +289,7 @@ async function openInspect(stem) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Prediction, GT, and error-layer controls
+// Prediction and optional GT controls
 // ─────────────────────────────────────────────────────────────────────────────
 
 function buildMethodToggles(stem) {
@@ -241,15 +301,13 @@ function buildMethodToggles(stem) {
     chip.type = "button";
     chip.className = "method-chip";
     chip.dataset.runId = method.run_id;
-    chip.title = method.run_id;
+    chip.title = `${method.label} — ${method.details || method.run_id}`;
+    chip.style.setProperty("--method-color", method.color);
 
-    const params = Object.entries(method.params)
-      .map(([key, value]) => `${key}=${value}`)
-      .join(" · ");
     chip.innerHTML = `
       <span class="chip-swatch" style="background:${method.color}"></span>
-      <span class="chip-name">${escapeHtml(method.name)}</span>
-      <span class="chip-params">${escapeHtml(params || "—")}</span>
+      <span class="chip-name">${escapeHtml(method.label || method.name)}</span>
+      <span class="chip-params">${escapeHtml(method.details || "—")}</span>
       <span class="chip-eye">${hasData ? "○" : "–"}</span>`;
 
     if (hasData) {
@@ -289,61 +347,22 @@ async function togglePrediction(stem, runId) {
   drawOverlays();
 }
 
-function buildEvaluationControls(stem) {
+function buildGroundTruthControl(stem) {
   const wsi = _getWsi(stem);
-  const groundTruthContainer = document.getElementById("ground-truth-toggle");
-  const hasGroundTruth = Boolean(wsi?.has_ground_truth);
-  groundTruthContainer.innerHTML = "";
+  const container = document.getElementById("ground-truth-toggle");
+  container.innerHTML = "";
 
-  const gtButton = document.createElement("button");
-  gtButton.type = "button";
-  gtButton.id = "gt-layer-button";
-  gtButton.className = "layer-chip";
-  gtButton.style.color = COLORS.ground_truth;
-  gtButton.innerHTML = `<span class="chip-swatch" style="background:${COLORS.ground_truth}"></span>Ground truth <span class="chip-eye">○</span>`;
-  gtButton.disabled = !hasGroundTruth;
-  if (!hasGroundTruth) gtButton.title = "This output does not contain saved ground truth. Re-run supervised evaluation to create it.";
-  gtButton.addEventListener("click", () => toggleGroundTruth(stem));
-  groundTruthContainer.appendChild(gtButton);
-
-  const select = document.getElementById("evaluation-method-select");
-  select.innerHTML = "";
-  const supervisedRuns = _supervisedRunIds(stem);
-  if (!supervisedRuns.length) {
-    select.disabled = true;
-    select.append(new Option("No supervised result", ""));
-  } else {
-    select.disabled = false;
-    for (const runId of supervisedRuns) {
-      const method = S.index.methods[runId];
-      select.append(new Option(`${method?.name ?? runId} — ${runId}`, runId));
-    }
-    if (!S.evaluationRunId || !supervisedRuns.includes(S.evaluationRunId)) {
-      S.evaluationRunId = supervisedRuns[0];
-    }
-    select.value = S.evaluationRunId;
-  }
-  select.onchange = async () => {
-    S.evaluationRunId = select.value || null;
-    await _loadVisibleEvaluationLayers(stem);
-    _refreshEvaluationControls(stem);
-    drawOverlays();
-  };
-
-  const errorsContainer = document.getElementById("evaluation-toggles");
-  errorsContainer.innerHTML = "";
-  for (const descriptor of ERROR_LAYERS) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "layer-chip";
-    button.dataset.layer = descriptor.key;
-    button.style.color = COLORS[descriptor.key];
-    button.innerHTML = `<span class="chip-swatch" style="background:${COLORS[descriptor.key]}"></span>${descriptor.label} <span class="chip-eye">○</span>`;
-    button.disabled = !supervisedRuns.length;
-    button.addEventListener("click", () => toggleEvaluationLayer(stem, descriptor.key));
-    errorsContainer.appendChild(button);
-  }
-  _refreshEvaluationControls(stem);
+  const button = document.createElement("button");
+  button.type = "button";
+  button.id = "gt-layer-button";
+  button.className = "layer-chip";
+  button.style.color = COLORS.ground_truth;
+  button.innerHTML = `<span class="chip-swatch" style="background:${COLORS.ground_truth}"></span>Ground truth <span class="chip-eye">○</span>`;
+  button.disabled = !Boolean(wsi?.has_ground_truth);
+  if (button.disabled) button.title = "No ground-truth GeoJSON is available for this slide";
+  button.addEventListener("click", () => toggleGroundTruth(stem));
+  container.appendChild(button);
+  _refreshGroundTruthControl();
 }
 
 async function toggleGroundTruth(stem) {
@@ -354,97 +373,16 @@ async function toggleGroundTruth(stem) {
     const loaded = await _fetchGroundTruth(stem);
     if (loaded) S.gtVisible = true;
   }
-  _refreshEvaluationControls(stem);
+  _refreshGroundTruthControl();
   drawOverlays();
 }
 
-async function toggleEvaluationLayer(stem, layer) {
-  if (!S.evaluationRunId) return;
-  if (S.evaluationVisible[layer]) {
-    S.evaluationVisible[layer] = false;
-  } else {
-    const loaded = await _fetchEvaluationLayer(stem, S.evaluationRunId, layer);
-    if (loaded) S.evaluationVisible[layer] = true;
-  }
-  _refreshEvaluationControls(stem);
-  drawOverlays();
-}
-
-async function _loadVisibleEvaluationLayers(stem) {
-  if (!S.evaluationRunId) return;
-  const active = ERROR_LAYERS
-    .filter(({ key }) => S.evaluationVisible[key])
-    .map(({ key }) => _fetchEvaluationLayer(stem, S.evaluationRunId, key));
-  await Promise.all(active);
-}
-
-function _refreshEvaluationControls(stem) {
-  const gtButton = document.getElementById("gt-layer-button");
-  if (gtButton) {
-    gtButton.classList.toggle("active", S.gtVisible);
-    const eye = gtButton.querySelector(".chip-eye");
-    if (eye && !gtButton.disabled) eye.textContent = S.gtVisible ? "●" : "○";
-  }
-
-  document.querySelectorAll("#evaluation-toggles .layer-chip").forEach((button) => {
-    const active = Boolean(S.evaluationVisible[button.dataset.layer]);
-    button.classList.toggle("active", active);
-    const eye = button.querySelector(".chip-eye");
-    if (eye && !button.disabled) eye.textContent = active ? "●" : "○";
-  });
-
-  const status = document.getElementById("evaluation-status");
-  const errorMapLink = document.getElementById("error-map-link");
-  const score = S.evaluationRunId ? S.index.scores[stem]?.[S.evaluationRunId] : null;
-  const wsi = _getWsi(stem);
-  if (wsi?.run_status === "prediction_only") {
-    status.textContent = "Prediction-only slide: no usable ground truth was paired.";
-  } else if (wsi?.run_status === "skipped_no_ground_truth") {
-    status.textContent = "Skipped because no usable ground truth was paired.";
-  } else if (!score?.metrics?.supervised) {
-    status.textContent = "No evaluation metrics are available for this method on this slide.";
-  } else {
-    status.textContent = "";
-  }
-
-  if (S.evaluationRunId && score?.evaluation_layers?.error_map) {
-    errorMapLink.href = `/api/error-map/${encodeURIComponent(stem)}/${encodeURIComponent(S.evaluationRunId)}`;
-    errorMapLink.classList.remove("hidden");
-  } else {
-    errorMapLink.classList.add("hidden");
-    errorMapLink.removeAttribute("href");
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// GeoJSON fetch/cache helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-function _entryFromGeojson(data) {
-  return {
-    features: data.features ?? [],
-    scale: data._meta?.scale_to_viewport ?? null,
-  };
-}
-
-async function _fetchGeojson(url) {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(response.statusText);
-    return _entryFromGeojson(await response.json());
-  } catch (error) {
-    console.warn(`Overlay fetch failed: ${url}`, error);
-    return null;
-  }
-}
-
-async function _fetchPrediction(stem, runId) {
-  if (S.predictionCache[stem]?.[runId]) return true;
-  const entry = await _fetchGeojson(`/api/overlay/${encodeURIComponent(stem)}/${encodeURIComponent(runId)}`);
-  if (!entry) return false;
-  S.predictionCache[stem] ??= {};
-  S.predictionCache[stem][runId] = entry;
-  return true;
+function _refreshGroundTruthControl() {
+  const button = document.getElementById("gt-layer-button");
+  if (!button) return;
+  button.classList.toggle("active", S.gtVisible);
+  const eye = button.querySelector(".chip-eye");
+  if (eye && !button.disabled) eye.textContent = S.gtVisible ? "●" : "○";
 }
 
 async function _fetchGroundTruth(stem) {
@@ -455,11 +393,123 @@ async function _fetchGroundTruth(stem) {
   return true;
 }
 
+async function _fetchPrediction(stem, runId) {
+  if (S.predictionCache[stem]?.[runId]) return true;
+  const entry = await _fetchGeojson(
+    `/api/overlay/${encodeURIComponent(stem)}/${encodeURIComponent(runId)}`
+  );
+  if (!entry) return false;
+  if (!S.predictionCache[stem]) S.predictionCache[stem] = {};
+  S.predictionCache[stem][runId] = entry;
+  return true;
+}
+
+async function _fetchGeojson(url) {
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) {
+      const message = await response.text().catch(() => "");
+      throw new Error(`${response.status} ${response.statusText}${message ? `: ${message}` : ""}`);
+    }
+    const payload = await response.json();
+    const features = payload?.type === "FeatureCollection" && Array.isArray(payload.features)
+      ? payload.features
+      : payload?.type === "Feature"
+        ? [payload]
+        : [];
+    const rawScale = Number(payload?._meta?.scale_to_viewport);
+    const scale = Number.isFinite(rawScale) && rawScale > 0 ? rawScale : null;
+    if (scale === null) {
+      console.warn("Overlay has no valid level-0-to-viewport scale", url, payload?._meta);
+    }
+    return { features, scale };
+  } catch (error) {
+    console.error("Could not load GeoJSON overlay", url, error);
+    return null;
+  }
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Transient TP / FP / FN spatial comparison for the inspected pair
+// ─────────────────────────────────────────────────────────────────────────────
+
+function _spatialComparisonRunIds(stem) {
+  const wsi = _getWsi(stem);
+  if (!wsi?.has_ground_truth) return [];
+  return Object.values(S.index.methods)
+    .filter((method) => Boolean(S.index.scores?.[stem]?.[method.run_id]?._prediction_available))
+    .map((method) => method.run_id);
+}
+
+function buildSpatialEvaluationControls(stem) {
+  const panel = document.getElementById("spatial-evaluation-panel");
+  const select = document.getElementById("evaluation-method-select");
+  const toggles = document.getElementById("evaluation-toggles");
+  const status = document.getElementById("evaluation-status");
+  if (!panel || !select || !toggles || !status) return;
+
+  const runIds = _spatialComparisonRunIds(stem);
+  panel.hidden = !runIds.length;
+  select.innerHTML = "";
+  toggles.innerHTML = "";
+  status.textContent = "";
+  if (!runIds.length) return;
+
+  for (const runId of runIds) {
+    const method = S.index.methods[runId];
+    select.append(new Option(method?.label ?? runId, runId));
+  }
+  S.evaluationRunId = runIds[0];
+  select.value = S.evaluationRunId;
+  select.onchange = () => {
+    S.evaluationRunId = select.value || null;
+    S.evaluationVisible = { true_positive: false, false_positive: false, false_negative: false };
+    _refreshSpatialEvaluationControls(stem);
+    drawOverlays();
+  };
+
+  for (const descriptor of ERROR_LAYERS) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "layer-chip";
+    button.dataset.layer = descriptor.key;
+    button.style.color = COLORS[descriptor.key];
+    button.innerHTML = `<span class="chip-swatch" style="background:${COLORS[descriptor.key]}"></span>${descriptor.label} <span class="chip-eye">○</span>`;
+    button.addEventListener("click", () => toggleEvaluationLayer(stem, descriptor.key));
+    toggles.appendChild(button);
+  }
+  _refreshSpatialEvaluationControls(stem);
+}
+
+async function toggleEvaluationLayer(stem, layer) {
+  if (!S.evaluationRunId || !_getWsi(stem)?.has_ground_truth) return;
+  if (S.evaluationVisible[layer]) {
+    S.evaluationVisible[layer] = false;
+  } else {
+    const loaded = await _fetchEvaluationLayer(stem, S.evaluationRunId, layer);
+    if (loaded) S.evaluationVisible[layer] = true;
+  }
+  _refreshSpatialEvaluationControls(stem);
+  drawOverlays();
+}
+
+function _refreshSpatialEvaluationControls(stem) {
+  const available = Boolean(S.evaluationRunId && _getWsi(stem)?.has_ground_truth);
+  document.querySelectorAll("#evaluation-toggles .layer-chip").forEach((button) => {
+    const active = available && Boolean(S.evaluationVisible[button.dataset.layer]);
+    button.disabled = !available;
+    button.classList.toggle("active", active);
+    const eye = button.querySelector(".chip-eye");
+    if (eye) eye.textContent = available ? (active ? "●" : "○") : "–";
+  });
+  const status = document.getElementById("evaluation-status");
+  if (status) status.textContent = "Computed on demand from the selected prediction and ground truth; cached only in viewer memory.";
+}
+
 async function _fetchEvaluationLayer(stem, runId, layer) {
   if (S.evaluationCache[stem]?.[runId]?.[layer]) return true;
-  const entry = await _fetchGeojson(
-    `/api/evaluation/${encodeURIComponent(stem)}/${encodeURIComponent(runId)}/${encodeURIComponent(layer)}`
-  );
+  const entry = await _fetchGeojson(`/api/spatial-comparison/${encodeURIComponent(stem)}/${encodeURIComponent(runId)}/${encodeURIComponent(layer)}`);
   if (!entry) return false;
   S.evaluationCache[stem] ??= {};
   S.evaluationCache[stem][runId] ??= {};
@@ -480,9 +530,7 @@ function buildOverviewToggles() {
   groundTruthButton.className = `ov-chip${S.overviewGroundTruthVisible ? " active" : ""}`;
   groundTruthButton.style.color = COLORS.ground_truth;
   groundTruthButton.disabled = !hasGroundTruth;
-  groundTruthButton.title = hasGroundTruth
-    ? "Show or hide ground-truth contours in overview cards"
-    : "No ground-truth annotations are available";
+  groundTruthButton.title = "Show or hide ground-truth contours in overview cards";
   groundTruthButton.innerHTML = `<span class="chip-swatch" style="background:${COLORS.ground_truth}"></span>Ground truth`;
   groundTruthButton.addEventListener("click", () => toggleOverviewGroundTruth(groundTruthButton));
   groundTruthBar.appendChild(groundTruthButton);
@@ -495,7 +543,8 @@ function buildOverviewToggles() {
     button.className = "ov-chip";
     button.dataset.runId = method.run_id;
     button.style.color = method.color;
-    button.innerHTML = `<span class="chip-swatch" style="background:${method.color}"></span>${escapeHtml(method.name)}`;
+    button.title = method.details || method.run_id;
+    button.innerHTML = `<span class="chip-swatch" style="background:${method.color}"></span>${escapeHtml(method.label)}`;
     button.addEventListener("click", () => toggleOverviewMethod(method.run_id, button));
     bar.appendChild(button);
   }
@@ -515,20 +564,114 @@ async function toggleOverviewMethod(runId, button) {
   if (S.overviewMethodSet.has(runId)) {
     S.overviewMethodSet.delete(runId);
     button.classList.remove("active");
-    _updateCardScoreVisibility();
-    redrawOverviewCanvases();
+    _syncDiceSortControl();
+    if (S.overviewSort !== "default") {
+      buildSidebar();
+      renderOverview();
+    } else {
+      _updateCardScoreVisibility();
+      redrawOverviewCanvases();
+    }
     return;
   }
   S.overviewMethodSet.add(runId);
   button.classList.add("active");
-  _updateCardScoreVisibility();
+  _syncDiceSortControl();
+  if (S.overviewSort !== "default") {
+    buildSidebar();
+    renderOverview();
+  } else {
+    _updateCardScoreVisibility();
+  }
   // Do not fetch prediction GeoJSON for every slide. Load only overlays for
   // currently instantiated overview cards; inspect-view layers are fetched on click.
   await _loadVisibleOverviewOverlays();
   redrawOverviewCanvases();
 }
 
+function buildDiceSortControl() {
+  const control = document.getElementById("dice-sort-control");
+  const select = document.getElementById("dice-sort-select");
+  if (!control || !select) return;
+
+  const diceAvailable = (S.index.available_metrics ?? []).includes("dice") && _hasAnySupervisedMetric();
+  control.hidden = !diceAvailable;
+  if (!diceAvailable) {
+    S.overviewSort = "default";
+    return;
+  }
+
+  select.value = S.overviewSort;
+  select.addEventListener("change", (event) => {
+    S.overviewSort = event.target.value;
+    buildSidebar();
+    renderOverview();
+    _syncDiceSortControl();
+  });
+  _syncDiceSortControl();
+}
+
+function _syncDiceSortControl() {
+  const control = document.getElementById("dice-sort-control");
+  const select = document.getElementById("dice-sort-select");
+  const context = document.getElementById("dice-sort-context");
+  if (!control || !select || control.hidden) return;
+
+  const selected = [...S.overviewMethodSet];
+  if (!selected.length) {
+    if (S.overviewSort !== "default") {
+      S.overviewSort = "default";
+      select.value = "default";
+      buildSidebar();
+      if (S.view === "overview") renderOverview();
+    }
+    select.disabled = true;
+    if (context) context.textContent = "Select prediction method(s)";
+    return;
+  }
+
+  select.disabled = false;
+  if (context) {
+    if (selected.length === 1) {
+      context.textContent = `Dice: ${S.index.methods[selected[0]]?.label ?? selected[0]}`;
+    } else {
+      context.textContent = `Mean Dice across ${selected.length} selected methods`;
+    }
+  }
+}
+
+function _diceSortScore(stem) {
+  const selected = [...S.overviewMethodSet];
+  if (!selected.length) return null;
+  const values = selected.map((runId) => _getMetric(S.index.scores, stem, runId, "dice"));
+  // A multi-method mean represents all selected methods. If any selected
+  // method lacks Dice for this slide, the sort score is missing and the slide
+  // is placed after slides with a complete score.
+  if (values.some((value) => value === null)) return null;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function _orderedWsis() {
+  const rows = [...(S.index?.wsis ?? [])];
+  if (S.overviewSort !== "dice-asc" && S.overviewSort !== "dice-desc") return rows;
+  if (!S.overviewMethodSet.size) return rows;
+
+  const direction = S.overviewSort === "dice-asc" ? 1 : -1;
+  return rows.sort((left, right) => {
+    const leftScore = _diceSortScore(left.stem);
+    const rightScore = _diceSortScore(right.stem);
+    const leftMissing = leftScore === null;
+    const rightMissing = rightScore === null;
+    if (leftMissing && rightMissing) return left.stem.localeCompare(right.stem, undefined, { sensitivity: "base" });
+    if (leftMissing) return 1;
+    if (rightMissing) return -1;
+    if (leftScore !== rightScore) return direction * (leftScore - rightScore);
+    return left.stem.localeCompare(right.stem, undefined, { sensitivity: "base" });
+  });
+}
+
 async function _loadOverviewSummary() {
+  if (!S.index.metrics_available) return null;
   try {
     const response = await fetch("/api/summary", { cache: "no-store" });
     if (!response.ok) throw new Error(response.statusText);
@@ -578,7 +721,7 @@ function _overviewSummaryTableHtml(group, rows, methods) {
       const row = byMetricAndMethod.get(`${metric.metric_key}::${method.run_id}`);
       return `<td>${_overviewSummaryValueHtml(row)}</td>`;
     }).join("");
-    return `<tr><th scope="row" title="${escapeAttr(method.run_id)}"><span class="summary-method-dot" style="background:${method.color}"></span>${escapeHtml(method.name)}</th>${cells}</tr>`;
+    return `<tr><th scope="row" title="${escapeAttr(method.run_id)}"><span class="summary-method-dot" style="background:${method.color}"></span>${escapeHtml(method.label)}</th>${cells}</tr>`;
   }).join("");
   return `<div class="overview-summary-group">
     <div class="overview-summary-table-wrap">
@@ -605,9 +748,11 @@ function _overviewSummaryValueHtml(row) {
 function buildMetricSelect() {
   const select = document.getElementById("metric-select");
   select.innerHTML = "";
-  for (const [key, label] of Object.entries(METRIC_LABELS)) {
-    const option = new Option(label, key, false, key === S.metricKey);
-    select.add(option);
+  const available = (S.index.available_metrics ?? []).filter((key) => METRIC_LABELS[key]);
+  if (!available.length) return;
+  if (!available.includes(S.metricKey)) S.metricKey = available[0];
+  for (const key of available) {
+    select.add(new Option(METRIC_LABELS[key], key, false, key === S.metricKey));
   }
   select.addEventListener("change", (event) => {
     S.metricKey = event.target.value;
@@ -622,9 +767,10 @@ function renderOverview() {
   const grid = document.getElementById("overview-grid");
   grid.innerHTML = "";
   const methods = Object.values(S.index.methods);
-  const metricScope = _isSupervisedMetric(S.metricKey) ? "supervised" : "unsupervised";
+  const hasMetrics = Boolean(S.index.metrics_available);
+  const metricScope = _isSupervisedMetric(S.metricKey) ? "supervised" : "reference-free";
 
-  for (const wsi of S.index.wsis) {
+  for (const wsi of _orderedWsis()) {
     const card = document.createElement("div");
     card.className = "wsi-card";
     card.dataset.stem = wsi.stem;
@@ -634,16 +780,16 @@ function renderOverview() {
       ? '<div class="card-osd"></div>'
       : '<span class="no-thumb">source WSI unavailable</span>';
 
-    const scoreRows = methods.map((method) => {
+    const scoreRows = hasMetrics ? methods.map((method) => {
       const value = _getMetric(S.index.scores, wsi.stem, method.run_id, S.metricKey);
       if (value === null) return "";
       const visible = S.overviewMethodSet.has(method.run_id);
       return `<div class="score-row" data-run-id="${escapeAttr(method.run_id)}" style="display:${visible ? "flex" : "none"}">
         <span class="score-dot" style="background:${method.color}"></span>
-        <span class="score-name" title="${escapeAttr(method.run_id)}">${escapeHtml(method.name)}</span>
+        <span class="score-name" title="${escapeAttr(method.run_id)}">${escapeHtml(method.label)}</span>
         <span class="score-val">${_fmtVal(value, S.metricKey)}</span>
       </div>`;
-    }).join("");
+    }).join("") : "";
 
     card.innerHTML = `
       <div class="card-thumb">${overviewVisual}</div>
@@ -652,10 +798,10 @@ function renderOverview() {
           <div class="card-stem">${escapeHtml(wsi.stem)}</div>
           ${_runStatusBadge(wsi, false)}
         </div>
-        <div class="card-scores-wrap" style="display:${S.overviewMethodSet.size ? "block" : "none"}">
+        ${hasMetrics ? `<div class="card-scores-wrap" style="display:${S.overviewMethodSet.size ? "block" : "none"}">
           <div class="card-scores-label">${metricScope} metric</div>
           <div class="card-scores">${scoreRows || "<span class='no-scores'>no score for selected metric</span>"}</div>
-        </div>
+        </div>` : ""}
       </div>`;
 
     card.querySelector(".card-body").addEventListener("click", async (event) => {
@@ -669,6 +815,7 @@ function renderOverview() {
 }
 
 function _updateCardScoreVisibility() {
+  if (!S.index.metrics_available) return;
   const anyVisible = S.overviewMethodSet.size > 0;
   document.querySelectorAll(".card-scores-wrap").forEach((wrap) => {
     wrap.style.display = anyVisible ? "block" : "none";
@@ -769,9 +916,7 @@ async function _loadOverviewOverlaysForStem(stem) {
     tasks.push(_fetchGroundTruth(stem));
   }
   for (const runId of S.overviewMethodSet) {
-    // Only the official metrics index defines valid slide/method pairs.
-    // This prevents the overview from pulling predictions from methods that
-    // were not part of the selected 8 July official CSV cohort.
+    // Prediction availability comes from runner artifacts, independently of metrics.
     if (S.index.scores[stem]?.[runId]) tasks.push(_fetchPrediction(stem, runId));
   }
   await Promise.all(tasks);
@@ -783,6 +928,177 @@ async function _loadVisibleOverviewOverlays() {
   await Promise.all(Object.keys(S.overviewViewers).map((stem) => _loadOverviewOverlaysForStem(stem)));
 }
 
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Self-contained Overview HTML report
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function downloadOverviewHtml() {
+  const button = document.getElementById("download-overview-html");
+  const status = document.getElementById("overview-report-status");
+  const wsis = _orderedWsis();
+  const runIds = [...S.overviewMethodSet];
+  const includeGroundTruth = Boolean(S.overviewGroundTruthVisible && S.index.ground_truth_available);
+
+  if (!runIds.length && !includeGroundTruth) {
+    status.textContent = "Select at least one prediction overlay or Ground truth first.";
+    return;
+  }
+
+  button.disabled = true;
+  const oldText = button.textContent;
+  button.textContent = "Building report…";
+  status.textContent = `Preparing 0/${wsis.length} slides…`;
+
+  try {
+    const cards = [];
+    for (let index = 0; index < wsis.length; index += 1) {
+      const wsi = wsis[index];
+      status.textContent = `Preparing ${index + 1}/${wsis.length}: ${wsi.stem}`;
+      const card = await _buildOverviewReportCard(wsi, runIds, includeGroundTruth);
+      cards.push(card);
+    }
+    const html = _overviewReportHtml(cards, runIds, includeGroundTruth);
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    const experiment = (S.index.output_dir || "segmenteer").split("/").filter(Boolean).at(-1) || "segmenteer";
+    anchor.href = url;
+    anchor.download = `segmenteer_overview_${_safeFilename(experiment)}.html`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    status.textContent = `Downloaded ${cards.length}-slide HTML report.`;
+  } catch (error) {
+    console.error("Could not build overview report", error);
+    status.textContent = `Report failed: ${String(error?.message || error)}`;
+  } finally {
+    button.disabled = false;
+    button.textContent = oldText;
+  }
+}
+
+async function _buildOverviewReportCard(wsi, runIds, includeGroundTruth) {
+  let width = 1;
+  let height = 1;
+  let thumbnail = null;
+  if (wsi.has_wsi) {
+    const [infoResponse, thumbResponse] = await Promise.all([
+      fetch(`/api/wsi/${encodeURIComponent(wsi.stem)}/info`, { cache: "no-store" }),
+      fetch(`/api/wsi/${encodeURIComponent(wsi.stem)}/thumbnail.jpeg?max_size=900`, { cache: "no-store" }),
+    ]);
+    if (infoResponse.ok) {
+      const info = await infoResponse.json();
+      width = Math.max(1, Number(info.width) || 1);
+      height = Math.max(1, Number(info.height) || 1);
+    }
+    if (thumbResponse.ok) thumbnail = await _blobToDataUrl(await thumbResponse.blob());
+  }
+
+  const layers = [];
+  if (includeGroundTruth && wsi.has_ground_truth) {
+    await _fetchGroundTruth(wsi.stem);
+    const entry = S.groundTruthCache[wsi.stem];
+    if (entry) layers.push({ label: "Ground truth", color: COLORS.ground_truth, dashed: true, features: entry.features });
+  }
+  for (const runId of runIds) {
+    if (!S.index.scores?.[wsi.stem]?.[runId]?._prediction_available) continue;
+    await _fetchPrediction(wsi.stem, runId);
+    const entry = S.predictionCache[wsi.stem]?.[runId];
+    if (!entry) continue;
+    const method = S.index.methods[runId];
+    layers.push({ label: method?.label || runId, color: method?.color || "#64748b", dashed: false, features: entry.features });
+  }
+  return { stem: wsi.stem, width, height, thumbnail, layers };
+}
+
+function _overviewReportHtml(cards, runIds, includeGroundTruth) {
+  const experiment = (S.index.output_dir || "segmenteer").split("/").filter(Boolean).at(-1) || "segmenteer";
+  const legend = [];
+  if (includeGroundTruth) legend.push(`<span class="legend-item"><i style="background:${COLORS.ground_truth}"></i>Ground truth</span>`);
+  for (const runId of runIds) {
+    const method = S.index.methods[runId];
+    if (!method) continue;
+    legend.push(`<span class="legend-item"><i style="background:${escapeAttr(method.color)}"></i>${escapeHtml(method.label)}</span>`);
+  }
+  const cardHtml = cards.map(_overviewReportCardHtml).join("\n");
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>segmenteer overview — ${escapeHtml(experiment)}</title>
+<style>
+  *{box-sizing:border-box} body{margin:0;background:#f5f8fc;color:#24324a;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  header{position:sticky;top:0;z-index:2;background:rgba(255,255,255,.96);border-bottom:1px solid #dbe4ef;padding:16px 22px}
+  h1{font-size:18px;margin:0 0 9px;font-weight:600} .meta{font-size:12px;color:#71839e;margin-bottom:10px}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:12px}.legend-item{display:inline-flex;align-items:center;gap:6px}.legend-item i{width:10px;height:10px;border-radius:50%;display:inline-block}
+  main{padding:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .card{background:#fff;border:1px solid #dbe4ef;border-radius:10px;overflow:hidden;break-inside:avoid}.visual{background:#edf2f8;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center}
+  .visual svg{width:100%;height:100%;display:block}.label{padding:10px 12px;font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .missing{color:#8da0ba;font-size:12px} @media print{header{position:static}body{background:white}main{padding:10px;grid-template-columns:repeat(3,1fr);gap:10px}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<header><h1>segmenteer overview · ${escapeHtml(experiment)}</h1><div class="meta">${cards.length} slides · self-contained thumbnail + outline export</div><div class="legend">${legend.join("")}</div></header>
+<main>${cardHtml}</main>
+</body></html>`;
+}
+
+function _overviewReportCardHtml(card) {
+  const paths = card.layers.map((layer) => _geojsonSvgPaths(layer.features, layer.color, layer.dashed)).join("");
+  const visual = card.thumbnail
+    ? `<svg viewBox="0 0 ${card.width} ${card.height}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${escapeAttr(card.stem)} thumbnail with segmentation outlines">
+         <image href="${card.thumbnail}" x="0" y="0" width="${card.width}" height="${card.height}" preserveAspectRatio="none"/>
+         ${paths}
+       </svg>`
+    : `<div class="missing">source WSI unavailable</div>`;
+  return `<article class="card"><div class="visual">${visual}</div><div class="label" title="${escapeAttr(card.stem)}">${escapeHtml(card.stem)}</div></article>`;
+}
+
+function _geojsonSvgPaths(features, color, dashed) {
+  const d = [];
+  for (const feature of features || []) _geometryToSvgPath(feature?.geometry, d);
+  if (!d.length) return "";
+  // Match the interactive Overview canvas styling in screen pixels.
+  // vector-effect keeps these widths constant as the self-contained report card scales.
+  const strokeWidth = dashed ? 2.3 : 1.8;
+  const dash = dashed ? ' stroke-dasharray="7 4"' : "";
+  return `<path d="${d.join(" ")}" fill="none" stroke="${escapeAttr(color)}" stroke-width="${strokeWidth}" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"${dash}/>`;
+}
+
+function _geometryToSvgPath(geometry, output) {
+  if (!geometry) return;
+  if (geometry.type === "Polygon") {
+    for (const ring of geometry.coordinates || []) _ringToSvgPath(ring, output);
+  } else if (geometry.type === "MultiPolygon") {
+    for (const polygon of geometry.coordinates || []) for (const ring of polygon || []) _ringToSvgPath(ring, output);
+  } else if (geometry.type === "GeometryCollection") {
+    for (const member of geometry.geometries || []) _geometryToSvgPath(member, output);
+  }
+}
+
+function _ringToSvgPath(ring, output) {
+  if (!Array.isArray(ring) || ring.length < 3) return;
+  const points = ring.filter((point) => Array.isArray(point) && Number.isFinite(Number(point[0])) && Number.isFinite(Number(point[1])));
+  if (points.length < 3) return;
+  output.push(`M ${points.map((point) => `${Number(point[0]).toFixed(2)} ${Number(point[1]).toFixed(2)}`).join(" L ")} Z`);
+}
+
+function _blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error || new Error("Could not encode thumbnail"));
+    reader.readAsDataURL(blob);
+  });
+}
+
+function _safeFilename(value) {
+  return String(value || "segmenteer").replace(/[^A-Za-z0-9_.-]+/g, "_").replace(/^_+|_+$/g, "") || "segmenteer";
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // OpenSeadragon canvas overlay rendering
@@ -847,7 +1163,7 @@ function drawOverlays() {
     );
   }
 
-  // 3. TP/FP/FN geometry for the selected evaluation method, computed lazily by the official server.
+  // 3. Transient TP / FP / FN geometry for the selected prediction + GT pair.
   if (S.evaluationRunId) {
     for (const { key } of ERROR_LAYERS) {
       if (!S.evaluationVisible[key]) continue;
@@ -855,6 +1171,7 @@ function drawOverlays() {
       if (layer) _drawFeatureCollection(ctx, layer.features, _errorStyle(key), layer.scale);
     }
   }
+
 }
 
 function _predictionStyle(color) {
@@ -866,8 +1183,9 @@ function _groundTruthStyle() {
 }
 
 function _errorStyle(layer) {
-  return { stroke: COLORS[layer], fill: COLORS[layer], fillAlpha: 0.32, lineWidth: 1.9, dash: [] };
+  return { stroke: COLORS[layer], fill: COLORS[layer], fillAlpha: 0.30, lineWidth: 1.9, dash: [] };
 }
+
 
 function _drawFeatureCollection(ctx, features, style, scale, viewer = S.viewer) {
   if (!features?.length || scale == null || !viewer) return;
@@ -922,19 +1240,24 @@ function _traceRing(ctx, ring, scale, viewer) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function buildMetricsTable(stem) {
+  if (!S.index.metrics_available) return;
   const container = document.getElementById("metrics-table");
   const methods = Object.values(S.index.methods).filter((method) => S.index.scores[stem]?.[method.run_id]);
   if (!methods.length) {
-    container.innerHTML = '<p class="panel-note">No score files found for this slide.</p>';
+    container.innerHTML = '<p class="panel-note">No evaluator metrics are present for this slide.</p>';
     return;
   }
 
   const supervisedMethods = methods.filter((method) => Boolean(S.index.scores[stem]?.[method.run_id]?.metrics?.supervised));
+  const unsupervisedMethods = methods.filter((method) => Boolean(S.index.scores[stem]?.[method.run_id]?.metrics?.unsupervised));
   const tables = [];
   if (supervisedMethods.length) {
     tables.push(_metricTableHtml("Evaluation", stem, supervisedMethods, EVALUATION_COLS));
   }
-  container.innerHTML = tables.join("");
+  if (unsupervisedMethods.length) {
+    tables.push(_metricTableHtml("Reference-free metrics", stem, unsupervisedMethods, UNSUPERVISED_COLS));
+  }
+  container.innerHTML = tables.join("") || '<p class="panel-note">No evaluator metrics loaded for this slide.</p>';
 }
 
 function _metricTableHtml(title, stem, methods, columns) {
@@ -947,7 +1270,7 @@ function _metricTableHtml(title, stem, methods, columns) {
     return `<tr>
       <td><div class="method-cell">
         <span class="method-dot" style="background:${method.color}"></span>
-        <span class="method-cell-name" title="${escapeAttr(method.run_id)}">${escapeHtml(method.name)}</span>
+        <span class="method-cell-name" title="${escapeAttr(method.run_id)}">${escapeHtml(method.label)}</span>
       </div></td>${cells}</tr>`;
   }).join("");
   return `<div class="metrics-group">
@@ -960,15 +1283,23 @@ function _metricTableHtml(title, stem, methods, columns) {
 
 async function switchView(view) {
   S.view = view;
+  const hasMetrics = Boolean(S.index.metrics_available);
   document.querySelectorAll(".tab").forEach((tab) => {
     tab.classList.toggle("active", tab.dataset.view === view);
   });
   document.getElementById("view-overview").style.display = view === "overview" ? "" : "none";
   document.getElementById("view-inspect").style.display = view === "inspect" ? "" : "none";
-  document.getElementById("panel-overview").style.display = view === "overview" ? "flex" : "none";
+
+  const layout = document.getElementById("layout");
+  const panel = document.getElementById("panel");
+  const overviewWithoutMetrics = view === "overview" && !hasMetrics;
+  layout.classList.toggle("overview-without-metrics", overviewWithoutMetrics);
+  panel.style.display = overviewWithoutMetrics ? "none" : "flex";
+  document.getElementById("panel-overview").style.display = view === "overview" && hasMetrics ? "flex" : "none";
   document.getElementById("panel-inspect").style.display = view === "inspect" ? "flex" : "none";
+
   if (view === "overview") {
-    if (!S.summary) {
+    if (hasMetrics && !S.summary) {
       S.summary = await _loadOverviewSummary();
       buildOverviewSummary();
     }
@@ -1003,9 +1334,6 @@ function _availableRunIds(stem) {
   return Object.keys(S.index.scores[stem] ?? {}).filter((runId) => Boolean(S.index.methods[runId]));
 }
 
-function _supervisedRunIds(stem) {
-  return _availableRunIds(stem).filter((runId) => Boolean(S.index.scores[stem]?.[runId]?.metrics?.supervised));
-}
 
 function _getWsi(stem) {
   return S.index.wsis.find((wsi) => wsi.stem === stem);
@@ -1021,7 +1349,6 @@ function _fmtVal(value, key) {
   if (["over_segmentation_rate", "under_segmentation_rate", "coverage_ratio"].includes(key)) {
     return `${(value * 100).toFixed(1)}%`;
   }
-  if (key === "hausdorff") return value >= 1000 ? `${value.toFixed(0)}` : value.toFixed(2);
   if (key === "execution_time_s") return `${value.toFixed(2)}s`;
   if (value > 0 && value < 0.01) return value.toExponential(2);
   return value.toFixed(3);

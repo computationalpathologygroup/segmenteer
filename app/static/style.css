@@ -104,6 +104,8 @@ ul { list-style: none; }
 
 /* Overview toolbar */
 .overview-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.overview-toolbar-primary { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.overview-download-action { margin-left: auto; }
 .toolbar-label { font-size: 11px; font-weight: 500; color: var(--text-3); text-transform: uppercase; letter-spacing: .5px; }
 #metric-select {
   padding: 4px 10px; border: 1px solid var(--border); border-radius: var(--radius);
@@ -111,6 +113,13 @@ ul { list-style: none; }
   cursor: pointer;
 }
 #metric-select:focus { border-color: var(--accent); }
+#dice-sort-select {
+  padding: 4px 10px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); outline: none; cursor: pointer;
+}
+#dice-sort-select:focus { border-color: var(--accent); }
+#dice-sort-select:disabled { opacity: .55; cursor: not-allowed; }
+.dice-sort-control { display: inline-flex; align-items: center; gap: 7px; margin-left: 8px; }
 
 /* Overview reporting actions */
 .toolbar-context { font-size: 10px; color: var(--text-3); }
@@ -301,7 +310,6 @@ ul { list-style: none; }
   border-radius: 3px; padding: 1px 3px; flex-shrink: 0; white-space: nowrap;
 }
 .status-supervised { color: #047857; border: 1px solid rgba(4,120,87,.25); background: #ecfdf5; }
-.status-prediction_only { color: #7c3aed; border: 1px solid rgba(124,58,237,.25); background: #f5f3ff; }
 .status-skipped_no_ground_truth { color: #9a6700; border: 1px solid rgba(154,103,0,.25); background: #fffbeb; }
 .status-not_run { color: var(--text-3); border: 1px solid var(--border); background: var(--surface-2); }
 .card-heading { display: flex; align-items: center; gap: 6px; min-width: 0; }
@@ -349,3 +357,34 @@ ul { list-style: none; }
   :root { --panel-w: 320px; }
   .toolbar-context { display: none; }
 }
+
+/* Decoupled optional-input behavior. Keep the original evaluated-mode UI intact. */
+#layout.overview-without-metrics { grid-template-columns: var(--sidebar-w) 1fr; }
+#layout.overview-without-metrics #panel { display: none !important; }
+.optional-ui[hidden], .overview-optional-control[hidden] { display: none !important; }
+.overview-optional-control { display: flex; align-items: center; gap: 8px; }
+.method-chip.active {
+  border-color: var(--method-color, currentColor);
+  background: color-mix(in srgb, var(--method-color, currentColor) 8%, white);
+}
+.status-unsupervised { color: #7c3aed; border: 1px solid rgba(124,58,237,.25); background: #f5f3ff; }
+
+/* Self-contained Overview HTML export */
+.download-report-button {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #64748b;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  padding: 4px 7px;
+  cursor: pointer;
+}
+.download-report-button:hover {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #334155;
+}
+.download-report-button:disabled { opacity: .5; cursor: wait; }

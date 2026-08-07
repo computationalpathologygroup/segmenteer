@@ -2,8 +2,8 @@
 
 Importing :mod:`segmenteer` must not import every optional segmentation backend.
 Each segmenter is imported only when its public name is actually accessed.
-This lets ``run.py`` use a simple commented ``SEGMENTERS`` list without
-requiring dependencies for methods that are not selected.
+This lets ``run.py`` keep a simple ``METHODS`` list without requiring
+dependencies for methods that are not selected.
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from __future__ import annotations
 from importlib import import_module
 from typing import Any
 
-__version__ = "0.2.4"
+__version__ = "0.1.0"
 
 # public name -> (module path, attribute name)
 # A lazy mapping avoids importing optional OpenCV, scikit-learn, Torch,
@@ -21,6 +21,12 @@ _LAZY_EXPORTS: dict[str, tuple[str, str]] = {
     "BenchmarkReporter": ("segmenteer.benchmark.console", "BenchmarkReporter"),
     "BenchmarkResult": ("segmenteer.benchmark.runner", "BenchmarkResult"),
     "BenchmarkRunner": ("segmenteer.benchmark.runner", "BenchmarkRunner"),
+    "PredictionOutputWriter": ("segmenteer.benchmark.output", "PredictionOutputWriter"),
+    "RuntimeSettings": ("segmenteer.core.runtime", "RuntimeSettings"),
+    "configure_runtime": ("segmenteer.core.runtime", "configure_runtime"),
+    "discover_slides": ("segmenteer.runner", "discover_slides"),
+    "run_directory": ("segmenteer.runner", "run_directory"),
+    "run_directory_cli": ("segmenteer.runner", "run_directory_cli"),
     "EnsembleOutputWriter": ("segmenteer.benchmark.ensemble", "EnsembleOutputWriter"),
     "EvaluationSummary": ("segmenteer.benchmark.evaluation", "EvaluationSummary"),
     "evaluate_output_directory": ("segmenteer.benchmark.evaluation", "evaluate_output_directory"),

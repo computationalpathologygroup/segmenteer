@@ -168,7 +168,7 @@ def load_segmenter(config_path: Path | str, reader: Any | None = None):
     Parameters
     ----------
     config_path:
-        Path to a ``config.yaml`` file written by :class:`EnsembleOutputWriter`.
+        Path to a ``config.yaml`` file written by the RUNNER prediction output writer.
     reader:
         Optional reader object to inject. When *None*, the backend selected by
         ``WSI_READER`` is used.
