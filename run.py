@@ -91,21 +91,17 @@ METHODS = [
     # # Classical methods
     # seg.LiSegmenter(mpp=20),
     # seg.YenSegmenter(mpp=20),
-    # seg.MorphologicalSegmenter(mpp=10),
     # seg.HSVThresholdSegmenter(mpp=10),
-    # seg.ODGMMSlideSegmenter(mpp=10),
 
-    # # # Direct deep-learning wrappers (all receive the shared device policy)
+    # Direct deep-learning wrappers (all receive the shared device policy)
     # seg.FastSAMSegmenter(mpp=20, device=BENCHMARK_DEVICE),
     # seg.FastSAMSegmenter(mpp=10, device=BENCHMARK_DEVICE),
     # seg.FastSAMSegmenter(mpp=5, device=BENCHMARK_DEVICE),
 
-    # seg.GrandQCSegmenter(mpp=10, device=BENCHMARK_DEVICE),
-    # seg.HESTSegmenter(mpp=20, device=BENCHMARK_DEVICE),
     # seg.RTLucassenSlideSegmenter(mpp=7.04, device=BENCHMARK_DEVICE),
     seg.AtlasPatchSAM2Segmenter(device="cpu"),
 
-    # # # Trident-backed deep-learning methods
+    #  Trident-backed deep-learning methods
     # seg.TRIDENTHESTSegmenter,
     # seg.TRIDENTGrandQCSegmenter,
     # seg.TRIDENTPathProfilerSegmenter,

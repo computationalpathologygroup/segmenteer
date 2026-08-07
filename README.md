@@ -129,7 +129,7 @@ Use `uv sync --extra <name>` so versions and pinned Git dependencies declared in
 Edit `run.py` and configure:
 
 - `WSI_DIR` — directory containing WSI files;
-- `SEGMENTERS` — methods/configurations to run;
+- `METHODS` — methods/configurations to run;
 - optional runtime settings such as device, slide order, and worker count.
 
 Run with a new timestamped experiment directory:
@@ -157,6 +157,9 @@ python run.py --workers 4
 
 When an existing Segmenteer 0.1.0 experiment directory is reused, `dataset_manifest.json` restores its saved slide-name cohort and completed prediction artifacts can be reused.
 
+`run.py` is intentionally a thin experiment launcher. Slide discovery, manifest handling,
+resume, worker selection, and sharding are implemented by `segmenteer.runner`.
+
 ### Runner output
 
 ```text
@@ -182,8 +185,6 @@ A dataset manifest contains the experiment slide count and names:
   ]
 }
 ```
-
-Root-level runtime/index files such as `results.csv` may also be present and describe runner execution/status.
 
 ### Method configuration
 
@@ -433,7 +434,7 @@ The exported outline styling matches the interactive Overview page. The download
 # 1. Install
 uv sync --extra all
 
-# 2. Configure WSI_DIR and SEGMENTERS in run.py, then run segmentation
+# 2. Configure WSI_DIR and METHODS in run.py, then run segmentation
 python run.py --output-dir outputs/my_experiment
 
 # 3. Evaluate against GeoJSON ground truth
@@ -464,3 +465,9 @@ python -m segmenteer.evaluator \
   --output outputs/my_experiment \
   --format sqlite
 ```
+
+## Citation
+
+> TBD.
+
+When using Segmenteer in a study, please cite the original publication(s) of the segmentation method(s) used.

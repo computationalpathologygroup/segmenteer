@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Segmenteer is a framework for tissue segmentation, evaluation, and visualization on whole-slide images.">
+  <meta name="theme-color" content="#f8fafc">
+  <meta property="og:title" content="Segmenteer — tissue segmentation for whole-slide images">
+  <meta property="og:description" content="A unified framework for tissue segmentation, evaluation, and visualization on whole-slide images.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://computationalpathologygroup.github.io/segmenteer/">
+  <link rel="canonical" href="https://computationalpathologygroup.github.io/segmenteer/">
+  <title>segmenteer/docs</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=2">
+  <link rel="shortcut icon" href="assets/favicon.svg?v=2">
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" data-header>
+    <a class="wordmark" href="#top" aria-label="Segmenteer home">segmenteer</a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="#overview">Overview</a>
+      <a href="#viewer">Viewer</a>
+      <a href="#use">Use</a>
+      <a class="repo-link" data-repo-link href="#">GitHub ↗</a>
+    </nav>
+    <button class="menu-button" type="button" aria-label="Open navigation" aria-expanded="false" data-menu-button>
+      <span></span><span></span>
+    </button>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Whole-slide tissue segmentation</p>
+        <h1 id="hero-title">Tissue segmentation<br><em>across methods.</em></h1>
+        <p class="hero-intro">Segmenteer provides a common workflow for tissue segmentation on whole-slide images, optional evaluation, and visual inspection of results on any dataset.</p>
+        <div class="hero-actions">
+          <a class="text-action" href="#overview">See the workflow <span aria-hidden="true">↓</span></a>
+          <a class="text-action repo-link" data-repo-link href="#">Repository <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+
+      <figure class="boundary-study" data-boundary-study>
+        <svg class="study-svg" viewBox="0 0 760 600" role="img" aria-labelledby="study-title study-desc">
+          <title id="study-title">Illustrative tissue boundary disagreement</title>
+          <desc id="study-desc">An illustrative tissue region with reference and prediction contours.</desc>
+          <defs>
+            <pattern id="microgrid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" stroke-width="0.55" opacity="0.2"/>
+            </pattern>
+            <clipPath id="specimen-clip">
+              <path id="specimen-path" d="M151,152 C206,91 282,91 336,119 C394,149 449,115 511,143 C579,174 639,240 616,309 C593,378 628,441 565,480 C497,522 438,474 372,493 C293,516 230,488 185,436 C141,386 110,332 124,271 C134,226 117,190 151,152 Z"/>
+            </clipPath>
+          </defs>
+          <rect width="760" height="600" class="study-paper"/>
+          <rect x="34" y="34" width="692" height="532" class="study-frame"/>
+          <rect x="34" y="34" width="692" height="532" fill="url(#microgrid)" class="study-grid"/>
+          <g class="registration-marks" aria-hidden="true">
+            <path d="M20 34h28M34 20v28M712 34h28M726 20v28M20 566h28M34 552v28M712 566h28M726 552v28"/>
+          </g>
+          <g clip-path="url(#specimen-clip)" class="specimen-fill">
+            <rect x="80" y="70" width="580" height="460"/>
+            <path d="M120 210 C210 165 281 246 356 203 C437 157 517 187 641 259 L650 340 C522 295 476 362 383 337 C293 313 212 376 118 321 Z" class="specimen-band specimen-band-a"/>
+            <path d="M170 123 C259 188 319 151 395 171 C497 198 543 272 585 341 C506 320 463 424 363 388 C275 356 216 400 152 342 C94 288 104 192 170 123 Z" class="specimen-band specimen-band-b"/>
+            <g class="specimen-speckles" aria-hidden="true"></g>
+          </g>
+          <path class="contour contour-a" data-contour="0" d="M151,152 C206,91 282,91 336,119 C394,149 449,115 511,143 C579,174 639,240 616,309 C593,378 628,441 565,480 C497,522 438,474 372,493 C293,516 230,488 185,436 C141,386 110,332 124,271 C134,226 117,190 151,152 Z"/>
+          <path class="contour contour-b" data-contour="1" d="M158,164 C211,105 279,96 339,126 C399,157 452,123 503,151 C571,188 627,246 606,313 C585,379 612,430 556,466 C489,509 431,468 368,485 C293,506 237,477 194,430 C151,382 121,329 135,273 C145,231 126,199 158,164 Z"/>
+          <path class="contour contour-c" data-contour="2" d="M143,143 C205,82 289,86 341,111 C401,140 445,104 519,135 C593,166 650,239 625,314 C599,389 638,449 573,489 C501,533 435,488 376,501 C292,519 219,493 176,441 C128,383 99,329 114,267 C125,219 108,181 143,143 Z"/>
+          <path class="contour contour-d" data-contour="3" d="M166,154 C223,112 282,105 336,132 C384,157 450,136 497,158 C553,185 607,239 594,299 C578,368 600,416 541,451 C483,487 424,454 364,470 C303,487 247,461 208,419 C169,376 139,329 149,281 C158,237 138,188 166,154 Z"/>
+          <path class="consensus" data-consensus d="M158,154 C213,102 281,98 338,124 C394,151 449,122 507,150 C573,183 628,242 608,309 C587,376 615,432 558,469 C493,510 434,471 370,488 C295,508 235,480 190,432 C147,384 117,331 130,273 C140,229 122,195 158,154 Z"/>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="statement" aria-label="Experiment model">
+      <p>One experiment keeps <strong>predictions</strong>, optional evaluation, and visual review aligned to the same slide cohort.</p>
+    </section>
+
+    <section class="viewer-demo section-grid" id="viewer" aria-labelledby="viewer-title">
+      <header class="section-heading">
+        <p class="section-kicker">Interactive viewer</p>
+        <h2 id="viewer-title">Inspect the experiment visually.</h2>
+        <p>Browse slide thumbnails, toggle segmentation outlines, compare predictions, and add ground truth or metrics only when they are available.</p>
+      </header>
+
+      <div class="viewer-video-shell">
+        <video
+          class="viewer-video"
+          controls
+          playsinline
+          preload="metadata"
+          aria-label="Segmenteer viewer walkthrough"
+        >
+          <source src="assets/viewer-demo.mp4" type="video/mp4">
+          Your browser does not support embedded video.
+        </video>
+      </div>
+    </section>
+
+    <section class="instrument section-grid" id="overview" aria-labelledby="overview-title">
+      <header class="section-heading">
+        <span class="section-number">01</span>
+        <p class="section-kicker">Overview</p>
+        <h2 id="overview-title">A consistent experimental workflow.</h2>
+        <p>Run segmentation on your WSI cohort, evaluate predictions when reference data are available, and inspect the same experiment visually with or without ground truth.</p>
+      </header>
+
+      <ol class="apparatus" aria-label="Segmenteer workflow">
+        <li data-step="01">
+          <div class="apparatus-name">Segment</div>
+          <p>Generate tissue-region predictions for the selected whole-slide images.</p>
+        </li>
+        <li data-step="02">
+          <div class="apparatus-name">Evaluate</div>
+          <p>Quantify prediction quality with reference annotations when available, or use reference-free metrics when they are not.</p>
+        </li>
+        <li data-step="03">
+          <div class="apparatus-name">Inspect</div>
+          <p>Review thumbnails and polygon outlines across slides; add ground truth and evaluation metrics when available.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="evaluation section-grid" id="use" aria-labelledby="use-section-title">
+      <header class="section-heading">
+        <span class="section-number">02</span>
+        <p class="section-kicker">Flexible use</p>
+        <h2 id="use-section-title">Use Segmenteer on your own WSI cohort.</h2>
+        <p>Segmenteer supports workflows ranging from predictions-only visual review to reference-based evaluation and benchmarking.</p>
+      </header>
+      <div class="evaluation-panel">
+        <p>Start with whole-slide images and segmentation predictions. Add GeoJSON ground truth and evaluation metrics when available; the viewer remains useful with predictions alone.</p>
+        <a class="text-action repo-link" data-repo-link href="#">Repository <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-word">SEG<br>MEN<br>TEER</div>
+    <div>
+      <p>Unified tissue segmentation experiments for whole-slide images.</p>
+      <p class="footer-small">Runner · Evaluator · Viewer</p>
+    </div>
+    <div class="footer-links">
+      <a class="repo-link" data-repo-link href="#">Repository ↗</a>
+      <a href="#top">Back to top ↑</a>
+    </div>
+  </footer>
+</body>
+</html>
