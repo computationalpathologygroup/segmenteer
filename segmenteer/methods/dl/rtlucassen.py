@@ -1,12 +1,13 @@
 from pathlib import Path
 
 from segmenteer.core.base import NumpySegmenter
+from segmenteer.core.runtime import resolve_torch_device
+from segmenteer.model_cache import get_method_model_dir
 
 
 def get_model_cache_dir() -> Path:
-    cache_dir = Path(__file__).parent.parent.parent.parent / "models" / "rtlucassen"
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    return cache_dir
+    """Return the shared local SlideSegmenter weights directory."""
+    return get_method_model_dir("rtlucassen")
 
 
 class RTLucassenSlideSegmenter(NumpySegmenter):
@@ -26,10 +27,8 @@ class RTLucassenSlideSegmenter(NumpySegmenter):
                 "slidesegmenter is required for RTLucassenSlideSegmenter.\n"
                 "Install with: uv sync --extra rtlucassen"
             ) from None
-        if device is None:
-            import torch
-            # slidesegmenter does not support MPS — fall back to cpu on macOS
-            device = "cuda" if torch.cuda.is_available() else "cpu"
+        # SlideSegmenter does not support MPS, so retain CUDA-or-CPU selection.
+        device = resolve_torch_device(device, allow_mps=False)
         super().__init__(*args, **kwargs)
         self.mpp = mpp
         self.segmenter = SlideSegmenter(

@@ -6,8 +6,9 @@ import os
 import tempfile
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from enum import StrEnum
+from enum import Enum, StrEnum
 from pathlib import Path
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, Protocol, Union
 
 import geojson
@@ -17,44 +18,37 @@ import skimage
 import yaml
 from skimage.color import rgb2gray
 
+from segmenteer.core.runtime import resolve_torch_device
 from segmenteer.core.utils import mask_to_geojson
 
 # ---------------------------------------------------------------------------
-# Optional-dependency guards
+# Lazy WSI-reader configuration
 # ---------------------------------------------------------------------------
 
-try:
-    from monai.data.wsi_reader import WSIReader as _WSIReader
-
-    _MONAI_AVAILABLE = True
-except ImportError:
-    _WSIReader = None  # type: ignore[assignment,misc]
-    _MONAI_AVAILABLE = False
-
-try:
-    from trident.segmentation_models.load import (
-        SegmentationModel as TRIDENTSegmentationModel,
-    )
-    from trident.wsi_objects.OpenSlideWSI import OpenSlideWSI as _TridentWSI
-
-    _TRIDENT_AVAILABLE = True
-except ImportError:
-    TRIDENTSegmentationModel = object  # type: ignore[assignment,misc]
-    _TridentWSI = None  # type: ignore[assignment]
-    _TRIDENT_AVAILABLE = False
-
-if TYPE_CHECKING:
-    from monai.data.wsi_reader import WSIReader
+from segmenteer.wsi.reader import NativeWSIReader
 
 
-def _require_wsi_reader():
-    """Return the WSIReader class, raising a helpful error if monai is not installed."""
-    if not _MONAI_AVAILABLE:
-        raise ImportError(
-            "monai is required for WSI reading.\n"
-            "Install the wsi extra: pip install 'segmenteer[wsi]'"
-        )
-    return _WSIReader
+def _reader_backend_from_env() -> "WSIBackend":
+    raw = os.environ.get("WSI_READER", WSIBackend.AUTO.value).casefold().strip()
+    try:
+        return WSIBackend(raw)
+    except ValueError as exc:
+        allowed = ", ".join(item.value for item in WSIBackend)
+        raise ValueError(f"Unsupported WSI_READER={raw!r}. Use one of: {allowed}.") from exc
+
+
+def get_wsi_reader(
+    backend: "WSIBackend | str | None" = None,
+    native_mpp: float | None = None,
+) -> NativeWSIReader:
+    """Create the lazy native reader selected by ``WSI_READER``.
+
+    This function does not import OpenSlide or tifffile until a slide is read.
+    ``WSI_NATIVE_MPP`` is consulted only when a slide has no physical MPP
+    metadata and no explicit *native_mpp* is supplied.
+    """
+    selected = _reader_backend_from_env() if backend is None else WSIBackend(str(backend))
+    return NativeWSIReader(selected.value, fallback_mpp=native_mpp)
 
 __all__ = [
     "Segmenter",
@@ -63,26 +57,31 @@ __all__ = [
     "SegmentationResult",
     "WSIBackend",
     "WSI_READER",
+    "get_wsi_reader",
     "load_segmenter",
     "segmenter_config_dict",
 ]
 
 
 class WSIBackend(StrEnum):
-    """MONAI WSIReader backend. Override the default with the WSI_READER env var."""
+    """Supported native WSI reader backends."""
 
+    AUTO = "auto"
     OPENSLIDE = "openslide"
-    CUCIM = "cucim"
     TIFFFILE = "tifffile"
 
 
-# WSI reader backend used by MONAI.  Override with the WSI_READER env var,
-# e.g.: WSI_READER=cucim python ...
-WSI_READER = WSIBackend(os.environ.get("WSI_READER", WSIBackend.OPENSLIDE))
+# Selected only when :func:`get_wsi_reader` is called.  Importing segmenteer
+# does not import either optional backend.
+WSI_READER = _reader_backend_from_env()
 
 # Attributes that carry no useful hyperparameter information and should not be
-# included in config files or run-id slugs.
-_SKIP_ATTRS: frozenset[str] = frozenset({"reader", "to_gray_func", "results"})
+# included in config files or run-id slugs.  ``segmenter``/``segmenter_func`` are
+# initialized model objects or callables; persisting their repr would make a run
+# id unstable and cannot be used to reconstruct a model.
+_SKIP_ATTRS: frozenset[str] = frozenset(
+    {"reader", "to_gray_func", "results", "segmenter", "segmenter_func"}
+)
 
 
 # ---------------------------------------------------------------------------
@@ -103,29 +102,54 @@ def _get_version() -> str:
     return "unknown"
 
 
+def _yaml_safe_value(value: Any) -> Any:
+    """Convert runtime-only values into primitives accepted by ``safe_dump``.
+
+    Segmenters commonly retain ``torch.device`` and NumPy scalar objects as
+    public configuration attributes.  Serialising those values directly makes
+    PyYAML emit Python-specific tags such as ``!!python/object/apply`` which
+    cannot be loaded through :func:`yaml.safe_load`.  Config files are intended
+    to be portable, so retain only their plain-data representation.
+    """
+    # ``str, Enum`` members also satisfy ``isinstance(value, str)``.  Check
+    # Enum first so PyYAML receives the member's plain, stable value rather
+    # than a Python enum instance it cannot represent with SafeDumper.
+    if isinstance(value, Enum):
+        return _yaml_safe_value(value.value)
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, Path):
+        return str(value)
+    if isinstance(value, np.generic):
+        return value.item()
+    if isinstance(value, np.ndarray):
+        return value.tolist()
+    if isinstance(value, Mapping):
+        return {str(key): _yaml_safe_value(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple, set, frozenset)):
+        return [_yaml_safe_value(item) for item in value]
+
+    # Avoid importing Torch just to serialize a configuration.  ``torch.device``
+    # is reconstructed by model constructors from its canonical string form.
+    type_name = type(value).__name__
+    module_name = type(value).__module__
+    if type_name == "device" and module_name.startswith("torch"):
+        return str(value)
+    return str(value)
+
+
 def segmenter_config_dict(segmenter: Any) -> dict:
-    """Return a YAML-serialisable dict that fully describes *segmenter*.
+    """Return a safe-YAML-serialisable dict that fully describes *segmenter*.
 
-    The dict has three keys:
-
-    ``class``
-        Fully-qualified class path, e.g.
-        ``segmenteer.methods.classical.threshold.OtsuSegmenter``.
-    ``params``
-        All public, non-callable instance attributes except those in
-        :data:`_SKIP_ATTRS` (reader, functional transforms, …).
-    ``segmenteer_version``
-        The installed version of the segmenteer package at the time the
-        config was written, for reproducibility.
-
-    The dict is intentionally kept flat so that :func:`load_segmenter` can
-    reconstruct the segmenter with a plain ``cls(**params)`` call.
+    The output uses only plain scalars, lists and mappings.  It can therefore
+    always be persisted with :func:`yaml.safe_dump` and reconstructed through
+    :func:`yaml.safe_load` without Python-object YAML tags.
     """
     cls = type(segmenter)
     params = {
-        k: v
-        for k, v in vars(segmenter).items()
-        if not k.startswith("_") and k not in _SKIP_ATTRS and not callable(v)
+        key: _yaml_safe_value(value)
+        for key, value in vars(segmenter).items()
+        if not key.startswith("_") and key not in _SKIP_ATTRS and not callable(value)
     }
     return {
         "class": f"{cls.__module__}.{cls.__qualname__}",
@@ -138,7 +162,7 @@ def _read_config(config_path: Path | str) -> dict:
     return yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
 
 
-def load_segmenter(config_path: Path | str, reader: WSIReader | None = None):
+def load_segmenter(config_path: Path | str, reader: Any | None = None):
     """Reconstruct a segmenter from a ``config.yaml`` saved during a benchmark run.
 
     Parameters
@@ -146,8 +170,8 @@ def load_segmenter(config_path: Path | str, reader: WSIReader | None = None):
     config_path:
         Path to a ``config.yaml`` file written by :class:`EnsembleOutputWriter`.
     reader:
-        Optional ``WSIReader`` to inject.  When *None* the default backend
-        (``WSI_READER`` env var or ``"openslide"``) is used.
+        Optional reader object to inject. When *None*, the backend selected by
+        ``WSI_READER`` is used.
 
     Examples
     --------
@@ -217,14 +241,14 @@ class NumpySegmenter(ABC):
     def __init__(
         self,
         mpp: float = 10,
-        min_area: int = 10,
+        min_area: int = 0,
         to_gray_func: Union[callable, None] = rgb2gray,
-        reader: WSIReader | None = None,
+        reader: Any | None = None,
     ):
         self.mpp = mpp
         self.min_area = min_area
         self.to_gray_func = to_gray_func
-        self.reader = reader if reader is not None else _require_wsi_reader()(WSI_READER)
+        self.reader = reader if reader is not None else get_wsi_reader()
 
     @property
     @abstractmethod
@@ -258,8 +282,15 @@ class NumpySegmenter(ABC):
     def _convert_to_geojson(
         self, wsi: Any, mask: npt.NDArray[np.bool]
     ) -> geojson.FeatureCollection:
-        scaling_factor = mask.shape[0] / self.reader.get_size(wsi, 0)[0]
-        return mask_to_geojson(mask, self.min_area, scaling_factor=scaling_factor)
+        level0_width, level0_height = self.reader.get_size(wsi, 0)
+        scale_x = mask.shape[1] / level0_width
+        scale_y = mask.shape[0] / level0_height
+        if not np.isclose(scale_x, scale_y, rtol=0.01, atol=1e-6):
+            raise ValueError(
+                "WSI reader returned a non-uniformly scaled image; "
+                f"x scale={scale_x:.6f}, y scale={scale_y:.6f}."
+            )
+        return mask_to_geojson(mask, self.min_area, scaling_factor=scale_x)
 
     @abstractmethod
     def _segment_numpy(
@@ -271,46 +302,107 @@ class NumpySegmenter(ABC):
 
 @dataclass
 class TRIDENTSegmenter:
-    """Base class for segmenters that work on numpy arrays."""
+    """Adapter that normalises Trident tissue segmentation into GeoJSON.
 
-    segmenter: TRIDENTSegmentationModel
-    target_mag: int = 10
-    holes_are_tissue: bool = True
+    ``target_mag`` defaults to the model's declared magnification rather than
+    forcing every Trident model to 10x.  That preserves the spacing expected by
+    HEST, GrandQC, PathProfiler and CPG adapters.
+
+    ``model_id`` is intentionally persisted with each output configuration.
+    Trident's public adapters all share this wrapper class, so the wrapped model
+    identity must not be inferred from the wrapper class name by the viewer.
+    """
+
+    segmenter: Any
+    model_id: str = "Unknown"
+    target_mag: int | None = None
+    holes_are_tissue: bool = False
     batch_size: int = 8
     num_workers: int = 0
 
+    _MODEL_LABELS = {
+        "hest": "HEST",
+        "grandqc": "GrandQC",
+        "pathprofiler": "PathProfiler",
+        "cpg": "CPG",
+    }
+
+    def __post_init__(self) -> None:
+        model_key = str(self.model_id).strip().casefold()
+        if not model_key or model_key == "unknown":
+            # This fallback keeps manually-created adapters readable while the
+            # project factories below provide the canonical explicit identity.
+            model_key = self.segmenter.__class__.__name__.casefold()
+            model_key = model_key.removeprefix("libtrident").removesuffix("segmenter")
+        self.model_id = self._MODEL_LABELS.get(model_key, str(self.model_id).strip() or "Unknown")
+
+        if self.target_mag is None:
+            declared = getattr(self.segmenter, "target_mag", 10)
+            self.target_mag = int(declared)
+
     @property
     def name(self) -> str:
-        return "trident_" + self.segmenter.__class__.__name__.lower()
+        """Filesystem-safe method id used in benchmark run directories."""
+        return "trident_" + self.model_id.casefold().replace(" ", "_")
+
+    @property
+    def display_name(self) -> str:
+        """Human-readable model label for reports and the viewer."""
+        return f"TRIDENT {self.model_id}"
 
     @staticmethod
     def _best_device() -> str:
-        import torch
+        configured = os.environ.get("SEGMENTEER_TRIDENT_DEVICE", "auto").strip()
+        if configured and configured.casefold() != "auto":
+            return configured
 
-        if torch.cuda.is_available():
-            return "cuda:0"
-        if torch.backends.mps.is_available():
-            return "mps"
-        return "cpu"
+        return resolve_torch_device("auto")
+
+    @staticmethod
+    def _as_feature_collection(payload: Any) -> geojson.FeatureCollection:
+        """Validate the one output contract shared by every Trident adapter."""
+        import json
+
+        if hasattr(payload, "to_json"):
+            payload = payload.to_json()
+        if isinstance(payload, (bytes, bytearray)):
+            payload = payload.decode("utf-8")
+        if isinstance(payload, str):
+            payload = json.loads(payload)
+        if not isinstance(payload, Mapping):
+            raise TypeError(
+                "Trident segment_tissue must return a GeoJSON object or JSON string; "
+                f"received {type(payload).__name__}."
+            )
+        if payload.get("type") != "FeatureCollection" or not isinstance(payload.get("features"), list):
+            raise ValueError("Trident output is not a GeoJSON FeatureCollection.")
+        return geojson.loads(json.dumps(payload))
 
     def segment(self, path: Path) -> geojson.FeatureCollection:
-        """Satisfies Segmenter protocol."""
-        if not _TRIDENT_AVAILABLE:
+        """Run Trident and return the canonical level-0 GeoJSON prediction."""
+        try:
+            from trident.wsi_objects.OpenSlideWSI import OpenSlideWSI
+        except ImportError as exc:
             raise ImportError(
-                "trident is required for TRIDENTSegmenter.\n"
-                "Install the trident extra: pip install 'segmenteer[trident]'"
-            )
-        wsi = _TridentWSI(path)
-        return geojson.loads(
-            wsi.segment_tissue(
+                "Trident is required for this selected method. Run:\n"
+                "  uv sync --extra trident"
+            ) from exc
+
+        wsi = OpenSlideWSI(str(path))
+        try:
+            result = wsi.segment_tissue(
                 segmentation_model=self.segmenter,
-                target_mag=self.target_mag,
+                target_mag=int(self.target_mag),
                 holes_are_tissue=self.holes_are_tissue,
                 batch_size=self.batch_size,
                 device=self._best_device(),
-                num_workers=self.num_workers,  # >0 tries to pickle OpenSlide ctypes handles → fails on macOS
-            ).to_json()
-        )
+                num_workers=self.num_workers,
+            )
+            return self._as_feature_collection(result)
+        finally:
+            close = getattr(wsi, "close", None)
+            if callable(close):
+                close()
 
 
 class PathSegmenter(ABC):
@@ -322,11 +414,11 @@ class PathSegmenter(ABC):
 
     def __init__(
         self,
-        min_area: int = 10,
-        reader: WSIReader | None = None,
+        min_area: int = 0,
+        reader: Any | None = None,
     ):
         self.min_area = min_area
-        self.reader = reader if reader is not None else _require_wsi_reader()(WSI_READER)
+        self.reader = reader if reader is not None else get_wsi_reader()
 
     @property
     @abstractmethod

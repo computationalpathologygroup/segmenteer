@@ -1,41 +1,26 @@
-"""Ensemble-ready output writer for benchmark runs.
-
-Output layout (single image and dataset runs share the same structure)
-----------------------------------------------------------------------
-    <output_dir>/
-        ensemble_manifest.json
-        results.csv / results.json
-        thumbnails/
-            <image_stem>.png
-        <run_id>/                      # one dir per method+hyperparams
-            config.yaml                # segmenter config – written once
-            predictions/
-                <image_stem>.geojson   # same stem as the source image file
-            eval/
-                scores/
-                    <image_stem>.json  # metrics + metadata merged
-                heatmaps/
-                    <image_stem>.png   # heatmap overlay
-
-``run_id`` encodes the method class-name *and* its hyperparameters, so two
-instances of the same class with different params live in separate directories
-and never overwrite each other.
-
-Every member directory is self-contained: a downstream ensembler only needs
-the manifest to discover and load all members.
-"""
-
 from __future__ import annotations
 
 import json
 import math
+import os
+import tempfile
 from collections import defaultdict
-from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
+
+from segmenteer.benchmark.indexes import (
+    CURRENT_ARTIFACT_SCHEMA_VERSION,
+    iter_completed_artifacts,
+)
+from segmenteer.benchmark.locking import output_index_lock
+from segmenteer.benchmark.resume import fingerprint, image_fingerprint
+from segmenteer.benchmark.reporting import (
+    score_to_dataset_csv_row,
+    write_dataset_results_csv_rows,
+)
 
 if TYPE_CHECKING:
     from segmenteer.benchmark.runner import BenchmarkResult
@@ -65,8 +50,26 @@ def _sanitize(obj):
     return obj
 
 
+def _write_text_atomic(path: Path, text: str) -> None:
+    """Atomically replace a text artifact so a killed run leaves no valid half-file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent, text=True)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        Path(temporary_name).replace(path)
+    except Exception:
+        try:
+            Path(temporary_name).unlink()
+        except FileNotFoundError:
+            pass
+        raise
+
+
 def _write_json(path: Path, data: object) -> None:
-    path.write_text(json.dumps(_sanitize(data), indent=2), encoding="utf-8")
+    _write_text_atomic(path, json.dumps(_sanitize(data), indent=2))
 
 
 # ---------------------------------------------------------------------------
@@ -74,12 +77,15 @@ def _write_json(path: Path, data: object) -> None:
 # ---------------------------------------------------------------------------
 
 PREDICTIONS_DIR = "predictions"
+GROUND_TRUTH_DIR = "ground_truth"
 EVAL_DIR = "eval"
 EVAL_SCORES_DIR = "eval/scores"
 EVAL_HEATMAPS_DIR = "eval/heatmaps"
+EVAL_ERRORS_DIR = "eval/errors"
+EVAL_ERROR_MAPS_DIR = "eval/error_maps"
+EVAL_COMPLETED_DIR = "eval/completed"
 CONFIG_FILE = "config.yaml"
 MANIFEST_FILE = "ensemble_manifest.json"
-THUMBNAILS_DIR = "thumbnails"
 
 
 # ---------------------------------------------------------------------------
@@ -148,12 +154,25 @@ class EnsembleOutputWriter:
         heatmap_mpp: float = 10.0,
         heatmap_max_size: int = 1024,
         heatmap_alpha: float = 0.4,
+        save_heatmaps: bool = False,
+        index_refresh_interval: int = 1,
     ) -> None:
         self.output_dir = Path(output_dir)
         self.image_path = Path(image_path) if image_path else None
         self.heatmap_mpp = heatmap_mpp
         self.heatmap_max_size = heatmap_max_size
         self.heatmap_alpha = heatmap_alpha
+        # Heatmaps require an additional WSI read. Keep them opt-in so the
+        # benchmark path writes only predictions plus metadata by default.
+        self.save_heatmaps = save_heatmaps
+        if index_refresh_interval < 1:
+            raise ValueError("index_refresh_interval must be at least 1.")
+        # Dataset root indexes are derived by scanning all committed artifacts.
+        # Refreshing them after every slide becomes quadratic on large cohorts;
+        # workflows use a modest batch interval while direct writer use remains
+        # immediately visible by default for backwards compatibility.
+        self.index_refresh_interval = int(index_refresh_interval)
+        self._pending_dataset_index_updates = 0
 
         self._members: list[dict] = []  # flat list for single-image runs
         # run_id → list[per-image entry] for dataset runs
@@ -168,6 +187,8 @@ class EnsembleOutputWriter:
     def __call__(self, result: BenchmarkResult) -> None:
         if result.failed:
             return  # skip writing empty output for failed runs
+        # ``save_member`` owns batched dataset-index refreshes so direct calls
+        # and callback-driven calls have identical semantics.
         self.save_member(result)
 
     # ------------------------------------------------------------------
@@ -175,25 +196,16 @@ class EnsembleOutputWriter:
     # ------------------------------------------------------------------
 
     def save_member(self, result: BenchmarkResult) -> Path:
-        """Persist *result* as a self-contained member directory.
+        """Persist prediction plus lightweight reproducibility metadata.
 
-        Layout::
-
-            <output_dir>/<run_id>/
-                config.yaml                  ← written once per method
-                predictions/
-                    <image_stem>.geojson
-                eval/
-                    scores/
-                        <image_stem>.json    ← metrics + metadata merged
-                    heatmaps/
-                        <image_stem>.png     ← heatmap overlay
+        Ground truth is copied once when available so post-run evaluation can
+        derive metrics from saved GeoJSON.  Polygon metrics, visual-QA layers,
+        and heatmaps are deliberately not produced unless explicitly requested.
         """
         from segmenteer.io.loader import save_geojson
-        from segmenteer.visualization.heatmaps import save_heatmap_thumbnail
 
-        image_path: Path = result.image_path or self.image_path
-        is_dataset = result.image_path is not None
+        image_path: Path | None = result.image_path or self.image_path
+        is_dataset = self.image_path is None and result.image_path is not None
         image_stem = image_path.stem if image_path else "image"
 
         method_dir = self.output_dir / result.run_id
@@ -202,27 +214,50 @@ class EnsembleOutputWriter:
         heatmaps_dir = method_dir / EVAL_HEATMAPS_DIR
         predictions_dir.mkdir(parents=True, exist_ok=True)
         scores_dir.mkdir(parents=True, exist_ok=True)
-        heatmaps_dir.mkdir(parents=True, exist_ok=True)
+        if self.save_heatmaps:
+            heatmaps_dir.mkdir(parents=True, exist_ok=True)
 
-        # 1. Annotations → predictions/<image_stem>.geojson --------------------
+        # 1. Prediction GeoJSON ------------------------------------------------
         annotations_rel = f"{result.run_id}/{PREDICTIONS_DIR}/{image_stem}.geojson"
         save_geojson(result.geojson, predictions_dir / f"{image_stem}.geojson")
 
-        # 2. Config YAML → <run_id>/config.yaml (once per method) --------------
+        # 2. Segmenter configuration -----------------------------------------
+        # A configuration mismatch is invalidated before this writer is called
+        # during resume.  Rewriting the current config here also repairs a
+        # partially written config file from an interrupted fresh run.
         config_rel = f"{result.run_id}/{CONFIG_FILE}"
         config_path = method_dir / CONFIG_FILE
-        if result.segmenter_config is not None and not config_path.exists():
-            import yaml  # lazy import – only needed at save time
+        config_fingerprint: str | None = None
+        if result.segmenter_config is not None:
+            import yaml
 
-            config_path.write_text(
-                yaml.dump(
-                    result.segmenter_config, default_flow_style=False, sort_keys=False
+            config_fingerprint = fingerprint(result.segmenter_config)
+            _write_text_atomic(
+                config_path,
+                yaml.safe_dump(
+                    result.segmenter_config,
+                    default_flow_style=False,
+                    sort_keys=False,
                 ),
-                encoding="utf-8",
             )
 
-        # 3. Scores → eval/scores/<image_stem>.json (metrics + metadata merged)
+        # 3. Ground-truth reference (no evaluation in the benchmark path) -----
+        # Ground truth is persisted once so a later post-run evaluator can work
+        # entirely from this output folder.  Deliberately do not create TP/FP/FN
+        # layers or error maps here: those require geometry operations and are
+        # evaluation artifacts, not inference artifacts.
+        ground_truth_rel: str | None = None
+        if result.ground_truth_geojson is not None:
+            ground_truth_dir = self.output_dir / GROUND_TRUTH_DIR
+            ground_truth_dir.mkdir(parents=True, exist_ok=True)
+            ground_truth_path = ground_truth_dir / f"{image_stem}.geojson"
+            if not ground_truth_path.exists():
+                save_geojson(result.ground_truth_geojson, ground_truth_path)
+            ground_truth_rel = f"{GROUND_TRUTH_DIR}/{image_stem}.geojson"
+
+        # 4. Score JSON ---------------------------------------------------------
         eval_data: dict = {
+            "artifact_schema_version": CURRENT_ARTIFACT_SCHEMA_VERSION,
             "method_name": result.method_name,
             "run_id": result.run_id,
             "image_stem": image_stem,
@@ -230,29 +265,70 @@ class EnsembleOutputWriter:
             "execution_time_s": result.execution_time,
             "seconds_per_pixel": result.seconds_per_pixel,
             "saved_at": datetime.now(timezone.utc).isoformat(),
-            "metrics": {
-                "unsupervised": asdict(result.unsupervised_metrics),
-            },
+            "evaluation_mode": (
+                "ground_truth_available"
+                if result.ground_truth_geojson is not None
+                else "prediction_only"
+            ),
+            "ground_truth_available": result.ground_truth_geojson is not None,
+            "segmenter_config": result.segmenter_config,
+            "segmenter_config_fingerprint": config_fingerprint,
+            "source_image_fingerprint": image_fingerprint(image_path) if image_path else None,
+            "native_spacing_um_per_px": list(result.native_spacing) if result.native_spacing else None,
+            "magnification_used": result.magnification_used,
+            "ground_truth_fingerprint": (
+                fingerprint(result.ground_truth_geojson)
+                if result.ground_truth_geojson is not None
+                else None
+            ),
         }
-        if result.supervised_metrics is not None:
-            eval_data["metrics"]["supervised"] = asdict(result.supervised_metrics)
+        if ground_truth_rel:
+            eval_data["ground_truth"] = {
+                "path": ground_truth_rel,
+                "coordinate_space": "level_0_pixels",
+            }
         scores_rel = f"{result.run_id}/{EVAL_SCORES_DIR}/{image_stem}.json"
         _write_json(scores_dir / f"{image_stem}.json", eval_data)
 
-        # 4. Heatmap → eval/heatmaps/<image_stem>.png --------------------------
-        heatmap_rel = f"{result.run_id}/{EVAL_HEATMAPS_DIR}/{image_stem}.png"
-        if image_path is not None:
-            save_heatmap_thumbnail(
-                image=image_path,
-                geojson_data=result.geojson,
-                output_path=heatmaps_dir / f"{image_stem}.png",
-                mpp=self.heatmap_mpp,
-                max_size=self.heatmap_max_size,
-                alpha=self.heatmap_alpha,
-            )
+        # 5. Optional prediction heatmap --------------------------------------
+        heatmap_rel = None
+        if self.save_heatmaps and image_path is not None:
+            from segmenteer.visualization.heatmaps import save_heatmap_thumbnail
 
-        # 5. Register in manifest lists ----------------------------------------
-        entry = {
+            heatmap_rel = f"{result.run_id}/{EVAL_HEATMAPS_DIR}/{image_stem}.png"
+            try:
+                save_heatmap_thumbnail(
+                    image=image_path,
+                    geojson_data=result.geojson,
+                    output_path=heatmaps_dir / f"{image_stem}.png",
+                    mpp=self.heatmap_mpp,
+                    max_size=self.heatmap_max_size,
+                    alpha=self.heatmap_alpha,
+                )
+            except Exception as exc:
+                heatmap_rel = None
+                print(f"  ! prediction heatmap skipped for {image_stem}: {type(exc).__name__}: {exc}")
+
+        # 6. Completion marker --------------------------------------------------
+        # This file is written only after prediction + score persistence.  It
+        # lets later resumes distinguish a valid completed item from an
+        # interruption that occurred mid-write.  Legacy folders without this
+        # marker are still accepted via config.yaml validation.
+        completed_dir = method_dir / EVAL_COMPLETED_DIR
+        completed_dir.mkdir(parents=True, exist_ok=True)
+        _write_json(
+            completed_dir / f"{image_stem}.json",
+            {
+                "artifact_schema_version": CURRENT_ARTIFACT_SCHEMA_VERSION,
+                "run_id": result.run_id,
+                "image_stem": image_stem,
+                "segmenter_config_fingerprint": config_fingerprint,
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+            },
+        )
+
+        # 7. Register in manifest lists ---------------------------------------
+        entry: dict = {
             "name": result.method_name,
             "run_id": result.run_id,
             "path": result.run_id,
@@ -263,6 +339,8 @@ class EnsembleOutputWriter:
             "config": config_rel,
             "heatmap": heatmap_rel,
         }
+        if ground_truth_rel:
+            entry["ground_truth"] = ground_truth_rel
         if is_dataset:
             self._run_members[result.run_id].append(entry)
             self._run_names[result.run_id] = result.method_name
@@ -285,45 +363,13 @@ class EnsembleOutputWriter:
         threshold: float = 0.5,
         ground_truth_geojson: dict | None = None,
     ) -> Path:
-        """Save the combined ensemble prediction as a first-class method directory.
+        """Save an ensemble prediction without evaluating it inline.
 
-        The output follows the exact same layout as ``save_member``::
-
-            <output_dir>/<ensemble_run_id>/
-                config.json                  ← lists member run_ids + strategy
-                predictions/
-                    <image_stem>.geojson
-                eval/
-                    scores/
-                        <image_stem>.json    ← metrics + ensemble metadata
-                    heatmaps/
-                        <image_stem>.png
-
-        This means the viewer, loader, and any downstream tool that searches
-        for ``<run_id>/predictions/*.geojson`` will pick up the ensemble
-        result automatically — no special-casing needed.
-
-        Parameters
-        ----------
-        image_path:
-            Source WSI used to compute metrics and the heatmap overlay.
-        geojson:
-            Combined FeatureCollection produced by your ensemble strategy.
-        member_run_ids:
-            Ordered list of member ``run_id``s that were fused (used to build
-            the ``run_id`` slug and recorded in ``config.json``).
-        strategy:
-            Human-readable fusion strategy name (e.g. ``"majority"``,
-            ``"weighted"``).
-        threshold:
-            Vote threshold or confidence cut-off used during fusion.
-        ground_truth_geojson:
-            Optional ground-truth FeatureCollection for supervised metrics.
+        The same post-run ``evaluate_outputs.py`` workflow used for individual
+        methods can evaluate this prediction later.  This avoids treating an
+        ensemble write as a hidden, expensive metric pass.
         """
         from segmenteer.io.loader import save_geojson
-        from segmenteer.metrics.supervised import compute_all_supervised_metrics
-        from segmenteer.metrics.unsupervised import compute_unsupervised_metrics
-        from segmenteer.visualization.heatmaps import save_heatmap_thumbnail
 
         image_path = Path(image_path)
         image_stem = image_path.stem
@@ -332,41 +378,47 @@ class EnsembleOutputWriter:
         method_dir = self.output_dir / run_id
         predictions_dir = method_dir / PREDICTIONS_DIR
         scores_dir = method_dir / EVAL_SCORES_DIR
-        heatmaps_dir = method_dir / EVAL_HEATMAPS_DIR
-        for d in (predictions_dir, scores_dir, heatmaps_dir):
-            d.mkdir(parents=True, exist_ok=True)
+        predictions_dir.mkdir(parents=True, exist_ok=True)
+        scores_dir.mkdir(parents=True, exist_ok=True)
 
-        # 1. Predictions -------------------------------------------------------
         save_geojson(geojson, predictions_dir / f"{image_stem}.geojson")
 
-        # 2. Config (JSON, not YAML — no segmenter class to serialise) ----------
         config_path = method_dir / "config.json"
+        ensemble_config = {
+            "type": "ensemble",
+            "strategy": strategy,
+            "threshold": threshold,
+            "n_members": len(member_run_ids),
+            "member_run_ids": member_run_ids,
+        }
         if not config_path.exists():
-            _write_json(config_path, {
-                "type": "ensemble",
-                "strategy": strategy,
-                "threshold": threshold,
-                "n_members": len(member_run_ids),
-                "member_run_ids": member_run_ids,
-            })
+            _write_json(config_path, ensemble_config)
+        config_fingerprint = fingerprint(ensemble_config)
 
-        # 3. Metrics -----------------------------------------------------------
-        from monai.data.wsi_reader import WSIReader
-        from segmenteer.core.base import WSI_READER
+        ground_truth_rel: str | None = None
+        if ground_truth_geojson is not None:
+            ground_truth_dir = self.output_dir / GROUND_TRUTH_DIR
+            ground_truth_dir.mkdir(parents=True, exist_ok=True)
+            gt_path = ground_truth_dir / f"{image_stem}.geojson"
+            if not gt_path.exists():
+                save_geojson(ground_truth_geojson, gt_path)
+            ground_truth_rel = f"{GROUND_TRUTH_DIR}/{image_stem}.geojson"
 
-        reader = WSIReader(WSI_READER)
-        wsi = reader.read(str(image_path))
-        w, h = reader.get_size(wsi, 0)
-        area = w * h
+        # Read only level-0 metadata.  No polygon metrics or mask rasterisation
+        # occur here.
+        native_spacing = None
+        try:
+            from segmenteer.core.base import get_wsi_reader
 
-        unsupervised = compute_unsupervised_metrics(geojson, area)
-        supervised = (
-            compute_all_supervised_metrics(geojson, ground_truth_geojson, (w, h))
-            if ground_truth_geojson is not None
-            else None
-        )
+            reader = get_wsi_reader()
+            wsi = reader.read(str(image_path))
+            x_mpp, y_mpp = reader.get_mpp(wsi, 0)
+            native_spacing = [float(x_mpp), float(y_mpp)]
+        except Exception:
+            pass
 
         eval_data: dict = {
+            "artifact_schema_version": CURRENT_ARTIFACT_SCHEMA_VERSION,
             "method_name": "ensemble",
             "run_id": run_id,
             "image_stem": image_stem,
@@ -375,22 +427,56 @@ class EnsembleOutputWriter:
             "threshold": threshold,
             "member_run_ids": member_run_ids,
             "saved_at": datetime.now(timezone.utc).isoformat(),
-            "metrics": {"unsupervised": asdict(unsupervised)},
+            "evaluation_mode": (
+                "ground_truth_available" if ground_truth_geojson is not None else "prediction_only"
+            ),
+            "ground_truth_available": ground_truth_geojson is not None,
+            "native_spacing_um_per_px": native_spacing,
+            "magnification_used": None,
+            "segmenter_config_fingerprint": config_fingerprint,
         }
-        if supervised is not None:
-            eval_data["metrics"]["supervised"] = asdict(supervised)
+        if ground_truth_rel:
+            eval_data["ground_truth"] = {
+                "path": ground_truth_rel,
+                "coordinate_space": "level_0_pixels",
+            }
         _write_json(scores_dir / f"{image_stem}.json", eval_data)
 
-        # 4. Heatmap -----------------------------------------------------------
-        save_heatmap_thumbnail(
-            image=image_path,
-            geojson_data=geojson,
-            output_path=heatmaps_dir / f"{image_stem}.png",
-            mpp=self.heatmap_mpp,
-            max_size=self.heatmap_max_size,
-            alpha=self.heatmap_alpha,
+        completed_dir = method_dir / EVAL_COMPLETED_DIR
+        completed_dir.mkdir(parents=True, exist_ok=True)
+        _write_json(
+            completed_dir / f"{image_stem}.json",
+            {
+                "artifact_schema_version": CURRENT_ARTIFACT_SCHEMA_VERSION,
+                "run_id": run_id,
+                "image_stem": image_stem,
+                "segmenter_config_fingerprint": config_fingerprint,
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+            },
         )
 
+        if self.save_heatmaps:
+            from segmenteer.visualization.heatmaps import save_heatmap_thumbnail
+
+            heatmaps_dir = method_dir / EVAL_HEATMAPS_DIR
+            heatmaps_dir.mkdir(parents=True, exist_ok=True)
+            try:
+                save_heatmap_thumbnail(
+                    image=image_path,
+                    geojson_data=geojson,
+                    output_path=heatmaps_dir / f"{image_stem}.png",
+                    mpp=self.heatmap_mpp,
+                    max_size=self.heatmap_max_size,
+                    alpha=self.heatmap_alpha,
+                )
+            except Exception as exc:
+                print(f"  ! prediction heatmap skipped for {image_stem}: {type(exc).__name__}: {exc}")
+
+        if self.image_path is None:
+            self._pending_dataset_index_updates += 1
+            if self._pending_dataset_index_updates >= self.index_refresh_interval:
+                self.refresh_dataset_indexes()
+                self._pending_dataset_index_updates = 0
         return method_dir
 
     # ------------------------------------------------------------------
@@ -423,53 +509,173 @@ class EnsembleOutputWriter:
     # Finalise — dataset
     # ------------------------------------------------------------------
 
-    def finalize_dataset(
-        self,
-        all_results: dict[Path, list[BenchmarkResult]] | None = None,
-    ) -> Path:
-        """Write ``ensemble_manifest.json`` for a dataset run.
+    def _load_dataset_metadata(self) -> dict | None:
+        """Read the stable dataset contract written by the workflow, if any."""
+        path = self.output_dir / "dataset_manifest.json"
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            return None
+        return payload if isinstance(payload, dict) else None
 
-        The manifest is **method-first**: each top-level ``members`` entry
-        represents one algorithm and lists its per-image predictions.
-        This mirrors the on-disk layout ``<run_id>/predictions/<stem>.geojson``
-        and makes it straightforward to load one method's outputs or all
-        methods for a single image via :func:`load_ensemble_members`.
-        """
-        members_block = []
-        for run_id, image_entries in self._run_members.items():
+    def _scan_dataset_members(
+        self,
+    ) -> tuple[
+        dict[str, list[dict]],
+        dict[str, str],
+        list[dict[str, str]],
+        dict[tuple[str, str], dict],
+    ]:
+        """Rebuild all derived indexes from committed artifacts on disk."""
+        groups: dict[str, list[dict]] = defaultdict(list)
+        names: dict[str, str] = {}
+        rows: list[dict[str, str]] = []
+        scores: dict[tuple[str, str], dict] = {}
+
+        for artifact in iter_completed_artifacts(self.output_dir):
+            run_id = artifact.run_id
+            image_stem = artifact.image_stem
+            score = artifact.score
+            config_filename = (
+                CONFIG_FILE
+                if (artifact.method_dir / CONFIG_FILE).is_file()
+                else "config.json"
+            )
+            entry: dict = {
+                "name": str(score.get("method_name") or run_id),
+                "run_id": run_id,
+                "path": run_id,
+                "image_stem": image_stem,
+                "image": score.get("image_path"),
+                "annotations": f"{run_id}/{PREDICTIONS_DIR}/{image_stem}.geojson",
+                "scores": f"{run_id}/{EVAL_SCORES_DIR}/{image_stem}.json",
+                "config": f"{run_id}/{config_filename}",
+                "heatmap": (
+                    f"{run_id}/{EVAL_HEATMAPS_DIR}/{image_stem}.png"
+                    if (artifact.method_dir / EVAL_HEATMAPS_DIR / f"{image_stem}.png").is_file()
+                    else None
+                ),
+            }
+            ground_truth = score.get("ground_truth")
+            if isinstance(ground_truth, dict) and ground_truth.get("path"):
+                entry["ground_truth"] = ground_truth["path"]
+                layers = score.get("evaluation_layers")
+                if isinstance(layers, dict):
+                    entry["evaluation_layers"] = {
+                        key: layers.get(key)
+                        for key in ("true_positive", "false_positive", "false_negative")
+                        if layers.get(key)
+                    }
+                    entry["error_map"] = layers.get("error_map")
+
+            groups[run_id].append(entry)
+            names[run_id] = entry["name"]
+            rows.append(score_to_dataset_csv_row(score))
+            scores[(run_id, image_stem)] = score
+
+        self._run_members = defaultdict(list, groups)
+        self._run_names = names
+        return groups, names, rows, scores
+
+    @staticmethod
+    def _summary_from_score(score: dict) -> dict | None:
+        """Convert persisted score metadata into a lightweight manifest row."""
+        if not isinstance(score, dict):
+            return None
+        row: dict = {
+            "run_id": score.get("run_id"),
+            "method": score.get("method_name"),
+            "evaluation_mode": score.get("evaluation_mode", "prediction_only"),
+            "execution_time_s": score.get("execution_time_s", 0.0),
+            "native_spacing_um_per_px": score.get("native_spacing_um_per_px"),
+            "magnification_used": score.get("magnification_used"),
+        }
+        # Legacy output folders may already contain metrics; surface those
+        # values without requiring new runs to calculate any.
+        metrics = score.get("metrics")
+        if isinstance(metrics, dict):
+            unsupervised = metrics.get("unsupervised")
+            if isinstance(unsupervised, dict):
+                for key in ("num_objects", "coverage_ratio", "mean_area", "mean_compactness", "mean_solidity"):
+                    if key in unsupervised:
+                        row[key] = unsupervised[key]
+            supervised = metrics.get("supervised")
+            if isinstance(supervised, dict):
+                for key in ("dice", "iou", "precision", "recall"):
+                    if key in supervised:
+                        row[key] = supervised[key]
+        return row
+
+    def _write_dataset_manifest(
+        self,
+        groups: dict[str, list[dict]],
+        names: dict[str, str],
+        scores: dict[tuple[str, str], dict],
+        dataset_metadata: dict | None,
+    ) -> Path:
+        members_block: list[dict] = []
+        for run_id in sorted(groups, key=str.casefold):
+            image_entries = sorted(groups[run_id], key=lambda entry: entry["image_stem"].casefold())
             member_entry: dict = {
                 "run_id": run_id,
-                "name": self._run_names.get(run_id, run_id),
+                "name": names.get(run_id, run_id),
                 "n_images": len(image_entries),
                 "images": image_entries,
             }
-            if all_results:
-                # collect per-image summary rows for this run_id
-                summary_rows = []
-                for img_path, img_result_list in all_results.items():
-                    matching = [r for r in img_result_list if r.run_id == run_id]
-                    summary_rows.extend(_build_summary(matching))
-                if summary_rows:
-                    member_entry["summary"] = summary_rows
+            summary_rows = [
+                summary
+                for entry in image_entries
+                if (summary := self._summary_from_score(scores[(run_id, entry["image_stem"])]))
+                is not None
+            ]
+            if summary_rows:
+                member_entry["summary"] = summary_rows
             members_block.append(member_entry)
 
         all_image_stems = sorted(
-            {e["image_stem"] for imgs in self._run_members.values() for e in imgs}
+            {entry["image_stem"] for image_entries in groups.values() for entry in image_entries},
+            key=str.casefold,
         )
         manifest: dict = {
             "segmenteer_version": _segmenteer_version(),
             "mode": "dataset",
             "run_dir": str(self.output_dir),
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "n_methods": len(self._run_members),
+            "n_methods": len(groups),
             "n_images": len(all_image_stems),
             "images": all_image_stems,
             "members": members_block,
         }
+        if dataset_metadata is not None:
+            manifest["dataset"] = dataset_metadata
 
         manifest_path = self.output_dir / MANIFEST_FILE
         _write_json(manifest_path, manifest)
         return manifest_path
+
+    def refresh_dataset_indexes(self, dataset_metadata: dict | None = None) -> Path:
+        """Atomically rebuild shared ``results.csv`` and the dataset manifest.
+
+        The root lock is deliberately held only during this cheap disk scan and
+        replacement of derived files.  Model inference and method-owned writes
+        remain fully parallel across distinct ``run_id`` directories.
+        """
+        with output_index_lock(self.output_dir):
+            groups, names, rows, scores = self._scan_dataset_members()
+            write_dataset_results_csv_rows(rows, self.output_dir / "results.csv")
+            metadata = dataset_metadata if dataset_metadata is not None else self._load_dataset_metadata()
+            manifest = self._write_dataset_manifest(groups, names, scores, metadata)
+        self._pending_dataset_index_updates = 0
+        return manifest
+
+    def finalize_dataset(
+        self,
+        all_results: dict[Path, list[BenchmarkResult]] | None = None,
+        dataset_metadata: dict | None = None,
+    ) -> Path:
+        """Rebuild the complete dataset indexes from committed output artifacts."""
+        del all_results  # Derived indexes intentionally do not trust local process state.
+        return self.refresh_dataset_indexes(dataset_metadata=dataset_metadata)
 
     # ------------------------------------------------------------------
     # Convenience
@@ -592,25 +798,42 @@ def load_ensemble_members(
 
 
 def _build_summary(results: list[BenchmarkResult]) -> list[dict]:
+    """Build a metadata-first summary without triggering metric computation."""
     rows = []
-    for r in results:
-        u = r.unsupervised_metrics
+    for result in results:
         row: dict = {
-            "run_id": r.run_id,
-            "method": r.method_name,
-            "execution_time_s": r.execution_time,
-            "num_objects": u.num_objects,
-            "coverage_ratio": u.coverage_ratio,
-            "mean_area": u.mean_area,
-            "mean_compactness": u.mean_compactness,
-            "mean_solidity": u.mean_solidity,
+            "run_id": result.run_id,
+            "method": result.method_name,
+            "evaluation_mode": (
+                "ground_truth_available"
+                if result.ground_truth_geojson is not None
+                else "prediction_only"
+            ),
+            "execution_time_s": result.execution_time,
+            "native_spacing_um_per_px": result.native_spacing,
+            "magnification_used": result.magnification_used,
         }
-        if r.supervised_metrics is not None:
-            s = r.supervised_metrics
-            row["dice"] = s.dice
-            row["iou"] = s.iou
-            row["precision"] = s.precision
-            row["recall"] = s.recall
+        if result.unsupervised_metrics is not None:
+            unsupervised = result.unsupervised_metrics
+            row.update(
+                {
+                    "num_objects": unsupervised.num_objects,
+                    "coverage_ratio": unsupervised.coverage_ratio,
+                    "mean_area": unsupervised.mean_area,
+                    "mean_compactness": unsupervised.mean_compactness,
+                    "mean_solidity": unsupervised.mean_solidity,
+                }
+            )
+        if result.supervised_metrics is not None:
+            supervised = result.supervised_metrics
+            row.update(
+                {
+                    "dice": supervised.dice,
+                    "iou": supervised.iou,
+                    "precision": supervised.precision,
+                    "recall": supervised.recall,
+                }
+            )
         rows.append(row)
     return rows
 

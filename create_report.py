@@ -19,8 +19,8 @@ from pathlib import Path
 # Allow running from the repo root without installing the package.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.loader import load_index
-from app.report import generate_report
+from app_older.loader import load_index
+from app_older.report import generate_report
 
 
 def main() -> None:

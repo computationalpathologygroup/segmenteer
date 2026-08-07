@@ -259,15 +259,17 @@ data*
 visualizations
 .DS_Store
 sandbox
-
+app_older/
 qupath
 
 outputs*
+*.zip
 
-todo
+TODO
 
 *.ndpi
 *.svs
 
 uv.toml
 overrides.txt
+

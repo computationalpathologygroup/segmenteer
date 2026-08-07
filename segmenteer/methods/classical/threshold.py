@@ -63,7 +63,7 @@ class EntropyMaskerSegmenter(NumpySegmenter):
 
     Parameters
     ----------
-    min_area : int, default=10
+    min_area : int, default=0
         Minimum area of a polygon to be included in the output.
     footprint : np.ndarray, default=`skimage.morphology.disk(9)`
         Footprint to use with `skimage.filters.rank.entropy`.
@@ -137,3 +137,78 @@ def entropy_masker(
     threshold: float = threshold_otsu(ent)
     mask: npt.NDArray[np.bool_] = ent >= threshold
     return mask
+
+
+class OtsuTissueSegmenter(NumpySegmenter):
+    """Otsu tissue mask for light-background histology images.
+
+    Unlike the OtsuSegmenter, dark pixels are treated as tissue and
+    bright pixels as slide background.
+    """
+
+    def __init__(self, mpp: float = 20, *args, **kwargs):
+        super().__init__(mpp=mpp, *args, **kwargs)
+
+    @property
+    def name(self) -> str:
+        return "otsu_tissue"
+
+    def _segment_numpy(
+        self,
+        image: npt.NDArray[np.uint8],
+    ) -> npt.NDArray[np.bool_]:
+        if image.size == 0 or image.min() == image.max():
+            return np.zeros(image.shape, dtype=np.bool_)
+
+        threshold = threshold_otsu(image)
+
+        # Histology tissue is generally darker than the bright slide background.
+        return image <= threshold
+    
+
+class LiTissueSegmenter(NumpySegmenter):
+    """Li global thresholding with dark histology tissue as foreground."""
+
+    def __init__(self, mpp: float = 20, *args, **kwargs):
+        super().__init__(mpp=mpp, *args, **kwargs)
+
+    @property
+    def name(self) -> str:
+        return "li_tissue"
+
+    def _segment_numpy(
+        self,
+        image: npt.NDArray[np.uint8],
+    ) -> npt.NDArray[np.bool_]:
+        # Avoid labelling a uniform white or black image as tissue.
+        if image.size == 0 or image.min() == image.max():
+            return np.zeros(image.shape, dtype=np.bool_)
+
+        threshold = threshold_li(image)
+
+        # Stained tissue is darker than the bright glass-slide background.
+        return image <= threshold
+
+
+class YenTissueSegmenter(NumpySegmenter):
+    """Yen global thresholding with dark histology tissue as foreground."""
+
+    def __init__(self, mpp: float = 20, *args, **kwargs):
+        super().__init__(mpp=mpp, *args, **kwargs)
+
+    @property
+    def name(self) -> str:
+        return "yen_tissue"
+
+    def _segment_numpy(
+        self,
+        image: npt.NDArray[np.uint8],
+    ) -> npt.NDArray[np.bool_]:
+        # Avoid labelling a uniform white or black image as tissue.
+        if image.size == 0 or image.min() == image.max():
+            return np.zeros(image.shape, dtype=np.bool_)
+
+        threshold = threshold_yen(image)
+
+        # Stained tissue is darker than the bright glass-slide background.
+        return image <= threshold

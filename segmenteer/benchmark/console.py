@@ -1,5 +1,3 @@
-"""Aesthetic console output for benchmark runs using rich."""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -106,15 +104,22 @@ class BenchmarkReporter:
         self.console.print()
 
     def print_image_header(
-        self, image_path: Path | str, index: int, total: int
+        self,
+        image_path: Path | str,
+        index: int,
+        total: int,
+        evaluation_mode: str | None = None,
     ) -> None:
         """Print a section rule when moving to a new image in a dataset run."""
         image_path = Path(image_path)
+        counter = f"  [muted]{index}/{total}[/muted]" if index and total else ""
+        mode = (
+            f"  [muted]· {evaluation_mode}[/muted]"
+            if evaluation_mode is not None
+            else ""
+        )
         self.console.print(
-            Rule(
-                f"[header]{image_path.name}[/header]  [muted]{index}/{total}[/muted]",
-                style="cyan",
-            )
+            Rule(f"[header]{image_path.name}[/header]{counter}{mode}", style="cyan")
         )
         self.console.print()
 
@@ -124,6 +129,13 @@ class BenchmarkReporter:
         method = Text(f" {name}", style="method")
         self.console.print(counter + method + Text("  running…", style="muted"))
 
+    def print_method_skipped(self, name: str, index: int, total: int) -> None:
+        """Print a compact line for a validated result reused during resume."""
+        counter = Text(f"[{index}/{total}]", style="muted")
+        method = Text(f" {name}", style="method")
+        self.console.print(counter + method + Text("  reused completed output", style="muted"))
+        self.console.print()
+
     def print_method_done(self, result: BenchmarkResult) -> None:
         """Print a compact one-line summary of a just-finished result."""
         if result.error:
@@ -131,10 +143,21 @@ class BenchmarkReporter:
             self.console.print()
             return
         t_color = _time_color(result.execution_time)
+        if result.unsupervised_metrics is None:
+            line = (
+                Text("  ✓ ", style="good")
+                + Text(f"{result.execution_time:7.2f}s", style=t_color)
+                + Text("  prediction + metadata saved", style="muted")
+            )
+            self.console.print(line)
+            self.console.print()
+            return
+
+        # Legacy/precomputed metrics remain displayable without forcing a new
+        # benchmark to calculate them.
         c_ratio = result.unsupervised_metrics.coverage_ratio
         c_color = _coverage_color(c_ratio)
         bar = _bar(c_ratio)
-
         line = (
             Text("  ✓ ", style="good")
             + Text(f"{result.execution_time:7.2f}s", style=t_color)
@@ -174,7 +197,13 @@ class BenchmarkReporter:
         self.console.print()
         self._print_performance_table(results)
         self.console.print()
-        self._print_quality_table(results)
+        if any(result.unsupervised_metrics is not None for result in results):
+            self._print_quality_table(results)
+        else:
+            self.console.print(
+                "[muted]Quality metrics are deferred. Run evaluate_outputs.py "
+                "against this output folder when evaluation is required.[/muted]"
+            )
         self.console.print()
         failures = [r for r in results if r.failed]
         if failures:
