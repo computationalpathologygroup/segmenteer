@@ -2,10 +2,10 @@ version = 1
 revision = 3
 requires-python = "==3.12.*"
 resolution-markers = [
-    "sys_platform == 'win32'",
     "platform_machine == 'x86_64' and sys_platform == 'linux'",
     "platform_machine == 'aarch64' and sys_platform == 'linux'",
     "platform_machine != 'aarch64' and platform_machine != 'x86_64' and sys_platform == 'linux'",
+    "sys_platform == 'win32'",
     "platform_machine == 'arm64' and sys_platform == 'darwin'",
     "platform_machine == 'x86_64' and sys_platform == 'darwin'",
     "(platform_machine != 'arm64' and platform_machine != 'x86_64' and sys_platform == 'darwin') or (sys_platform != 'darwin' and sys_platform != 'linux' and sys_platform != 'linux2' and sys_platform != 'win32')",
@@ -2023,17 +2023,14 @@ wheels = [
 
 [[package]]
 name = "openslide-python"
-version = "1.4.6"
-source = { registry = "https://pypi.org/simple" }
+version = "1.4.6.1"
+source = { registry = "https://girder.github.io/large_image_wheels" }
 dependencies = [
     { name = "pillow" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/74/76/64718cf7c8e297db2c7e5e6a204795d74541f1ba9da7bf5be85155f20d81/openslide_python-1.4.6.tar.gz", hash = "sha256:5df25a68507c7574b219b548f814b088ade8e04c36990c1472813ee16797bfb1", size = 430943, upload-time = "2026-06-08T01:12:39.6Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/22/7b5609514102fb3e02e4f8b87a58c1ce2f2b5bb0734462728ffc473f1fa7/openslide_python-1.4.6-cp311-abi3-macosx_10_9_universal2.whl", hash = "sha256:6d58a97324b3c42ef65085329bffa346a30d5607359a82c983faebc54750fc43", size = 33102, upload-time = "2026-06-08T01:12:26.467Z" },
-    { url = "https://files.pythonhosted.org/packages/89/be/7abab64f5dc53af384614f43ee2e5fab2b505cbb6d4c561172457d624eab/openslide_python-1.4.6-cp311-abi3-manylinux1_x86_64.manylinux_2_5_x86_64.whl", hash = "sha256:59caee04d657cccc88457148a34a507d492fd4ce9c7bcc16fca7d3bbd0a77fa0", size = 36748, upload-time = "2026-06-08T01:12:27.494Z" },
-    { url = "https://files.pythonhosted.org/packages/49/f2/fb9c87f34a740102ac18748bdc8908f29593878bf9eb5e4f76961f2d875a/openslide_python-1.4.6-cp311-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:dd637eccfc051da0b263a966ff8763f6791abb1c68ca08fc0b29062e91cbe6d1", size = 37306, upload-time = "2026-06-08T01:12:28.574Z" },
-    { url = "https://files.pythonhosted.org/packages/42/95/f49de157f4cf503a9bc2eafcf4a2351fffdeb95fee4c17caf63fb4cda7cf/openslide_python-1.4.6-cp311-abi3-win_amd64.whl", hash = "sha256:0c2655e668e467c6fd8db0147924f9753f053586304f5b775e56019a02adee8f", size = 35278, upload-time = "2026-06-08T01:12:29.73Z" },
+    { url = "https://github.com/girder/large_image_wheels/raw/wheelhouse/openslide_python-1.4.6.1-cp311-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:68fdd9da3c7f5eee2af53547bfa29f2236f43dd77ef360087ee3ff2889ee12ef" },
+    { url = "https://github.com/girder/large_image_wheels/raw/wheelhouse/openslide_python-1.4.6.1-cp311-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:a77a811ae941258681c4712739e1ffb517681749024994a54052a03d8198b849" },
 ]
 
 [[package]]
@@ -3528,10 +3525,10 @@ name = "torch"
 version = "2.13.0+cu129"
 source = { registry = "https://download.pytorch.org/whl/cu129" }
 resolution-markers = [
-    "sys_platform == 'win32'",
     "platform_machine == 'x86_64' and sys_platform == 'linux'",
     "platform_machine == 'aarch64' and sys_platform == 'linux'",
     "platform_machine != 'aarch64' and platform_machine != 'x86_64' and sys_platform == 'linux'",
+    "sys_platform == 'win32'",
 ]
 dependencies = [
     { name = "cuda-bindings", marker = "sys_platform != 'win32'" },
@@ -3578,10 +3575,10 @@ name = "torchvision"
 version = "0.28.0+cu129"
 source = { registry = "https://download.pytorch.org/whl/cu129" }
 resolution-markers = [
-    "sys_platform == 'win32'",
     "platform_machine == 'x86_64' and sys_platform == 'linux'",
     "platform_machine == 'aarch64' and sys_platform == 'linux'",
     "platform_machine != 'aarch64' and platform_machine != 'x86_64' and sys_platform == 'linux'",
+    "sys_platform == 'win32'",
 ]
 dependencies = [
     { name = "numpy" },

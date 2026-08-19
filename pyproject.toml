@@ -192,6 +192,7 @@ torchvision = [
 ]
 
 [tool.uv]
+index-strategy = "unsafe-best-match"
 # The pinned BigPicture package requires tensorflow-cpu>=2.20, but PyPI ships
 # no matching macOS ARM wheel. No other supported project dependency requires
 # tensorflow-cpu, so omit it globally and install tensorflow>=2.20 explicitly

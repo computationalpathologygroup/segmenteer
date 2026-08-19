@@ -12,10 +12,7 @@ RUN uv python install 3.12
 RUN apt-get update && apt-get install --no-install-recommends --yes \
         ca-certificates \
         build-essential \
-        git \
-        software-properties-common \
-    && add-apt-repository ppa:ubuntugis/ppa && apt-get update && apt-get install --no-install-recommends --yes \
-        gdal-bin libgdal-dev
+        git
 
 WORKDIR /app
 RUN --mount=type=cache,target=/root/.cache/uv \
@@ -29,13 +26,6 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 
 FROM nvidia/cuda:12.9.2-base-ubuntu22.04
-
-RUN apt-get update && apt-get install --no-install-recommends --yes \
-        ca-certificates \
-        git \
-        software-properties-common \
-    && add-apt-repository ppa:ubuntugis/ppa && apt-get update && apt-get install --no-install-recommends --yes \
-        gdal-bin libgdal-dev
 
 COPY --from=builder /python /python
 COPY --from=builder /app /app
