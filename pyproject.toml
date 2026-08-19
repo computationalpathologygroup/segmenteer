@@ -28,7 +28,7 @@ openslide = [
 
 # Classical image-processing methods.
 background-subtractor = [
-    "opencv-python>=4.13.0.90",
+    "opencv-python-headless>=4.11.0.86",
 ]
 od-gmm = [
     "scikit-learn>=1.7.2",
@@ -141,12 +141,11 @@ all = [
     "tensorflow>=2.20.0,<2.21.0",
     "tissue-segmentation",
     "fastapi>=0.115.0",
-    "histomicstk>=1.4.0",
+    # "histomicstk>=1.4.0",
     "huggingface-hub>=0.36.0",
     "imagecodecs>=2025.3.30",
     "matplotlib>=3.10.8",
     "onnxruntime>=1.24.4",
-    "opencv-python>=4.13.0.90",
     "openslide-bin>=4.0.0.11",
     "openslide-python>=1.3.0",
     "scikit-learn>=1.7.2",
@@ -158,6 +157,7 @@ all = [
     "trident",
     "ultralytics>=8.4.6",
     "uvicorn[standard]>=0.32.0",
+    "opencv-python-headless>=4.11.0.86",
 ]
 
 dev = [
@@ -173,6 +173,11 @@ name = "large_image"
 url = "https://girder.github.io/large_image_wheels"
 explicit = true
 
+[[tool.uv.index]]
+name = "pytorch-cu129"
+url = "https://download.pytorch.org/whl/cu129"
+explicit = true
+
 [tool.uv.build-backend]
 module-root = ""
 module-name = "segmenteer"
@@ -183,6 +188,12 @@ slidesegmenter = { git = "https://github.com/RTLucassen/slidesegmenter", rev = "
 trident = { git = "https://github.com/mahmoodlab/trident.git", rev = "adf3b7e8fdd7c815f33bec79da0d8d265200c2d6"}
 tissue-segmentation = { git = "https://github.com/imi-bigpicture/tissue-segmentation.git", subdirectory = "tissue_segmentation", rev = "6d97a25a8255f591eb2c705611a32a5f56101a25"}
 sam-2 = { git = "https://github.com/facebookresearch/sam2.git" }
+torch = [
+  { index = "pytorch-cu129", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+  { index = "pytorch-cu129", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
 
 [tool.uv]
 index-strategy = "unsafe-best-match"
@@ -190,4 +201,7 @@ index-strategy = "unsafe-best-match"
 # no matching macOS ARM wheel. No other supported project dependency requires
 # tensorflow-cpu, so omit it globally and install tensorflow>=2.20 explicitly
 # through the BigPicture extra instead.
-exclude-dependencies = ["tensorflow-cpu"]
+exclude-dependencies = [
+    "tensorflow-cpu",
+    "opencv-python",  # ultralytics installs the wrong opencv package
+]

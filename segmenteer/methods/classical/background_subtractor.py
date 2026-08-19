@@ -33,3 +33,7 @@ class BackgroundSubtractorMOG2Segmenter(NumpySegmenter):
 
         fg_mask = bg_subtractor.apply(image_uint8, learningRate=0.0)
         return fg_mask > 0
+
+    @property
+    def name(self):
+        return "BackgroundsubtractorMOG2"

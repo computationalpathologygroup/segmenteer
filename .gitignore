@@ -252,6 +252,7 @@ __marimo__/
 data
 models
 *.lock
+!uv.lock
 segmentation_results
 trident
 data*
