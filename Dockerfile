@@ -11,6 +11,7 @@ RUN uv python install 3.12
 
 RUN apt-get update && apt-get install --no-install-recommends --yes \
         ca-certificates \
+        build-essential \
         git \
         software-properties-common \
     && add-apt-repository ppa:ubuntugis/ppa && apt-get update && apt-get install --no-install-recommends --yes \
