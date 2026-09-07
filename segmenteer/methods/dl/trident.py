@@ -78,11 +78,25 @@ def _build_trident_cpg() -> Any:
         ) from exc
 
 
+def _build_trident_rtlucassenslidesegmenter() -> Any:
+    try:
+        from segmenteer.methods.dl.rtlucassen import LIBTRIDENTRTLucassenSlideSegmenterSegmenter
+        return _trident_segmenter_class()(
+            LIBTRIDENTRTLucassenSlideSegmenterSegmenter(),
+            model_id="rtlucassen",
+        )
+    except ImportError as exc:
+        raise ImportError(
+            "TRIDENTRTLucassenSlideSegmenterSegmenter requires Torch, torchvision, and "
+            "Trident. Run: uv sync --extra rtlucassen"
+        ) from exc
+
 _FACTORIES: dict[str, Callable[[], Any]] = {
     "TRIDENTHESTSegmenter": _build_trident_hest,
     "TRIDENTGrandQCSegmenter": _build_trident_grandqc,
     "TRIDENTPathProfilerSegmenter": _build_trident_pathprofiler,
     "TRIDENTCPGSegmenter": _build_trident_cpg,
+    "TRIDENTRTLucassenSlideSegmenterSegmenter": _build_trident_rtlucassenslidesegmenter,
 }
 
 

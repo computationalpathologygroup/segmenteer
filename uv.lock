@@ -908,7 +908,9 @@ dependencies = [
     { name = "imagecodecs" },
     { name = "numcodecs" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/57/65/bacdb7de1f83aa51f322f41fd3fd0513c74290d043e527a8328f51d07181/imagecodecs_numcodecs-2026.8.16.tar.gz", hash = "sha256:e65cccb7902f70fc69beb3af1822799996eddc5152438ffb9fd636e6e174bf4f", size = 2843, upload-time = "2026-08-16T01:10:56.34Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8d/44/ae7e6061af818c4d076f6ce1056d27b6e46bc73371e8233413af0ca77631/imagecodecs_numcodecs-2026.8.16-py3-none-any.whl", hash = "sha256:c3675f335971b1f13f84ed863c5a589de18d18f33e524ffa274ee2226f70cdc2", size = 3247, upload-time = "2026-08-20T02:11:02.729Z" },
+]
 
 [[package]]
 name = "imageio"
@@ -3029,6 +3031,11 @@ pathprofiler = [
 ]
 rtlucassen = [
     { name = "slidesegmenter" },
+    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'linux' and sys_platform != 'win32'" },
+    { name = "torch", version = "2.13.0+cu129", source = { registry = "https://download.pytorch.org/whl/cu129" }, marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+    { name = "torchvision", version = "0.28.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'linux' and sys_platform != 'win32'" },
+    { name = "torchvision", version = "0.28.0+cu129", source = { registry = "https://download.pytorch.org/whl/cu129" }, marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+    { name = "trident" },
 ]
 runtime = [
     { name = "fastapi" },
@@ -3122,6 +3129,7 @@ requires-dist = [
     { name = "torch", marker = "(sys_platform == 'linux' and extra == 'grandqc') or (sys_platform == 'win32' and extra == 'grandqc')", specifier = ">=2.9.1", index = "https://download.pytorch.org/whl/cu129" },
     { name = "torch", marker = "(sys_platform == 'linux' and extra == 'hest') or (sys_platform == 'win32' and extra == 'hest')", specifier = ">=2.9.1", index = "https://download.pytorch.org/whl/cu129" },
     { name = "torch", marker = "(sys_platform == 'linux' and extra == 'pathprofiler') or (sys_platform == 'win32' and extra == 'pathprofiler')", specifier = ">=2.9.1", index = "https://download.pytorch.org/whl/cu129" },
+    { name = "torch", marker = "(sys_platform == 'linux' and extra == 'rtlucassen') or (sys_platform == 'win32' and extra == 'rtlucassen')", specifier = ">=2.9.1", index = "https://download.pytorch.org/whl/cu129" },
     { name = "torch", marker = "(sys_platform == 'linux' and extra == 'torch') or (sys_platform == 'win32' and extra == 'torch')", specifier = ">=2.9.1", index = "https://download.pytorch.org/whl/cu129" },
     { name = "torch", marker = "(sys_platform == 'linux' and extra == 'trident') or (sys_platform == 'win32' and extra == 'trident')", specifier = ">=2.9.1", index = "https://download.pytorch.org/whl/cu129" },
     { name = "torch", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'all'", specifier = ">=2.9.1" },
@@ -3131,6 +3139,7 @@ requires-dist = [
     { name = "torch", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'grandqc'", specifier = ">=2.9.1" },
     { name = "torch", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'hest'", specifier = ">=2.9.1" },
     { name = "torch", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'pathprofiler'", specifier = ">=2.9.1" },
+    { name = "torch", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'rtlucassen'", specifier = ">=2.9.1" },
     { name = "torch", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'torch'", specifier = ">=2.9.1" },
     { name = "torch", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'trident'", specifier = ">=2.9.1" },
     { name = "torchvision", marker = "(sys_platform == 'linux' and extra == 'all') or (sys_platform == 'win32' and extra == 'all')", specifier = ">=0.24.1", index = "https://download.pytorch.org/whl/cu129" },
@@ -3140,6 +3149,7 @@ requires-dist = [
     { name = "torchvision", marker = "(sys_platform == 'linux' and extra == 'grandqc') or (sys_platform == 'win32' and extra == 'grandqc')", specifier = ">=0.24.1", index = "https://download.pytorch.org/whl/cu129" },
     { name = "torchvision", marker = "(sys_platform == 'linux' and extra == 'hest') or (sys_platform == 'win32' and extra == 'hest')", specifier = ">=0.24.1", index = "https://download.pytorch.org/whl/cu129" },
     { name = "torchvision", marker = "(sys_platform == 'linux' and extra == 'pathprofiler') or (sys_platform == 'win32' and extra == 'pathprofiler')", specifier = ">=0.24.1", index = "https://download.pytorch.org/whl/cu129" },
+    { name = "torchvision", marker = "(sys_platform == 'linux' and extra == 'rtlucassen') or (sys_platform == 'win32' and extra == 'rtlucassen')", specifier = ">=0.24.1", index = "https://download.pytorch.org/whl/cu129" },
     { name = "torchvision", marker = "(sys_platform == 'linux' and extra == 'torch') or (sys_platform == 'win32' and extra == 'torch')", specifier = ">=0.24.1", index = "https://download.pytorch.org/whl/cu129" },
     { name = "torchvision", marker = "(sys_platform == 'linux' and extra == 'trident') or (sys_platform == 'win32' and extra == 'trident')", specifier = ">=0.24.1", index = "https://download.pytorch.org/whl/cu129" },
     { name = "torchvision", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'all'", specifier = ">=0.24.1" },
@@ -3149,6 +3159,7 @@ requires-dist = [
     { name = "torchvision", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'grandqc'", specifier = ">=0.24.1" },
     { name = "torchvision", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'hest'", specifier = ">=0.24.1" },
     { name = "torchvision", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'pathprofiler'", specifier = ">=0.24.1" },
+    { name = "torchvision", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'rtlucassen'", specifier = ">=0.24.1" },
     { name = "torchvision", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'torch'", specifier = ">=0.24.1" },
     { name = "torchvision", marker = "sys_platform != 'linux' and sys_platform != 'win32' and extra == 'trident'", specifier = ">=0.24.1" },
     { name = "tqdm", marker = "extra == 'all'", specifier = ">=4.67.0" },
@@ -3158,6 +3169,7 @@ requires-dist = [
     { name = "trident", marker = "extra == 'cpg'", git = "https://github.com/mahmoodlab/trident.git?rev=adf3b7e8fdd7c815f33bec79da0d8d265200c2d6" },
     { name = "trident", marker = "extra == 'dl'", git = "https://github.com/mahmoodlab/trident.git?rev=adf3b7e8fdd7c815f33bec79da0d8d265200c2d6" },
     { name = "trident", marker = "extra == 'pathprofiler'", git = "https://github.com/mahmoodlab/trident.git?rev=adf3b7e8fdd7c815f33bec79da0d8d265200c2d6" },
+    { name = "trident", marker = "extra == 'rtlucassen'", git = "https://github.com/mahmoodlab/trident.git?rev=adf3b7e8fdd7c815f33bec79da0d8d265200c2d6" },
     { name = "trident", marker = "extra == 'trident'", git = "https://github.com/mahmoodlab/trident.git?rev=adf3b7e8fdd7c815f33bec79da0d8d265200c2d6" },
     { name = "ultralytics", marker = "extra == 'all'", specifier = ">=8.4.6" },
     { name = "ultralytics", marker = "extra == 'dl'", specifier = ">=8.4.6" },

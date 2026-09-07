@@ -128,6 +128,7 @@ _LAZY_EXPORTS: dict[str, tuple[str, str]] = {
     "TRIDENTHESTSegmenter": ("segmenteer.methods.dl.trident", "TRIDENTHESTSegmenter"),
     "TRIDENTPathProfilerSegmenter": ("segmenteer.methods.dl.trident", "TRIDENTPathProfilerSegmenter"),
     "TRIDENTCPGSegmenter": ("segmenteer.methods.dl.trident", "TRIDENTCPGSegmenter"),
+    "TRIDENTRTLucassenSlideSegmenterSegmenter": ("segmenteer.methods.dl.trident", "TRIDENTRTLucassenSlideSegmenterSegmenter"),
 }
 
 
