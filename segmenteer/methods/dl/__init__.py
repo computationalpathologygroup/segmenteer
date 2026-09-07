@@ -24,6 +24,11 @@ except ImportError:
     RTLucassenSlideSegmenter = None  # type: ignore[assignment]
 
 try:
+    from segmenteer.methods.dl.tiatoolbox import TIAToolboxSegmenter
+except ImportError:
+    TIAToolboxSegmenter = None
+
+try:
     from segmenteer.methods.dl.trident import (
         TRIDENTGrandQCSegmenter,
         TRIDENTHESTSegmenter,
@@ -46,4 +51,5 @@ __all__ = [
     "BigPictureSegmenter",
     "TRIDENTPathProfilerSegmenter",
     "TRIDENTCPGSegmenter",
+    "TIAToolboxSegmenter",
 ]

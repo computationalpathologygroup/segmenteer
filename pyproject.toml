@@ -154,6 +154,7 @@ all = [
     "uvicorn[standard]>=0.32.0",
     "opencv-python-headless>=4.11.0.86",
     "histomicstk>=1.3.14",
+    "tiatoolbox>=2.1.3",
 ]
 
 dev = [
@@ -161,6 +162,9 @@ dev = [
 ]
 histomicstk = [
     "histomicstk>=1.3.14",
+]
+tiatoolbox = [
+    "tiatoolbox>=2.1.3",
 ]
 
 [build-system]
@@ -171,8 +175,8 @@ build-backend = "uv_build"
 url = "https://girder.github.io/large_image_wheels"
 
 [[tool.uv.index]]
-name = "pytorch-cu129"
-url = "https://download.pytorch.org/whl/cu129"
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
 explicit = true
 
 [tool.uv.build-backend]
@@ -185,11 +189,12 @@ trident = { git = "https://github.com/mahmoodlab/trident.git", rev = "adf3b7e8fd
 tissue-segmentation = { git = "https://github.com/imi-bigpicture/tissue-segmentation.git", subdirectory = "tissue_segmentation", rev = "6d97a25a8255f591eb2c705611a32a5f56101a25"}
 sam-2 = { git = "https://github.com/facebookresearch/sam2.git", rev = "2b90b9f5ceec907a1c18123530e92e794ad901a4" }
 torch = [
-  { index = "pytorch-cu129", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+  { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
 ]
 torchvision = [
-  { index = "pytorch-cu129", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+  { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
 ]
+tiatoolbox = { git = "https://github.com/TissueImageAnalytics/tiatoolbox", rev = "0482082c0934abf095b43cd60dd9b8db002755c5" }
 
 [tool.uv]
 index-strategy = "unsafe-best-match"
@@ -200,6 +205,9 @@ index-strategy = "unsafe-best-match"
 exclude-dependencies = [
     "tensorflow-cpu",
     "opencv-python",  # ultralytics installs the wrong opencv package
+]
+override-dependencies = [
+    { package = { name = "trident", version = "0.2.3" }, dependencies = ["timm>=1.0.3"] },  # It's very strict on an early timm version, while tiatoolbox requires >=1.0.3.
 ]
 
 [tool.uv.extra-build-dependencies]

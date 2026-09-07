@@ -24,6 +24,7 @@ BENCHMARK_DEVICE = "cuda"
 # =============================================================================
 
 METHODS = [
+    seg.TIAToolboxSegmenter(),
     seg.EntropyMaskerSegmenter(mpp=20),
     seg.BackgroundSubtractorMOG2Segmenter(mpp=20),
     seg.FESISegmenter(mpp=20),
