@@ -66,6 +66,7 @@ METHODS = [
     seg.TRIDENTPathProfilerSegmenter,
     seg.TRIDENTGrandQCSegmenter,
     seg.TRIDENTHESTSegmenter,
+    seg.TRIDENTRTLucassenSlideSegmenterSegmenter,
 
     # Classical methods
     seg.LiSegmenter(mpp=20),
