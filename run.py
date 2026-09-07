@@ -1,71 +1,121 @@
-import os
-from pathlib import Path
+"""Segmenteer experiment launcher.
 
+Edit the configuration and METHODS list below, then run::
+
+    python run.py
+
+Optional command-line overrides are available with ``python run.py --help``.
+"""
 import segmenteer as seg
 
-# ---------------------------------------------------------------------------
-# Reader configuration — change to WSIBackend.CUCIM or WSIBackend.TIFFFILE
-# ---------------------------------------------------------------------------
 
-WSI_READER = seg.WSIBackend.OPENSLIDE
-os.environ.setdefault("WSI_READER", WSI_READER)
-kw = {}  # to override backend: from monai.data.wsi_reader import WSIReader; kw = {"reader": WSIReader(WSI_READER)}
+# =============================================================================
+# CONFIGURATION — edit this section
+# =============================================================================
 
-# ---------------------------------------------------------------------------
-# Segmenter pool — comment out/remove methods from the list below that you do not want to use or use your own paramaters
-# ---------------------------------------------------------------------------
+# Dataset / process settings.
+SLIDE_ORDER = "smallest-first"  # "smallest-first" | "alphabetical"
+WORKERS: int | str = "auto"     # "auto" | positive integer
+BENCHMARK_DEVICE = "cuda"
 
-SEGMENTERS = [
-    seg.OtsuSegmenter(mpp=5, min_area=0, **kw),
-    seg.LiSegmenter(mpp=20, min_area=0, **kw),
-    seg.YenSegmenter(mpp=20, min_area=0, **kw),
-    seg.EntropyMaskerSegmenter(mpp=10, min_area=0, **kw),
-    seg.ODGMMSlideSegmenter(mpp=10, **kw),
-    seg.MorphologicalSegmenter(mpp=10, **kw),
-    seg.WatershedSegmenter(mpp=10, **kw),
-    seg.FESISegmenter(**kw),                     # improved=True, mpp=20
-    seg.FESISegmenter(improved=False, **kw),     # different params → separate dir
-    seg.BackgroundSubtractorMOG2Segmenter(mpp=20, **kw),
-    # seg.HSVThresholdSegmenter(mpp=10, **kw),     # HSV colour-range (H&E purple-pink)
-    # seg.HESTSegmenter(mpp=1),
-    # seg.GrandQCSegmenter(mpp=8),
-    # seg.BigPictureSegmenter(),  # requires: uv pip install tensorflow tissue-segmentation @ git+...
-    # seg.TRIDENTHESTSegmenter,
-    # seg.TRIDENTGrandQCSegmenter,
-    # seg.TRIDENTPathProfilerSegmenter,
-    seg.FastSAMSegmenter(mpp=10),
-    # seg.RTLucassenSlideSegmenter(),
-    # seg.HistomicsTKSegmenter(mpp=10, **kw),
-    # seg.TRIDENTCPGSegmenter,
+
+# =============================================================================
+# METHODS — add/remove configurations here
+# =============================================================================
+
+METHODS = [
+    seg.EntropyMaskerSegmenter(mpp=20),
+    seg.BackgroundSubtractorMOG2Segmenter(mpp=20),
+    seg.FESISegmenter(mpp=20),
+    seg.FESISegmenter(mpp=20, improved=False),
+    seg.FESISegmenter(mpp=10),
+    seg.FESISegmenter(mpp=10, improved=False),
+    # seg.HistomicsTKSegmenter(mpp=20),
+    # seg.HistomicsTKSegmenter(mpp=10),
+    seg.OtsuSegmenter(mpp=20),
+    seg.BigPictureSegmenter(mpp=8, device=BENCHMARK_DEVICE),
+    seg.BigPictureSegmenter(mpp=8, device=BENCHMARK_DEVICE, select_largest_tissue_objects=True, apply_hole_filling=False),
+    seg.BigPictureSegmenter(mpp=8, device=BENCHMARK_DEVICE),
+    seg.BigPictureSegmenter(
+        mpp=8,
+        device=BENCHMARK_DEVICE,
+        dilation_disk_size=32,
+        confidence_threshold=0.8,
+        dilate_mask=True,
+        apply_hole_filling=True,
+        select_largest_tissue_objects=True,
+    ),
+    seg.WatershedSegmenter(mpp=20),
+    seg.WatershedSegmenter(mpp=10),
+    seg.WatershedSegmenter(mpp=5),
+    seg.HSVThresholdSegmenter(mpp=20),
+    seg.HSVThresholdSegmenter(mpp=10, min_area=1000),
+    seg.HSVThresholdSegmenter(mpp=5),
+    seg.OtsuSegmenter(mpp=10),
+    seg.OtsuSegmenter(mpp=5),
+    seg.OtsuTissueSegmenter(mpp=20),
+
+    seg.EntropyMaskerSegmenter(mpp=10),
+    seg.EntropyMaskerSegmenter(mpp=5),
+    seg.FESISegmenter(mpp=5),
+    seg.FESISegmenter(mpp=5, improved=False),
+    # seg.HistomicsTKSegmenter(mpp=5),
+
+    seg.RTLucassenSlideSegmenter(mpp=7.04, device=BENCHMARK_DEVICE),
+    seg.TRIDENTCPGSegmenter,
+    seg.TRIDENTPathProfilerSegmenter,
+    seg.TRIDENTGrandQCSegmenter,
+    seg.TRIDENTHESTSegmenter,
+
+    # Classical methods
+    seg.LiSegmenter(mpp=20),
+    seg.YenSegmenter(mpp=20),
+    seg.HSVThresholdSegmenter(mpp=10),
+
+    # Direct deep-learning wrappers (all receive the shared device policy)
+    seg.FastSAMSegmenter(mpp=20, device=BENCHMARK_DEVICE),
+    seg.FastSAMSegmenter(mpp=10, device=BENCHMARK_DEVICE),
+    seg.FastSAMSegmenter(mpp=5, device=BENCHMARK_DEVICE),
+
+    seg.RTLucassenSlideSegmenter(mpp=7.04, device=BENCHMARK_DEVICE),
+    seg.AtlasPatchSAM2Segmenter(device="cpu"),
+
+    #  Trident-backed deep-learning methods
+    seg.TRIDENTHESTSegmenter,
+    seg.TRIDENTGrandQCSegmenter,
+    seg.TRIDENTPathProfilerSegmenter,
+    seg.TRIDENTCPGSegmenter,
+
+    seg.WatershedTissueSegmenter(
+        mpp=20,
+        min_distance_um=100,
+    ),
+    seg.LiTissueSegmenter(mpp=10),
+    seg.LiTissueSegmenter(mpp=5),
+
+    seg.YenTissueSegmenter(mpp=20),
+    seg.YenTissueSegmenter(mpp=10),
+    seg.YenTissueSegmenter(mpp=5),
+
+    # seg.HistomicsTKTissueSegmenter(
+    #     mpp=20,
+    #     mask_type="simple",
+    # ),
+    # seg.HistomicsTKTissueSegmenter(
+    #     mpp=20,
+    #     mask_type="saliency",
+    # ),
+    # seg.HistomicsTKTissueSegmenter(
+    #     mpp=10,
+    #     mask_type="saliency",
+    # ),
+    seg.OtsuTissueSegmenter(mpp=5),
 ]
 
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    # --- single image, unsupervised ---
-    # seg.run_single_image(SEGMENTERS, Path("CMU-3.tif"))
-
-    # --- single image, supervised ---
-    # import json
-    # gt = json.loads(Path("example.geojson").read_text())
-    # seg.run_single_image(SEGMENTERS, Path("example.tiff"), ground_truth=gt)
-
-    # --- dataset, unsupervised ---
-    images = sorted(
-        Path("/mnt/c/Users/z405155/Downloads/doi-10.34894-zzyu9m/HHG/").glob("*.tiff")
+    seg.run_directory_cli(
+        METHODS,
+        slide_order=SLIDE_ORDER,
+        workers=WORKERS,
     )
-    seg.run_dataset(SEGMENTERS, images)
-
-    # --- dataset, supervised (annotations sit next to images) ---
-    # images = sorted(Path("dataset/").glob("*.tiff"))
-    # gts = seg.load_ground_truths(images)               # finds <stem>_gt.geojson
-    # seg.run_dataset(SEGMENTERS, images, ground_truths=gts)
-
-    # --- dataset, supervised (annotations in a separate folder) ---
-    # images = sorted(Path("dataset/wsis/").glob("*.tiff"))
-    # gts = seg.load_ground_truths(images, annotation_dir=Path("dataset/annotations/"))
-    # seg.run_dataset(SEGMENTERS, images, ground_truths=gts)
-
-    # note: supervised runs have not been yet tested

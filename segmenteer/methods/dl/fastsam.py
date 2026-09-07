@@ -3,13 +3,20 @@ from pathlib import Path
 import numpy as np
 
 from segmenteer.core.base import NumpySegmenter
-from segmenteer.core.utils import mask_to_geojson
+from segmenteer.core.runtime import resolve_torch_device
+from segmenteer.model_cache import (
+    find_local_model,
+    get_method_model_dir,
+    promote_to_method_cache,
+)
+
+
+_MODEL_NAMESPACE = "fastsam"
 
 
 def get_model_cache_dir() -> Path:
-    cache_dir = Path(__file__).parent.parent.parent.parent / "models" / "fastsam"
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    return cache_dir
+    """Return the shared local FastSAM weights directory."""
+    return get_method_model_dir(_MODEL_NAMESPACE)
 
 
 class FastSAMSegmenter(NumpySegmenter):
@@ -32,7 +39,7 @@ class FastSAMSegmenter(NumpySegmenter):
         except ImportError:
             raise ImportError(
                 "ultralytics is required for FastSAMSegmenter.\n"
-                "Install with: pip install 'segmenteer[fastsam]'"
+                "Install with: uv sync --extra fastsam"
             ) from None
         super().__init__(*args, **kwargs)
         self.mpp = mpp
@@ -40,7 +47,7 @@ class FastSAMSegmenter(NumpySegmenter):
         self.text_prompt = text_prompt
         self.conf = conf
         self.iou = iou
-        self.device = device if device else "cuda" if self._cuda_available() else "cpu"
+        self.device = resolve_torch_device(device)
         self.imgsz = imgsz
 
         print(f"Initializing FastSAM model: {model_name}")
@@ -53,35 +60,34 @@ class FastSAMSegmenter(NumpySegmenter):
         self._model = None
         self._load_model()
 
-    def _cuda_available(self) -> bool:
-        try:
-            import torch
 
-            return torch.cuda.is_available()
-        except ImportError:
-            return False
+    def _downloaded_checkpoint_path(self) -> Path | None:
+        """Return a checkpoint path exposed by Ultralytics, if available."""
+        raw_path = getattr(self._model, "ckpt_path", None)
+        if raw_path:
+            candidate = Path(raw_path).expanduser()
+            if candidate.is_file():
+                return candidate
+        candidate = Path(self.model_name)
+        return candidate if candidate.is_file() else None
 
     def _load_model(self):
         from ultralytics import FastSAM
 
-        model_path = get_model_cache_dir() / self.model_name
-
-        if model_path.exists():
-            print(f"Loading FastSAM from {model_path}")
+        model_path = find_local_model(_MODEL_NAMESPACE, self.model_name)
+        if model_path is not None:
+            print(f"Loading FastSAM weights from {model_path}")
             self._model = FastSAM(str(model_path))
-        else:
-            print(f"Downloading FastSAM model: {self.model_name}")
-            self._model = FastSAM(self.model_name)
+            return
 
-            try:
-                import shutil
-
-                downloaded_path = Path(self.model_name)
-                if downloaded_path.exists():
-                    shutil.move(str(downloaded_path), str(model_path))
-                    print(f"Saved model to {model_path}")
-            except Exception as e:
-                print(f"Note: Could not move model to cache dir: {e}")
+        print(f"Downloading FastSAM model: {self.model_name}")
+        self._model = FastSAM(self.model_name)
+        downloaded_path = self._downloaded_checkpoint_path()
+        if downloaded_path is not None:
+            model_path = promote_to_method_cache(
+                downloaded_path, _MODEL_NAMESPACE, self.model_name
+            )
+            print(f"Saved FastSAM weights to {model_path}")
 
     @property
     def name(self) -> str:
@@ -111,7 +117,7 @@ class FastSAMSegmenter(NumpySegmenter):
             )
 
         if not results or len(results) == 0:
-            return mask_to_geojson(np.zeros(image.shape[:2], dtype=bool), self.min_area)
+            return np.zeros(image.shape[:2], dtype=bool)
 
         result = results[0]
 
@@ -120,7 +126,7 @@ class FastSAMSegmenter(NumpySegmenter):
             or result.masks is None
             or len(result.masks) == 0
         ):
-            return mask_to_geojson(np.zeros(image.shape[:2], dtype=bool), self.min_area)
+            return np.zeros(image.shape[:2], dtype=bool)
 
         masks = result.masks.data.cpu().numpy()
 

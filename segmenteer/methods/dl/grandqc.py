@@ -3,6 +3,8 @@ from pathlib import Path
 import numpy as np
 
 from segmenteer.core.base import NumpySegmenter
+from segmenteer.core.runtime import resolve_torch_device
+from segmenteer.model_cache import find_local_model, get_method_model_dir
 
 try:
     import torch
@@ -15,9 +17,8 @@ except ImportError:
 
 
 def get_model_cache_dir() -> Path:
-    cache_dir = Path(__file__).parent.parent.parent.parent / "models" / "grandqc"
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    return cache_dir
+    """Return the shared local GrandQC weights directory."""
+    return get_method_model_dir("grandqc")
 
 
 class GrandQCSegmenter(NumpySegmenter):
@@ -37,17 +38,14 @@ class GrandQCSegmenter(NumpySegmenter):
         if not _TORCH_AVAILABLE:
             raise ImportError(
                 "torch and torchvision are required for GrandQCSegmenter.\n"
-                "Install with: pip install 'segmenteer[grandqc]'"
+                "Install with: uv sync --extra grandqc"
             )
         super().__init__(*args, **kwargs)
         self.mpp = mpp
         self.checkpoint_path = checkpoint_path
         self.confidence_threshold = confidence_threshold
 
-        if device is None:
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        else:
-            self.device = torch.device(device)
+        self.device = torch.device(resolve_torch_device(device))
 
         print(
             f"Initializing GrandQC Tissue Detection model (MPP {self.mpp}, 1x magnification)"
@@ -91,7 +89,7 @@ class GrandQCSegmenter(NumpySegmenter):
         except ImportError:
             raise ImportError(
                 "segmentation_models_pytorch is required for GrandQC. "
-                "Install with: pip install segmentation-models-pytorch"
+                "Run: uv sync --extra grandqc"
             )
 
         self._model = smp.UnetPlusPlus(
@@ -107,9 +105,9 @@ class GrandQCSegmenter(NumpySegmenter):
         if self.checkpoint_path:
             checkpoint_file = Path(self.checkpoint_path)
         else:
-            checkpoint_file = cache_dir / self.MODEL_FILE
+            checkpoint_file = find_local_model("grandqc", self.MODEL_FILE)
 
-            if not checkpoint_file.exists():
+            if checkpoint_file is None:
                 try:
                     checkpoint_file = self._download_from_zenodo(
                         self.MODEL_FILE, cache_dir

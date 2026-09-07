@@ -31,9 +31,9 @@ class HSVThresholdSegmenter(NumpySegmenter):
         Lower bound of the HSV range (H, S, V) passed to ``cv2.inRange``.
     upper : array-like of 3 uint8, default ``[180, 255, 255]``
         Upper bound of the HSV range (H, S, V).
-    mpp : float, default 10
+    mpp : float, default 0
         Microns-per-pixel at which the WSI is downsampled before segmentation.
-    min_area : int, default 10
+    min_area : int, default 0
         Minimum polygon area (in pixels at *mpp* resolution) to retain.
     """
 
@@ -45,7 +45,7 @@ class HSVThresholdSegmenter(NumpySegmenter):
         lower: list[int] | npt.NDArray[np.uint8] | None = None,
         upper: list[int] | npt.NDArray[np.uint8] | None = None,
         mpp: float = 10,
-        min_area: int = 10,
+        min_area: int = 0,
         **kwargs,
     ) -> None:
         super().__init__(mpp=mpp, min_area=min_area, **kwargs)

@@ -1,4 +1,9 @@
-"""Heatmap rendering for individual method predictions and ensemble vote maps."""
+"""Heatmap rendering for individual predictions and ensemble vote maps.
+
+This module uses only core dependencies for normal prediction overlays.  It
+never imports MONAI or pyvips, so saving outputs cannot introduce a hidden WSI
+backend dependency after segmentation has succeeded.
+"""
 
 from __future__ import annotations
 
@@ -6,30 +11,19 @@ from pathlib import Path
 from typing import Union
 
 import numpy as np
-import pyvips
-from PIL import Image as _PILImage
+from PIL import Image as PILImage
 
 
 def create_heatmap_overlay(
     image: np.ndarray, geojson_data: dict, alpha: float = 0.4
 ) -> np.ndarray:
-    """Return *image* with a green overlay drawn over the predicted tissue mask.
-
-    Parameters
-    ----------
-    image:
-        H×W or H×W×3 uint8 / float array.
-    geojson_data:
-        GeoJSON FeatureCollection with predicted polygons.
-    alpha:
-        Overlay opacity (0 = invisible, 1 = fully green).
-    """
+    """Return *image* with a green overlay drawn over the predicted tissue mask."""
     from segmenteer.core.utils import geojson_to_mask
 
     if image.ndim == 2:
         image_rgb = np.stack([image, image, image], axis=-1)
     else:
-        image_rgb = image.copy()
+        image_rgb = image[..., :3].copy()
 
     if image_rgb.dtype != np.uint8:
         if image_rgb.max() <= 1.0:
@@ -37,11 +31,13 @@ def create_heatmap_overlay(
         else:
             image_rgb = image_rgb.astype(np.uint8)
 
-    mask = geojson_to_mask(geojson_data, image.shape[:2])
+    mask = geojson_to_mask(geojson_data, image_rgb.shape[:2])
     overlay = image_rgb.copy()
     green = np.zeros_like(overlay)
     green[:, :] = [0, 255, 0]
-    overlay[mask] = (overlay[mask] * (1 - alpha) + green[mask] * alpha).astype(np.uint8)
+    overlay[mask] = (
+        overlay[mask] * (1 - alpha) + green[mask] * alpha
+    ).astype(np.uint8)
     return overlay
 
 
@@ -49,47 +45,33 @@ def save_heatmap_thumbnail(
     image: Path,
     geojson_data: dict,
     output_path: Union[str, Path],
-    mpp: int = 0,
+    mpp: float = 10.0,
     max_size: int = 1024,
     alpha: float = 0.4,
 ) -> None:
-    """Render prediction polygons as a coloured overlay and save to *output_path*.
-
-    Parameters
-    ----------
-    image:
-        Path to the source WSI file.
-    geojson_data:
-        GeoJSON FeatureCollection with predicted polygons.
-    output_path:
-        Destination PNG path.
-    mpp:
-        Microns-per-pixel resolution at which to read the WSI.
-    max_size:
-        Longest edge (pixels) of the saved thumbnail.
-    alpha:
-        Overlay opacity.
-    """
-    from monai.data.wsi_reader import WSIReader
-
-    from segmenteer.core.base import WSI_READER
+    """Render an image-space prediction overlay without MONAI/pyvips."""
+    from segmenteer.core.base import get_wsi_reader
     from segmenteer.core.utils import scale_geojson_coordinates
+
+    if mpp <= 0:
+        raise ValueError("Heatmap MPP must be positive.")
 
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    reader = WSIReader(WSI_READER)
+    reader = get_wsi_reader()
     wsi = reader.read(str(image))
-    geojson_data = scale_geojson_coordinates(
-        geojson_data, scale_factor=reader.get_mpp(wsi, 0)[0] / mpp
+    native_mpp_x, _ = reader.get_mpp(wsi, 0)
+    scaled_geojson = scale_geojson_coordinates(
+        geojson_data, scale_factor=native_mpp_x / mpp
     )
-    img_arr = reader.get_wsi_at_mpp(wsi, (mpp, mpp))[..., :3]
-    overlay = create_heatmap_overlay(img_arr, geojson_data, alpha)
-    thumbnail = _PILImage.fromarray(overlay).resize(
+    image_array = reader.get_wsi_at_mpp(wsi, (mpp, mpp))[..., :3]
+    overlay = create_heatmap_overlay(image_array, scaled_geojson, alpha)
+    thumbnail = PILImage.fromarray(overlay).resize(
         _thumbnail_size(overlay.shape[1], overlay.shape[0], max_size),
-        _PILImage.Resampling.LANCZOS,
+        PILImage.Resampling.LANCZOS,
     )
-    pyvips.Image.new_from_array(np.array(thumbnail)).write_to_file(str(output_path))
+    thumbnail.save(output_path, format="PNG")
 
 
 def _thumbnail_size(w: int, h: int, max_size: int) -> tuple[int, int]:
@@ -108,23 +90,7 @@ def save_vote_heatmap(
     bg_path: Path | None = None,
     alpha: float = 0.40,
 ) -> None:
-    """Save a colour heatmap of the per-pixel vote fraction (0–1).
-
-    Parameters
-    ----------
-    vote_ratio:
-        2-D float array with values in [0, 1] representing the weighted
-        fraction of ensemble members that voted *tissue* for each pixel.
-    path:
-        Destination PNG path. Parent directory is created if needed.
-    bg_path:
-        Optional path to a background image (e.g. a WSI thumbnail).  When
-        provided it is displayed in grayscale so the RdYlGn overlay remains
-        readable.
-    alpha:
-        Opacity of the vote-map overlay when *bg_path* is given.  ``1.0``
-        means fully opaque (background not visible).
-    """
+    """Save a colour heatmap of the per-pixel vote fraction (0–1)."""
     import matplotlib
 
     matplotlib.use("Agg")
@@ -161,3 +127,86 @@ def save_vote_heatmap(
     plt.tight_layout()
     plt.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
+
+
+# ---------------------------------------------------------------------------
+# Supervised visual-QA map
+# ---------------------------------------------------------------------------
+
+
+_EVALUATION_COLORS: dict[str, tuple[int, int, int]] = {
+    "true_positive": (22, 163, 74),
+    "false_positive": (220, 38, 38),
+    "false_negative": (245, 158, 11),
+}
+
+
+def create_supervised_error_overlay(
+    image: np.ndarray,
+    evaluation_layers: dict[str, dict],
+    alpha: float = 0.48,
+) -> np.ndarray:
+    """Overlay exact TP/FP/FN regions on an RGB image.
+
+    Green = true-positive tissue, red = false-positive tissue, and orange =
+    false-negative tissue.  The layer geometry is produced in level-0 pixels
+    and must be scaled to the supplied image before calling this function.
+    """
+    from segmenteer.core.utils import geojson_to_mask
+
+    if image.ndim == 2:
+        base = np.stack([image, image, image], axis=-1)
+    else:
+        base = image[..., :3].copy()
+
+    if base.dtype != np.uint8:
+        base = (base * 255).astype(np.uint8) if base.max() <= 1.0 else base.astype(np.uint8)
+
+    overlay = base.copy()
+    for label, color in _EVALUATION_COLORS.items():
+        layer = evaluation_layers.get(label)
+        if not layer:
+            continue
+        mask = geojson_to_mask(layer, overlay.shape[:2])
+        if not np.any(mask):
+            continue
+        color_array = np.asarray(color, dtype=np.float32)
+        overlay[mask] = (
+            overlay[mask].astype(np.float32) * (1.0 - alpha) + color_array * alpha
+        ).astype(np.uint8)
+    return overlay
+
+
+def save_supervised_error_map(
+    image: Path,
+    evaluation_layers: dict[str, dict],
+    output_path: Union[str, Path],
+    mpp: float = 10.0,
+    max_size: int = 1024,
+    alpha: float = 0.48,
+) -> None:
+    """Save a low-resolution TP/FP/FN visual-QA map beside method outputs."""
+    from segmenteer.core.base import get_wsi_reader
+    from segmenteer.core.utils import scale_geojson_coordinates
+
+    if mpp <= 0:
+        raise ValueError("Error-map MPP must be positive.")
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    reader = get_wsi_reader()
+    wsi = reader.read(str(image))
+    native_mpp_x, _ = reader.get_mpp(wsi, 0)
+    factor = native_mpp_x / mpp
+    scaled_layers = {
+        label: scale_geojson_coordinates(layer, scale_factor=factor)
+        for label, layer in evaluation_layers.items()
+    }
+    image_array = reader.get_wsi_at_mpp(wsi, (mpp, mpp))[..., :3]
+    overlay = create_supervised_error_overlay(image_array, scaled_layers, alpha=alpha)
+    thumbnail = PILImage.fromarray(overlay).resize(
+        _thumbnail_size(overlay.shape[1], overlay.shape[0], max_size),
+        PILImage.Resampling.LANCZOS,
+    )
+    thumbnail.save(output_path, format="PNG")

@@ -1,98 +1,134 @@
-"""High-level benchmark workflows.
-
-Provides ``run_single_image`` and ``run_dataset`` so that user scripts only
-need to supply a segmenter list and a data path — everything else is handled
-here.
-"""
+"""Low-level inference-only workflows used by the public directory runner."""
 
 from __future__ import annotations
 
+import json
+from collections.abc import Callable
 from pathlib import Path
-from typing import Optional
 
 from segmenteer.benchmark.console import BenchmarkReporter
-from segmenteer.benchmark.ensemble import EnsembleOutputWriter, load_ensemble_members
-from segmenteer.benchmark.reporting import export_results_csv, export_results_json
-from segmenteer.benchmark.runner import BenchmarkRunner
-from segmenteer.io import create_timestamped_output_dir
-from segmenteer.visualization import save_thumbnail
+from segmenteer.benchmark.locking import claim_method_locks, dataset_metadata_lock
+from segmenteer.benchmark.output import PredictionOutputWriter
+from segmenteer.benchmark.resume import DatasetResumeStore
+from segmenteer.benchmark.runner import BenchmarkRunner, make_run_ids
+from segmenteer.io.atomic import write_json_atomic
+from segmenteer.io.utils import create_timestamped_output_dir
+
+
+def _resolve_dataset_output_dir(
+    *, output_root: str | Path, output_dir: str | Path | None
+) -> Path:
+    if output_dir is None:
+        return create_timestamped_output_dir(output_root)
+    selected = Path(output_dir).expanduser()
+    if selected.exists() and not selected.is_dir():
+        raise NotADirectoryError(f"Output path exists but is not a directory: {selected}")
+    selected.mkdir(parents=True, exist_ok=True)
+    return selected
+
+
+def _persist_dataset_manifest(output_dir: Path, images: list[Path]) -> Path:
+    """Record the union of slide names discovered by cooperative runner workers."""
+    discovered = {Path(image).name for image in images}
+    path = output_dir / "dataset_manifest.json"
+    with dataset_metadata_lock(output_dir):
+        existing_names: set[str] = set()
+        if path.exists():
+            try:
+                existing = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+                raise RuntimeError(f"Existing dataset manifest is unreadable: {path}") from exc
+            if isinstance(existing, dict) and isinstance(existing.get("slides"), list):
+                existing_names = {
+                    str(name) for name in existing["slides"] if str(name).strip()
+                }
+        names = sorted(existing_names | discovered, key=str.casefold)
+        write_json_atomic(path, {"n_slides": len(names), "slides": names})
+    return path
+
+
+def prepare_dataset_output(
+    *,
+    images: list[Path] | None = None,
+    output_root: str | Path = "outputs",
+    output_dir: str | Path | None = None,
+) -> Path:
+    """Create/join an experiment directory and persist its runner manifest."""
+    selected = _resolve_dataset_output_dir(
+        output_root=output_root, output_dir=output_dir
+    )
+    if images is not None:
+        _persist_dataset_manifest(selected, [Path(image) for image in images])
+    return selected
 
 
 def run_single_image(
     segmenters: list,
     path: Path,
-    ground_truth: Optional[dict] = None,
-) -> None:
-    """Benchmark *segmenters* on a single WSI.
-
-    Output layout::
-
-        outputs/<timestamp>/
-            ensemble_manifest.json
-            thumbnails/<stem>.png
-            results.csv / results.json
-            <method__params>/
-                predictions/<stem>.geojson
-                eval/scores/<stem>.json
-                eval/heatmaps/<stem>.png
-    """
+    output_root: str | Path = "outputs",
+) -> Path:
+    """Run segmentation methods on one WSI and save prediction/config artifacts."""
     path = Path(path)
-    output_dir = create_timestamped_output_dir("outputs")
-    thumbnails_dir = output_dir / "thumbnails"
-    thumbnails_dir.mkdir(parents=True, exist_ok=True)
-    save_thumbnail(path, thumbnails_dir / f"{path.stem}.png")
+    output_dir = create_timestamped_output_dir(output_root)
+    _persist_dataset_manifest(output_dir, [path])
 
     reporter = BenchmarkReporter()
-    writer = EnsembleOutputWriter(output_dir, image_path=path)
+    writer = PredictionOutputWriter(output_dir)
     runner = BenchmarkRunner(reporter=reporter, result_callback=writer)
-
-    results = runner.run_multiple(segmenters, path, ground_truth_geojson=ground_truth)
-
-    export_results_csv(results, output_dir / "results.csv")
-    export_results_json(results, output_dir / "results.json")
-    manifest = writer.finalize(results, image_path=path)
+    results = runner.run_multiple(segmenters, path)
 
     reporter.print_summary(results)
     reporter.print_saved(
         output_dir,
-        [f"thumbnails/{path.stem}.png", "results.csv", "results.json", manifest.name]
-        + [f"{r.run_id}/" for r in results],
+        ["dataset_manifest.json", "<method>/config.yaml", "<method>/predictions/"],
     )
+    return output_dir
 
 
 def run_dataset(
     segmenters: list,
     images: list[Path],
-    ground_truths: Optional[dict[Path, dict]] = None,
-) -> None:
-    """Benchmark *segmenters* across a set of WSIs.
+    output_root: str | Path = "outputs",
+    output_dir: str | Path | None = None,
+    output_ready_callback: Callable[[Path], None] | None = None,
+    shared_method_workers: bool = False,
+) -> Path:
+    """Run methods across a dataset, independent of evaluator and viewer."""
+    images = [Path(image) for image in images]
+    output_dir = prepare_dataset_output(
+        images=images, output_root=output_root, output_dir=output_dir
+    )
+    if output_ready_callback is not None:
+        output_ready_callback(output_dir)
 
-    Output layout::
-
-        outputs/<timestamp>/
-            ensemble_manifest.json
-            thumbnails/<stem>.png
-            <method__params>/
-                predictions/<stem>.geojson
-                eval/scores/<stem>.json
-                eval/heatmaps/<stem>.png
-    """
-    output_dir = create_timestamped_output_dir("outputs")
-    thumbnails_dir = output_dir / "thumbnails"
-    thumbnails_dir.mkdir(parents=True, exist_ok=True)
-
-    for img in images:
-        save_thumbnail(img, thumbnails_dir / f"{img.stem}.png")
-
+    run_ids = make_run_ids(segmenters)
     reporter = BenchmarkReporter()
-    writer = EnsembleOutputWriter(output_dir)
-    runner = BenchmarkRunner(reporter=reporter, result_callback=writer)
+    with claim_method_locks(output_dir, run_ids, shared=shared_method_workers):
+        writer = PredictionOutputWriter(output_dir)
+        resume_store = DatasetResumeStore(output_dir)
+        runner = BenchmarkRunner(reporter=reporter, result_callback=writer)
+        all_results = runner.run_dataset(
+            segmenters,
+            images,
+            resume_store=resume_store,
+            run_ids=run_ids,
+        )
 
-    all_results = runner.run_dataset(segmenters, images, ground_truths=ground_truths)
-    manifest = writer.finalize_dataset(all_results)
+        combined_results = [
+            result for image_results in all_results.values() for result in image_results
+        ]
+        reporter.print_summary(combined_results)
 
-    for img_path, results in all_results.items():
-        reporter.print_image_header(img_path, 0, 0)
-        reporter.print_summary(results)
+        stats = resume_store.stats
+        if stats.reused or stats.invalid_artifacts or stats.invalidated_methods:
+            print(
+                "Output reuse summary: "
+                f"reused {stats.reused} prediction(s); "
+                f"recomputed/repaired {stats.invalid_artifacts} invalid prediction(s)."
+            )
 
-    reporter.print_saved(output_dir, [manifest.name, "thumbnails/"])
+    reporter.print_saved(
+        output_dir,
+        ["dataset_manifest.json", "<method>/config.yaml", "<method>/predictions/"],
+    )
+    return output_dir
