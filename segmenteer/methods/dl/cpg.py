@@ -1,7 +1,14 @@
 from pathlib import Path
 from typing import Any
 
-from segmenteer.core.base import TRIDENTSegmentationModel
+try:
+    from trident.segmentation_models.load import SegmentationModel as _TridentSegmentationModel
+
+    _TRIDENT_AVAILABLE = True
+except Exception as exc:  # optional dependency; do not fail top-level imports
+    _TridentSegmentationModel = object  # type: ignore[assignment,misc]
+    _TRIDENT_AVAILABLE = False
+    _TRIDENT_IMPORT_ERROR = exc
 
 try:
     import torch
@@ -24,7 +31,7 @@ def get_model_cache_dir() -> Path:
     cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir
 
-class LIBTRIDENTCPGSegmenter(TRIDENTSegmentationModel):
+class LIBTRIDENTCPGSegmenter(_TridentSegmentationModel):
     def __init__(self, **build_kwargs: dict[str, Any]):
         if not _TORCH_AVAILABLE or not _ONNX_AVAILABLE:
             raise ImportError(

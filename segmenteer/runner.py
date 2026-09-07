@@ -354,8 +354,6 @@ def run_directory(
 def run_directory_cli(
     methods: Sequence[object],
     *,
-    wsi_dir: str | Path,
-    output_root: str | Path = "outputs",
     default_output_dir: str | Path | None = None,
     slide_order: str = "smallest-first",
     workers: int | str = "auto",
@@ -365,6 +363,18 @@ def run_directory_cli(
     """Small CLI wrapper for :func:`run_directory` used by project ``run.py``."""
     parser = argparse.ArgumentParser(
         description="Run Segmenteer inference over a WSI directory."
+    )
+    parser.add_argument(
+        "--input-dir",
+        type=Path,
+        metavar="DIR",
+        help="input directory with WSIs",
+    )
+    parser.add_argument(
+        "--output-root",
+        type=Path,
+        metavar="DIR",
+        help="output root directory",
     )
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument(
@@ -394,8 +404,8 @@ def run_directory_cli(
 
     output = run_directory(
         methods,
-        wsi_dir=wsi_dir,
-        output_root=output_root,
+        wsi_dir=args.input_dir,
+        output_root=args.output_root,
         output_dir=selected_output,
         slide_order=selected_order,
         workers=selected_workers,
