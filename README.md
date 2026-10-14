@@ -478,16 +478,17 @@ We built on many segmentation models and frameworks.
 Below we cite them.
 Please open an issue to request proper attribution.
 
-| method | url | license |
-|--------|-----|---------|
+| method | url | license | doi |
+|--------|-----|---------|----------|
 | CPG    |     |         |
-| AtlasPatch | [AtlasAnalyticsLab/AtlasPatch](https://github.com/AtlasAnalyticsLab/AtlasPatch/) | [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) |
-| GrandQC | [cpath-ukk/grandqc](https://github.com/cpath-ukk/grandqc/) | [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) |
-| HEST | [mahmoodlab/hest](https://github.com/mahmoodlab/hest) | [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) |
-| PathProfiler | [MaryamHaghighat/PathProfiler](https://github.com/MaryamHaghighat/PathProfiler) | [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) |
-| SlideSegmenter | [RTLucassen/slidesegmenter](https://github.com/RTLucassen/slidesegmenter) | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) |
-| TRIDENT | [mahmoodlab/Trident](https://github.com/mahmoodlab/Trident) | [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) |
-| Bigpicture | [imi-bigpicture/tissue-segmentation](https://github.com/imi-bigpicture/tissue-segmentation) | [MIT](https://mit-license.org/) |
-| LICENSE | [DigitalSlideArchive/HistomicsTK](https://github.com/DigitalSlideArchive/HistomicsTK) | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) |
+| AtlasPatch | [AtlasAnalyticsLab/AtlasPatch](https://github.com/AtlasAnalyticsLab/AtlasPatch/) | [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) |  |
+| GrandQC | [cpath-ukk/grandqc](https://github.com/cpath-ukk/grandqc/) | [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) |  |
+| HEST | [mahmoodlab/hest](https://github.com/mahmoodlab/hest) | [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) |  |
+| PathProfiler | [MaryamHaghighat/PathProfiler](https://github.com/MaryamHaghighat/PathProfiler) | [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) |  |
+| SlideSegmenter | [RTLucassen/slidesegmenter](https://github.com/RTLucassen/slidesegmenter) | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) |  |
+| TRIDENT | [mahmoodlab/Trident](https://github.com/mahmoodlab/Trident) | [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) |  |
+| Bigpicture | [imi-bigpicture/tissue-segmentation](https://github.com/imi-bigpicture/tissue-segmentation) | [MIT](https://mit-license.org/) |  |
+| LICENSE | [DigitalSlideArchive/HistomicsTK](https://github.com/DigitalSlideArchive/HistomicsTK) | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) |  |
+| EntropMasker (reimplementation) | [CirculatoryHealth/EntropyMasker](https://github.com/CirculatoryHealth/EntropyMasker) |  | [10.1101/2022.09.01.22279487](https://doi.org/10.1101/2022.09.01.22279487) |
 
 See the `LICENSES` for license copies.
