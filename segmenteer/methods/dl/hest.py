@@ -3,6 +3,12 @@ from pathlib import Path
 import numpy as np
 
 from segmenteer.core.base import NumpySegmenter
+from segmenteer.core.runtime import resolve_torch_device
+from segmenteer.model_cache import (
+    find_local_model,
+    get_method_model_dir,
+    promote_to_method_cache,
+)
 
 try:
     import torch
@@ -15,10 +21,12 @@ except ImportError:
     _TORCH_AVAILABLE = False
 
 
+_MODEL_NAMESPACE = "hest"
+
+
 def get_model_cache_dir() -> Path:
-    cache_dir = Path(__file__).parent.parent.parent.parent / "models" / "hest"
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    return cache_dir
+    """Return the shared local HEST weights directory."""
+    return get_method_model_dir(_MODEL_NAMESPACE)
 
 
 class HESTSegmenter(NumpySegmenter):
@@ -38,7 +46,7 @@ class HESTSegmenter(NumpySegmenter):
         if not _TORCH_AVAILABLE:
             raise ImportError(
                 "torch and torchvision are required for HESTSegmenter.\n"
-                "Install with: pip install 'segmenteer[hest]'"
+                "Install with: uv sync --extra hest"
             )
         super().__init__(*args, **kwargs)
         self.model_repo = model_repo
@@ -47,10 +55,7 @@ class HESTSegmenter(NumpySegmenter):
         self.confidence_threshold = confidence_threshold
         self.mpp = mpp
 
-        if device is None:
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        else:
-            self.device = torch.device(device)
+        self.device = torch.device(resolve_torch_device(device))
 
         print(f"Initializing HEST model at {self.mpp} MPP")
 
@@ -58,63 +63,85 @@ class HESTSegmenter(NumpySegmenter):
         self._transform = None
         self._load_model()
 
-    def _load_model(self):
-        self._model = deeplabv3_resnet50(weights=None, num_classes=2)
+    def _checkpoint_file(self) -> Path:
+        """Resolve a local HEST weight before consulting Hugging Face.
 
+        Earlier releases passed ``models/hest`` as Hugging Face's cache path.
+        Hugging Face therefore nested the checkpoint below ``models--...`` and
+        this wrapper never saw it on later runs.  ``find_local_model`` accepts
+        that legacy layout, direct project-local files, and the canonical path.
+        """
         if self.checkpoint_path:
-            checkpoint_file = Path(self.checkpoint_path)
-        else:
-            checkpoint_file = get_model_cache_dir() / self.model_file
-
-        if checkpoint_file.exists():
-            try:
-                checkpoint = torch.load(
-                    checkpoint_file, map_location=self.device, weights_only=False
+            checkpoint_file = Path(self.checkpoint_path).expanduser()
+            if not checkpoint_file.is_file():
+                raise FileNotFoundError(
+                    f"HEST checkpoint_path does not exist: {checkpoint_file}"
                 )
-                state_dict = checkpoint.get("state_dict", checkpoint)
+            return checkpoint_file
 
-                new_state_dict = {}
-                for k, v in state_dict.items():
-                    new_key = k.replace("model.", "") if k.startswith("model.") else k
-                    new_state_dict[new_key] = v
+        local_file = find_local_model(_MODEL_NAMESPACE, self.model_file)
+        if local_file is not None:
+            return local_file
 
-                self._model.load_state_dict(new_state_dict, strict=False)
-                print(f"Loaded HEST weights from {checkpoint_file}")
-            except Exception as e:
-                print(
-                    f"Warning: Could not load checkpoint from {checkpoint_file}. Error: {e}"
-                )
-                raise
-        else:
-            try:
-                from huggingface_hub import hf_hub_download
+        try:
+            from huggingface_hub import hf_hub_download
+        except ImportError as exc:
+            raise ImportError(
+                "huggingface-hub is required to download missing HEST weights. "
+                "Run: uv sync --extra hest"
+            ) from exc
 
-                print(f"Downloading HEST model from HuggingFace: {self.model_repo}...")
-                downloaded_path = hf_hub_download(
+        # Check Hugging Face's existing global cache before attempting network
+        # access.  This helps projects that previously downloaded the model
+        # through a different cache location.
+        try:
+            cached_file = Path(
+                hf_hub_download(
                     repo_id=self.model_repo,
                     filename=self.model_file,
-                    cache_dir=get_model_cache_dir(),
+                    local_files_only=True,
                 )
-                checkpoint = torch.load(
-                    downloaded_path, map_location=self.device, weights_only=False
-                )
-                state_dict = checkpoint.get("state_dict", checkpoint)
+            )
+        except Exception:
+            cached_file = None
 
-                new_state_dict = {}
-                for k, v in state_dict.items():
-                    new_key = k.replace("model.", "") if k.startswith("model.") else k
-                    new_state_dict[new_key] = v
+        if cached_file is not None and cached_file.is_file():
+            return promote_to_method_cache(
+                cached_file, _MODEL_NAMESPACE, self.model_file
+            )
 
-                self._model.load_state_dict(new_state_dict, strict=False)
-                print("Loaded HEST model from HuggingFace")
-            except Exception as e:
-                print(
-                    f"Error downloading/loading model from HuggingFace: {e}\n"
-                    f"Please download {self.model_file} manually from:\n"
-                    f"https://huggingface.co/{self.model_repo}/tree/main\n"
-                    f"and place it in {get_model_cache_dir()}"
-                )
-                raise
+        print(f"Downloading HEST model from Hugging Face: {self.model_repo}...")
+        downloaded_file = Path(
+            hf_hub_download(
+                repo_id=self.model_repo,
+                filename=self.model_file,
+                cache_dir=get_model_cache_dir(),
+            )
+        )
+        return promote_to_method_cache(
+            downloaded_file, _MODEL_NAMESPACE, self.model_file
+        )
+
+    def _load_model(self):
+        self._model = deeplabv3_resnet50(weights=None, num_classes=2)
+        checkpoint_file = self._checkpoint_file()
+
+        try:
+            checkpoint = torch.load(
+                checkpoint_file, map_location=self.device, weights_only=False
+            )
+            state_dict = checkpoint.get("state_dict", checkpoint)
+
+            new_state_dict = {}
+            for k, v in state_dict.items():
+                new_key = k.replace("model.", "") if k.startswith("model.") else k
+                new_state_dict[new_key] = v
+
+            self._model.load_state_dict(new_state_dict, strict=False)
+            print(f"Loaded HEST weights from {checkpoint_file}")
+        except Exception as e:
+            print(f"Error loading HEST model weights from {checkpoint_file}: {e}")
+            raise
 
         self._model = self._model.to(self.device)
         self._model.eval()

@@ -11,22 +11,30 @@ from segmenteer.methods.classical.fesi import FESISegmenter
 from segmenteer.methods.classical.morphological import (
     MorphologicalSegmenter,
     WatershedSegmenter,
+    WatershedTissueSegmenter,
 )
-from segmenteer.methods.classical.od_gmm import ODGMMSlideSegmenter
+try:
+    from segmenteer.methods.classical.od_gmm import ODGMMSlideSegmenter
+except ImportError:
+    ODGMMSlideSegmenter = None  # type: ignore[assignment]
 from segmenteer.methods.classical.threshold import (
     EntropyMaskerSegmenter,
     LiSegmenter,
+    LiTissueSegmenter,
     OtsuSegmenter,
+    OtsuTissueSegmenter,
     YenSegmenter,
+    YenTissueSegmenter,
 )
 
-# cv2-based methods — graceful fallback if opencv is absent
 try:
-    from segmenteer.methods.classical.hsv_threshold import HSVThresholdSegmenter
+    from segmenteer.methods.classical.histomicstk import (
+        HistomicsTKSegmenter,
+        HistomicsTKTissueSegmenter,
+    )
 except ImportError:
     HSVThresholdSegmenter = None  # type: ignore[assignment]
 
-# histomicstk is optional. Import it only if available.
 try:
     from segmenteer.methods.classical.histomicstk import HistomicsTKSegmenter
 except ImportError:
@@ -34,14 +42,19 @@ except ImportError:
 
 __all__ = [
     "OtsuSegmenter",
+    "OtsuTissueSegmenter",
     "LiSegmenter",
     "YenSegmenter",
     "EntropyMaskerSegmenter",
     "MorphologicalSegmenter",
     "WatershedSegmenter",
+    "WatershedTissueSegmenter",
     "BackgroundSubtractorMOG2Segmenter",
     "ODGMMSlideSegmenter",
     "HistomicsTKSegmenter",
+    "HistomicsTKTissueSegmenter",
     "FESISegmenter",
     "HSVThresholdSegmenter",
+    "LiTissueSegmenter",
+    "YenTissueSegmenter",
 ]

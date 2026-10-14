@@ -1,11 +1,15 @@
 import json
+from dataclasses import dataclass
 from pathlib import Path
+from collections.abc import Iterable
 from typing import Union
 
 import geojson
 import numpy as np
 
 from segmenteer.core.utils import scale_geojson_coordinates
+from segmenteer.io.asap import load_asap_xml
+from segmenteer.io.atomic import write_json_atomic
 
 
 def is_dicom_directory(path: Path) -> bool:
@@ -144,13 +148,13 @@ def load_image(path: Union[str, Path], level: int = 0) -> np.ndarray:
 
 
 def save_geojson(geojson_data: dict, path: Union[str, Path], scale_factor: float = 1.0):
+    """Persist GeoJSON atomically so readers never observe a partial file."""
     path = Path(path)
 
     if scale_factor != 1.0:
         geojson_data = scale_geojson_coordinates(geojson_data, scale_factor)
 
-    with open(path, "w") as f:
-        json.dump(geojson_data, f, indent=2)
+    write_json_atomic(path, geojson_data)
 
 
 def load_geojson(path: Union[str, Path]) -> dict:
@@ -160,47 +164,151 @@ def load_geojson(path: Union[str, Path]) -> dict:
         return geojson.load(f)
 
 
+@dataclass(frozen=True)
+class GroundTruthPairing:
+    """Pairing outcome for a set of WSI paths and external annotations.
+
+    ``ground_truths`` contains only valid, non-empty annotations.  Missing
+    files and files that become empty after group filtering are retained
+    separately so callers can choose a policy without treating partial labels
+    as a fatal error.
+    """
+
+    ground_truths: dict[Path, dict]
+    missing: dict[Path, Path]
+    empty: dict[Path, Path]
+
+    @property
+    def paired_images(self) -> list[Path]:
+        """Images with a usable annotation, in deterministic path order."""
+        return sorted(self.ground_truths, key=lambda path: str(path).casefold())
+
+    @property
+    def unpaired_images(self) -> list[Path]:
+        """Images whose annotation was missing or unusable."""
+        return sorted(
+            {*self.missing, *self.empty}, key=lambda path: str(path).casefold()
+        )
+
+    @property
+    def has_unpaired_images(self) -> bool:
+        return bool(self.missing or self.empty)
+
+    def as_manifest(self) -> dict:
+        """Return JSON-safe, per-slide pairing information for run manifests."""
+        return {
+            "paired_images": [str(path) for path in self.paired_images],
+            "missing_annotations": [
+                {"image": str(image), "expected_annotation": str(annotation)}
+                for image, annotation in sorted(
+                    self.missing.items(), key=lambda item: str(item[0]).casefold()
+                )
+            ],
+            "empty_annotations": [
+                {"image": str(image), "annotation": str(annotation)}
+                for image, annotation in sorted(
+                    self.empty.items(), key=lambda item: str(item[0]).casefold()
+                )
+            ],
+        }
+
+
+def inspect_ground_truths(
+    images: list,
+    annotation_dir: Union[Path, None] = None,
+    suffix: str = "_gt.geojson",
+    groups: Iterable[str] | None = None,
+) -> GroundTruthPairing:
+    """Inspect ground-truth availability without imposing a run policy.
+
+    Pairing is by identical filename stem.  A missing annotation and an empty
+    annotation (including one emptied by ASAP group filtering) are distinct:
+    both are unsuitable for supervised evaluation, but both remain eligible
+    for prediction-only inference when requested by the caller.
+    """
+    ground_truths: dict[Path, dict] = {}
+    missing: dict[Path, Path] = {}
+    empty: dict[Path, Path] = {}
+
+    for raw_image in images:
+        image = Path(raw_image)
+        search_dir = Path(annotation_dir) if annotation_dir is not None else image.parent
+        annotation_path = search_dir / f"{image.stem}{suffix}"
+        if not annotation_path.exists():
+            missing[image] = annotation_path
+            continue
+
+        extension = annotation_path.suffix.casefold()
+        if extension == ".xml":
+            ground_truth = load_asap_xml(annotation_path, groups=groups)
+        elif extension in {".geojson", ".json"}:
+            ground_truth = load_geojson(annotation_path)
+        else:
+            raise ValueError(
+                f"Unsupported annotation format for {annotation_path}. "
+                "Supported formats are .xml, .geojson, and .json."
+            )
+
+        if not ground_truth.get("features"):
+            empty[image] = annotation_path
+            continue
+        ground_truths[image] = ground_truth
+
+    return GroundTruthPairing(ground_truths=ground_truths, missing=missing, empty=empty)
+
+
+def format_ground_truth_pairing_error(
+    pairing: GroundTruthPairing,
+    *,
+    limit: int = 8,
+) -> str:
+    """Compact error message for strict pairing without dumping huge path lists."""
+    parts: list[str] = []
+    if pairing.missing:
+        examples = ", ".join(
+            str(path)
+            for path in list(
+                sorted(pairing.missing.values(), key=lambda value: str(value).casefold())
+            )[:limit]
+        )
+        suffix = " …" if len(pairing.missing) > limit else ""
+        parts.append(f"{len(pairing.missing)} missing annotation file(s): {examples}{suffix}")
+    if pairing.empty:
+        examples = ", ".join(
+            str(path)
+            for path in list(
+                sorted(pairing.empty.values(), key=lambda value: str(value).casefold())
+            )[:limit]
+        )
+        suffix = " …" if len(pairing.empty) > limit else ""
+        parts.append(
+            f"{len(pairing.empty)} empty annotation file(s) after format/group filtering: "
+            f"{examples}{suffix}"
+        )
+    if not parts:
+        return "Ground-truth pairing is complete."
+    return "Ground-truth pairing failed (" + "; ".join(parts) + ")"
+
+
 def load_ground_truths(
     images: list,
     annotation_dir: Union[Path, None] = None,
     suffix: str = "_gt.geojson",
+    groups: Iterable[str] | None = None,
+    strict: bool = False,
 ) -> dict:
-    """Discover and load GeoJSON ground-truth annotations for a list of images.
+    """Load valid paired GeoJSON or ASAP XML ground truth for each image.
 
-    Looks for ``<image_stem><suffix>`` either next to each image (default) or
-    inside *annotation_dir* when provided.  Images without a matching file are
-    silently skipped and will run in unsupervised mode.
-
-    Parameters
-    ----------
-    images:
-        List of WSI :class:`~pathlib.Path` objects.
-    annotation_dir:
-        Directory containing annotation files.  Defaults to each image's own
-        parent directory.
-    suffix:
-        Filename suffix appended to the image stem (default ``_gt.geojson``).
-
-    Returns
-    -------
-    ``dict`` mapping each image :class:`~pathlib.Path` to its loaded GeoJSON
-    ``dict``.  Only images that have a matching annotation are included.
-
-    Examples
-    --------
-    Annotations next to images::
-
-        gts = seg.load_ground_truths(images)
-
-    Annotations in a separate folder::
-
-        gts = seg.load_ground_truths(images, annotation_dir=Path("annotations/"))
+    ``strict=False`` (the default) returns the valid subset, allowing callers
+    to run prediction-only inference on unlabeled slides.  ``strict=True``
+    raises when any matching annotation is missing or empty.
     """
-    ground_truths: dict = {}
-    for img in images:
-        img = Path(img)
-        search_dir = Path(annotation_dir) if annotation_dir is not None else img.parent
-        ann_path = search_dir / f"{img.stem}{suffix}"
-        if ann_path.exists():
-            ground_truths[img] = load_geojson(ann_path)
-    return ground_truths
+    pairing = inspect_ground_truths(
+        images,
+        annotation_dir=annotation_dir,
+        suffix=suffix,
+        groups=groups,
+    )
+    if strict and pairing.has_unpaired_images:
+        raise FileNotFoundError(format_ground_truth_pairing_error(pairing))
+    return pairing.ground_truths

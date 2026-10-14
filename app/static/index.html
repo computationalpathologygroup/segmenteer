@@ -8,13 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=3">
-  <!-- OpenSeadragon — deep zoom viewport -->
+  <link rel="stylesheet" href="/static/style.css?v=20260807-17">
   <script src="https://cdn.jsdelivr.net/npm/openseadragon@4.1/build/openseadragon/openseadragon.min.js"></script>
 </head>
 <body>
-
-<!-- ── Top bar ─────────────────────────────────────────────────────── -->
 <header id="topbar">
   <div class="topbar-left">
     <span class="logo">segmenteer</span>
@@ -24,45 +21,55 @@
     <button class="tab active" data-view="overview">Overview</button>
     <button class="tab" data-view="inspect">Inspect</button>
   </nav>
-  <div class="topbar-right">
-    <span id="wsi-count" class="stat-chip"></span>
-    <span id="method-count" class="stat-chip"></span>
-  </div>
+  <div class="topbar-right"></div>
 </header>
 
-<!-- ── Body ────────────────────────────────────────────────────────── -->
 <div id="layout">
-
-  <!-- Sidebar: WSI list -->
   <aside id="sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-title">Slides</span>
+      <span class="sidebar-title">Slides · <span id="slide-count">0</span></span>
       <input id="search" type="text" placeholder="filter…" autocomplete="off">
     </div>
     <ul id="wsi-list"></ul>
   </aside>
 
-  <!-- Main content: overview grid or OSD viewer -->
   <main id="main">
-    <!-- Overview grid -->
-    <section id="view-overview">
+    <section id="view-overview" style="display:none">
+      <!-- Overview utility row: metric controls are optional; report download remains available. -->
       <div class="overview-toolbar">
-        <label class="toolbar-label">Select metric type</label>
-        <select id="metric-select"></select>
-        <a href="/api/report" class="btn-report" download>&#8595; Download segmentation report</a>
+        <div id="metrics-overview-controls" class="overview-toolbar-primary optional-ui" hidden>
+          <label class="toolbar-label" for="metric-select">Card score metric</label>
+          <select id="metric-select" title="This value is displayed in overview cards when a prediction overlay is enabled."></select>
+          <span class="toolbar-context">Shown in cards with visible prediction overlays</span>
+          <div id="dice-sort-control" class="dice-sort-control" hidden>
+            <label class="toolbar-label" for="dice-sort-select">Sort slides</label>
+            <select id="dice-sort-select" title="Sort slides using Dice for the selected prediction method, or mean Dice across multiple selected methods.">
+              <option value="default">Default</option>
+              <option value="dice-desc">Dice ↓</option>
+              <option value="dice-asc">Dice ↑</option>
+            </select>
+            <span id="dice-sort-context" class="toolbar-context">Select prediction method(s)</span>
+          </div>
+        </div>
+        <div class="toolbar-actions overview-download-action">
+          <button id="download-overview-html" class="download-report-button" type="button">Download overview HTML</button>
+          <span id="overview-report-status" class="toolbar-context" aria-live="polite"></span>
+        </div>
       </div>
       <div class="overview-toggles-row">
-        <label class="toolbar-label">Overlays</label>
+        <div id="overview-ground-truth-control" class="overview-optional-control" hidden>
+          <label class="toolbar-label">Ground truth</label>
+          <div id="overview-ground-truth-bar"></div>
+        </div>
+        <label class="toolbar-label">Prediction overlays</label>
         <div id="overview-method-bar"></div>
       </div>
       <div id="overview-grid"></div>
     </section>
 
-    <!-- Inspect view -->
-    <section id="view-inspect" style="display:none">
+    <section id="view-inspect">
       <div id="osd-container">
         <div id="osd-viewer"></div>
-        <!-- Canvas overlay is appended here by JS -->
       </div>
       <div id="inspect-empty">
         <p>Select a slide from the sidebar to begin.</p>
@@ -70,28 +77,49 @@
     </section>
   </main>
 
-  <!-- Right panel: method toggles + metrics -->
   <aside id="panel">
-    <div id="panel-overview">
-      <p class="panel-hint">Click a slide to inspect it.</p>
+    <!-- Original right-hand evaluated summary, present only with evaluator metrics. -->
+    <div id="panel-overview" style="display:none">
+      <div id="metrics-overview-panel" class="panel-section optional-ui" hidden>
+        <div class="overview-summary-heading">
+          <div class="section-heading">Evaluation</div>
+        </div>
+        <div id="overview-summary-table"></div>
+      </div>
     </div>
-    <div id="panel-inspect" style="display:none">
+
+    <div id="panel-inspect" style="display:flex">
       <div class="panel-section">
         <span class="panel-title" id="panel-stem"></span>
       </div>
+
       <div class="panel-section">
-        <div class="section-heading">Methods</div>
+        <div class="section-heading">Prediction layers</div>
         <div id="method-toggles"></div>
       </div>
-      <div class="panel-section">
-        <div class="section-heading">Metrics</div>
+
+      <div id="ground-truth-panel" class="panel-section optional-ui" hidden>
+        <div class="section-heading">Ground truth</div>
+        <div id="ground-truth-toggle"></div>
+      </div>
+
+      <div id="spatial-evaluation-panel" class="panel-section optional-ui" hidden>
+        <div class="section-heading">Spatial error map</div>
+        <label class="field-label" for="evaluation-method-select">Method</label>
+        <select id="evaluation-method-select" class="evaluation-select"></select>
+        <div id="evaluation-toggles" class="evaluation-toggles"></div>
+        <p id="evaluation-status" class="panel-note"></p>
+      </div>
+
+      <!-- Original per-slide evaluation table, present only with evaluator metrics. -->
+      <div id="metrics-panel" class="panel-section optional-ui" hidden>
+        <div class="section-heading">Evaluation</div>
         <div id="metrics-table"></div>
       </div>
     </div>
   </aside>
-
 </div>
 
-<script src="/static/app.js?v=3"></script>
+<script src="/static/app.js?v=20260807-17"></script>
 </body>
 </html>
