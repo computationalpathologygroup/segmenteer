@@ -4,6 +4,7 @@ import argparse
 import os
 from collections.abc import Callable, Iterable
 from pathlib import Path
+import sys
 
 
 def _parse_segmenter_names(value: str) -> list[str]:
@@ -61,7 +62,7 @@ def main(argv: list[str] | None = None) -> None:
         help="List available segmenter names and exit",
     )
 
-    target = parser.add_mutually_exclusive_group()
+    target = parser.add_mutually_exclusive_group(required=True)
     target.add_argument("--image", metavar="PATH", help="Run on a single image")
     target.add_argument(
         "--dataset",
@@ -96,6 +97,9 @@ def main(argv: list[str] | None = None) -> None:
         help="Override microns-per-pixel (mpp) for all segmenters",
     )
 
+    if len(sys.argv) == 1:
+        parser.print_help()
+        parser.exit()
     args = parser.parse_args(argv)
 
     if args.wsi_reader:

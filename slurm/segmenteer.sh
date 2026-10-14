@@ -15,4 +15,8 @@
 # First we need to make all the model weights available. They are not in the Docker image.
 cp -r /pa_cpgarchive/projects/tissue-segmentation/models/ /app
 
-python run.py --input-dir /pa_cpgarchive/projects/tissue-segmentation/data/stains-in-the-wild/hhgm-vanhuizen/HHG/ --output-root /happiny/projects/siemdejong/tissue-segmentation/hhg-output
+# segmenteer --help
+
+segmenteer \
+    --input-dir /pa_cpgarchive/projects/tissue-segmentation/data/stains-in-the-wild/hhgm-vanhuizen/HHG/ \
+    --output-root /happiny/projects/siemdejong/tissue-segmentation/hhg-output
