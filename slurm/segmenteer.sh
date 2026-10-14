@@ -18,5 +18,5 @@ cp -r /pa_cpgarchive/projects/tissue-segmentation/models/ /app
 # segmenteer --help
 
 segmenteer \
-    --input-dir /pa_cpgarchive/projects/tissue-segmentation/data/stains-in-the-wild/hhgm-vanhuizen/HHG/ \
-    --output-root /happiny/projects/siemdejong/tissue-segmentation/hhg-output
+    --dataset /pa_cpgarchive/projects/tissue-segmentation/data/stains-in-the-wild/hhgm-vanhuizen/HHG/ \
+    --output-dir /happiny/projects/siemdejong/tissue-segmentation/hhg-output

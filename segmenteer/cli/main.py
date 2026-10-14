@@ -96,6 +96,12 @@ def main(argv: list[str] | None = None) -> None:
         default=None,
         help="Override microns-per-pixel (mpp) for all segmenters",
     )
+    parser.add_argument(
+        "--output-dir",
+        default="output",
+        metavar="DIR",
+        help="Output directory for dataset runs (default: output/)",
+    )
 
     if len(sys.argv) == 1:
         parser.print_help()
@@ -214,7 +220,7 @@ def main(argv: list[str] | None = None) -> None:
     ground_truths = seg.load_ground_truths(
         images, annotation_dir=annotations_dir, suffix=args.annotation_suffix
     )
-    seg.run_dataset(segmenters, images, ground_truths=ground_truths or None)
+    seg.run_dataset(segmenters, images, ground_truths=ground_truths or None, output_dir=Path(args.output_dir))
 
 
 if __name__ == "__main__":
