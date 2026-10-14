@@ -34,3 +34,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
+
+VOLUME /weights
+ENV SEGMENTEER_MODELS_DIR=/weights
+ENV TORCH_HOME=/weights/torch

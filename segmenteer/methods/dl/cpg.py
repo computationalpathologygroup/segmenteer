@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Any
 
+from segmenteer.model_cache import get_method_model_dir
+
 try:
     from trident.segmentation_models.load import SegmentationModel as _TridentSegmentationModel
 
@@ -25,11 +27,10 @@ try:
 except ImportError:
     _ONNX_AVAILABLE = False
 
-
 def get_model_cache_dir() -> Path:
-    cache_dir = Path(__file__).parent.parent.parent.parent / "models" / "cpg"
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    return cache_dir
+    """Return the shared local cpg weights directory."""
+    return get_method_model_dir("cpg")
+
 
 class LIBTRIDENTCPGSegmenter(_TridentSegmentationModel):
     def __init__(self, **build_kwargs: dict[str, Any]):

@@ -8,11 +8,13 @@ class BackgroundSubtractorMOG2Segmenter(NumpySegmenter):
 
     def __init__(
         self,
-        mpp: float = 20,
+        mpp: float | None = 20,
         var_threshold: float = 16.0,
         *args,
         **kwargs,
     ):
+        if mpp is None:
+            mpp = 20
         super().__init__(mpp=mpp, *args, **kwargs)
         self.var_threshold = var_threshold
 

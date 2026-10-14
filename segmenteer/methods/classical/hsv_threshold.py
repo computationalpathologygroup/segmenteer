@@ -44,10 +44,12 @@ class HSVThresholdSegmenter(NumpySegmenter):
         self,
         lower: list[int] | npt.NDArray[np.uint8] | None = None,
         upper: list[int] | npt.NDArray[np.uint8] | None = None,
-        mpp: float = 10,
+        mpp: float | None = 10,
         min_area: int = 0,
         **kwargs,
     ) -> None:
+        if mpp is None:
+            mpp = 10
         super().__init__(mpp=mpp, min_area=min_area, **kwargs)
         self.lower = list(map(int, lower if lower is not None else _DEFAULT_LOWER))
         self.upper = list(map(int, upper if upper is not None else _DEFAULT_UPPER))

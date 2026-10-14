@@ -12,7 +12,7 @@ class ODGMMSlideSegmenter(NumpySegmenter):
 
     def __init__(
         self,
-        mpp: int = 10,
+        mpp: float | None = 10,
         n_samples: int = 100000,
         n_components: int = 2,
         morph_kernel_size: int = 5,
@@ -21,6 +21,8 @@ class ODGMMSlideSegmenter(NumpySegmenter):
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
+        if mpp is None:
+            mpp = 10
         self.mpp = mpp
         self.n_samples = n_samples
         self.n_components = n_components
