@@ -9,7 +9,7 @@
 #SBATCH --time=8:00:00
 #SBATCH --nodes=1
 #SBATCH --requeue
-#SBATCH --container-mounts=/data/pathology/projects:/happiny/projects,/data/pathology/archives:/happiny/archives,/data/pa_cpgarchive/projects/tissue-segmentation/models:/weights,/data/pa_cpgarchive/projects/tissue-segmentation/data/stains-in-the-wild/hhgm-vanhuizen/HHG/:/dataset,/data/pathology/projects/siemdejong/tissue-segmentation/hhg-output:/outputs
+#SBATCH --container-mounts=/data/pathology/projects:/happiny/projects,/data/pathology/archives:/happiny/archives,/data/pathology/archives/projects/tissue-segmentation/models:/weights,/data/pa_cpgarchive/projects/tissue-segmentation/data/stains-in-the-wild/hhgm-vanhuizen/HHG/:/dataset,/data/pathology/projects/siemdejong/tissue-segmentation/hhg-output:/outputs
 #SBATCH --container-image="dockerdex.umcn.nl:5005#siemdejong/segmenteer"
 
 # segmenteer --help
