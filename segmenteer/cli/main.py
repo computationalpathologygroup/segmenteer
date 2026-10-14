@@ -56,13 +56,13 @@ def main(argv: list[str] | None = None) -> None:
             "default, classic, all"
         ),
     )
-    parser.add_argument(
+
+    target = parser.add_mutually_exclusive_group(required=True)
+    target.add_argument(
         "--list-segmenters",
         action="store_true",
         help="List available segmenter names and exit",
     )
-
-    target = parser.add_mutually_exclusive_group(required=True)
     target.add_argument("--image", metavar="PATH", help="Run on a single image")
     target.add_argument(
         "--dataset",
