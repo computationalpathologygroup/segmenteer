@@ -220,7 +220,7 @@ def main(argv: list[str] | None = None) -> None:
     ground_truths = seg.load_ground_truths(
         images, annotation_dir=annotations_dir, suffix=args.annotation_suffix
     )
-    seg.run_dataset(segmenters, images, ground_truths=ground_truths or None, output_dir=Path(args.output_dir))
+    seg.run_dataset(segmenters, images, output_dir=Path(args.output_dir))
 
 
 if __name__ == "__main__":
