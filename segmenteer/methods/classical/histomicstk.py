@@ -13,12 +13,14 @@ class HistomicsTKMaskType(str, Enum):
 class HistomicsTKSegmenter(NumpySegmenter):
     def __init__(
         self,
-        mpp: float = 20,
+        mpp: float | None = 20,
         mask_type: HistomicsTKMaskType = HistomicsTKMaskType.SALIENCY,
         *args,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
+        if mpp is None:
+            mpp = 20
         self.mpp = mpp
         # Config files store enum values as plain strings.  Normalize both the
         # public Enum API and the persisted string form to one runtime type.
@@ -64,11 +66,13 @@ class HistomicsTKTissueSegmenter(NumpySegmenter):
 
     def __init__(
         self,
-        mpp: float = 20,
+        mpp: float | None = 20,
         mask_type: HistomicsTKMaskType = HistomicsTKMaskType.SALIENCY,
         *args,
         **kwargs,
     ):
+        if mpp is None:
+            mpp = 20
         super().__init__(mpp=mpp, *args, **kwargs)
         self.mask_type = HistomicsTKMaskType(mask_type)
         self._validate_histomicstk_available()

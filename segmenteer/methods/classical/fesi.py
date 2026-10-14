@@ -35,12 +35,14 @@ class FESISegmenter(NumpySegmenter):
 
     def __init__(
         self,
-        mpp: float = 20,
+        mpp: float | None = 20,
         improved: bool = True,
         *args,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
+        if mpp is None:
+            mpp = 20
         self.mpp = mpp
         self.improved = improved
 

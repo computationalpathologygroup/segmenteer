@@ -39,7 +39,7 @@ class HESTSegmenter(NumpySegmenter):
         checkpoint_path: str | None = None,
         device: str | None = None,
         confidence_threshold: float = 0.5,
-        mpp: float = 8,
+        mpp: float | None = 8,
         *args,
         **kwargs,
     ):
@@ -53,6 +53,8 @@ class HESTSegmenter(NumpySegmenter):
         self.model_file = model_file
         self.checkpoint_path = checkpoint_path
         self.confidence_threshold = confidence_threshold
+        if mpp is None:
+            mpp = 8
         self.mpp = mpp
 
         self.device = torch.device(resolve_torch_device(device))

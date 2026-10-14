@@ -20,8 +20,10 @@ warnings.simplefilter("once", DaskWarning)
 
 
 class OtsuSegmenter(NumpySegmenter):
-    def __init__(self, mpp: float = 20, *args, **kwargs):
+    def __init__(self, mpp: float | None = 20, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if mpp is None:
+            mpp = 20
         self.mpp = mpp
 
     @property
@@ -33,8 +35,10 @@ class OtsuSegmenter(NumpySegmenter):
 
 
 class LiSegmenter(NumpySegmenter):
-    def __init__(self, mpp: float = 20, *args, **kwargs):
+    def __init__(self, mpp: float | None = 20, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if mpp is None:
+            mpp = 20
         self.mpp = mpp
 
     @property
@@ -46,8 +50,10 @@ class LiSegmenter(NumpySegmenter):
 
 
 class YenSegmenter(NumpySegmenter):
-    def __init__(self, mpp: float = 20, *args, **kwargs):
+    def __init__(self, mpp: float | None = 20, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if mpp is None:
+            mpp = 20
         self.mpp = mpp
 
     @property
@@ -79,7 +85,7 @@ class EntropyMaskerSegmenter(NumpySegmenter):
         self,
         footprint: npt.NDArray[np.int_] | None = None,
         to_gray_func: Union[callable, None] = None,
-        mpp: float = 10,
+        mpp: float | None = 10,
         *args,
         **kwargs,
     ) -> None:
@@ -87,6 +93,8 @@ class EntropyMaskerSegmenter(NumpySegmenter):
             to_gray_func = partial(np.max, axis=2)
         super().__init__(to_gray_func=to_gray_func, *args, **kwargs)
         self.footprint = footprint
+        if mpp is None:
+            mpp = 10
         self.mpp = mpp
 
     @property
@@ -148,8 +156,11 @@ class OtsuTissueSegmenter(NumpySegmenter):
     bright pixels as slide background.
     """
 
-    def __init__(self, mpp: float = 20, *args, **kwargs):
+    def __init__(self, mpp: float | None = 20, *args, **kwargs):
+        if mpp is None:
+            mpp = 20
         super().__init__(mpp=mpp, *args, **kwargs)
+
 
     @property
     def name(self) -> str:
@@ -171,7 +182,9 @@ class OtsuTissueSegmenter(NumpySegmenter):
 class LiTissueSegmenter(NumpySegmenter):
     """Li global thresholding with dark histology tissue as foreground."""
 
-    def __init__(self, mpp: float = 20, *args, **kwargs):
+    def __init__(self, mpp: float | None = 20, *args, **kwargs):
+        if mpp is None:
+            mpp = 20
         super().__init__(mpp=mpp, *args, **kwargs)
 
     @property
@@ -195,7 +208,9 @@ class LiTissueSegmenter(NumpySegmenter):
 class YenTissueSegmenter(NumpySegmenter):
     """Yen global thresholding with dark histology tissue as foreground."""
 
-    def __init__(self, mpp: float = 20, *args, **kwargs):
+    def __init__(self, mpp: float | None = 20, *args, **kwargs):
+        if mpp is None:
+            mpp = 20
         super().__init__(mpp=mpp, *args, **kwargs)
 
     @property

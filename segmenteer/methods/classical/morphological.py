@@ -14,12 +14,14 @@ from segmenteer.core.utils import mask_to_geojson
 class MorphologicalSegmenter(NumpySegmenter):
     def __init__(
         self,
-        mpp: int = 10,
+        mpp: float | None = 10,
         disk_size: int = 3,
         *args,
         **kargs,
     ):
         super().__init__(*args, **kargs)
+        if mpp is None:
+            mpp = 10
         self.mpp = mpp
         self.disk_size = disk_size
 
@@ -38,12 +40,14 @@ class MorphologicalSegmenter(NumpySegmenter):
 class WatershedSegmenter(NumpySegmenter):
     def __init__(
         self,
-        mpp: int = 10,
+        mpp: float | None = 10,
         min_distance: int = 10,
         *args,
         **kargs,
     ):
         super().__init__(*args, **kargs)
+        if mpp is None:
+            mpp = 10
         self.mpp = mpp
         self.min_distance = min_distance
 
@@ -66,12 +70,13 @@ class WatershedTissueSegmenter(NumpySegmenter):
 
     def __init__(
         self,
-        mpp: float = 10,
+        mpp: float | None = 10,
         min_distance_um: float = 100.0,
         *args,
         **kwargs,
     ):
-        mpp = float(mpp)
+        if mpp is None:
+            mpp = 10
         min_distance_um = float(min_distance_um)
 
         if not np.isfinite(mpp) or mpp <= 0:
