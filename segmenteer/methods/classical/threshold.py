@@ -79,6 +79,7 @@ class EntropyMaskerSegmenter(NumpySegmenter):
         self,
         footprint: npt.NDArray[np.int_] | None = None,
         to_gray_func: Union[callable, None] = None,
+        mpp: float = 10,
         *args,
         **kwargs,
     ) -> None:
@@ -86,6 +87,7 @@ class EntropyMaskerSegmenter(NumpySegmenter):
             to_gray_func = partial(np.max, axis=2)
         super().__init__(to_gray_func=to_gray_func, *args, **kwargs)
         self.footprint = footprint
+        self.mpp = mpp
 
     @property
     def name(self) -> str:

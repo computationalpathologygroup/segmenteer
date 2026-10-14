@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import argparse
 import os
+from collections.abc import Callable, Iterable
 from pathlib import Path
-from typing import Callable, Iterable
 
 
 def _parse_segmenter_names(value: str) -> list[str]:
@@ -90,6 +90,11 @@ def main(argv: list[str] | None = None) -> None:
         metavar="SUFFIX",
         help="Filename suffix for dataset annotations (default: _gt.geojson)",
     )
+    parser.add_argument(
+        "--mpp",
+        default=None,
+        help="Override microns-per-pixel (mpp) for all segmenters",
+    )
 
     args = parser.parse_args(argv)
 
@@ -101,37 +106,37 @@ def main(argv: list[str] | None = None) -> None:
     kw: dict = {}
 
     factories: dict[str, Callable[[], object]] = {
-        "otsu": lambda: seg.OtsuSegmenter(mpp=5, min_area=0, **kw),
-        "li": lambda: seg.LiSegmenter(mpp=20, min_area=0, **kw),
-        "yen": lambda: seg.YenSegmenter(mpp=20, min_area=0, **kw),
-        "entropy-masker": lambda: seg.EntropyMaskerSegmenter(mpp=10, min_area=0, **kw),
-        "od-gmm": lambda: seg.ODGMMSlideSegmenter(mpp=10, **kw),
-        "morphological": lambda: seg.MorphologicalSegmenter(mpp=10, **kw),
-        "watershed": lambda: seg.WatershedSegmenter(mpp=10, **kw),
-        "fesi": lambda: seg.FESISegmenter(**kw),
-        "fesi-basic": lambda: seg.FESISegmenter(improved=False, **kw),
+        "otsu": lambda: seg.OtsuSegmenter(mpp=args.mpp, min_area=0, **kw),
+        "li": lambda: seg.LiSegmenter(mpp=args.mpp, min_area=0, **kw),
+        "yen": lambda: seg.YenSegmenter(mpp=args.mpp, min_area=0, **kw),
+        "entropy-masker": lambda: seg.EntropyMaskerSegmenter(mpp=args.mpp, min_area=0, **kw),
+        "od-gmm": lambda: seg.ODGMMSlideSegmenter(mpp=args.mpp, **kw),
+        "morphological": lambda: seg.MorphologicalSegmenter(mpp=args.mpp, **kw),
+        "watershed": lambda: seg.WatershedSegmenter(mpp=args.mpp, **kw),
+        "fesi": lambda: seg.FESISegmenter(mpp=args.mpp, **kw),
+        "fesi-basic": lambda: seg.FESISegmenter(mpp=args.mpp, improved=False, **kw),
         "background-subtractor": lambda: seg.BackgroundSubtractorMOG2Segmenter(
-            mpp=20, **kw
+            mpp=args.mpp, **kw
         ),
-        "hsv-threshold": lambda: seg.HSVThresholdSegmenter(mpp=10, **kw),
-        "hest": lambda: seg.HESTSegmenter(mpp=1),
-        "grandqc": lambda: seg.GrandQCSegmenter(mpp=8),
-        "bigpicture": lambda: seg.BigPictureSegmenter(),
+        "hsv-threshold": lambda: seg.HSVThresholdSegmenter(mpp=args.mpp, **kw),
+        "hest": lambda: seg.HESTSegmenter(mpp=args.mpp),
+        "grandqc": lambda: seg.GrandQCSegmenter(mpp=args.mpp),
+        "bigpicture": lambda: seg.BigPictureSegmenter(mpp=args.mpp),
         "trident-hest": lambda: _require_segmenter(
             getattr(seg, "TRIDENTHESTSegmenter"), "TRIDENTHESTSegmenter"
-        ),
+        ),  # TODO: add mpp argument to TRIDENTHESTSegmenter
         "trident-grandqc": lambda: _require_segmenter(
             getattr(seg, "TRIDENTGrandQCSegmenter"), "TRIDENTGrandQCSegmenter"
-        ),
+        ),  # TODO: add mpp argument to TRIDENTGrandQCSegmenter
         "trident-pathprofiler": lambda: _require_segmenter(
             getattr(seg, "TRIDENTPathProfilerSegmenter"), "TRIDENTPathProfilerSegmenter"
-        ),
-        "fastsam": lambda: seg.FastSAMSegmenter(mpp=10),
-        "rtlucassen": lambda: seg.RTLucassenSlideSegmenter(),
-        "histomicstk": lambda: seg.HistomicsTKSegmenter(mpp=10, **kw),
+        ),  # TODO: add mpp argument to TRIDENTPathProfilerSegmenter
+        "fastsam": lambda: seg.FastSAMSegmenter(mpp=args.mpp),
+        "rtlucassen": lambda: seg.RTLucassenSlideSegmenter(mpp=args.mpp),
+        "histomicstk": lambda: seg.HistomicsTKSegmenter(mpp=args.mpp, **kw),
         "trident-cpg": lambda: _require_segmenter(
             getattr(seg, "TRIDENTCPGSegmenter"), "TRIDENTCPGSegmenter"
-        ),
+        ),  # TODO: add mpp argument to TRIDENTCPGSegmenter
     }
 
     classic_names = [
