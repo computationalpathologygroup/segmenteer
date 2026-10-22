@@ -1,2 +1,9 @@
 models
 outputs
+slurm
+input
+docs
+tests
+.devcontainer
+.venv
+.git

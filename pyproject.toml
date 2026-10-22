@@ -15,6 +15,9 @@ dependencies = [
     "tifffile>=2025.5.10",
 ]
 
+[project.scripts]
+segmenteer = "segmenteer.cli:main"
+
 [project.optional-dependencies]
 # TIFF evaluation works with the core dependencies. The optional OpenSlide
 # backend is recommended for vendor WSI formats and tiled pyramidal TIFFs.

@@ -12,7 +12,7 @@ class BigPictureSegmenter(NumpySegmenter):
 
     def __init__(
         self,
-        mpp: float = 8,
+        mpp: float | None = 8,
         dilation_disk_size: int = 32,
         confidence_threshold: float = 0.8,
         dilate_mask: bool = True,
@@ -68,6 +68,8 @@ class BigPictureSegmenter(NumpySegmenter):
                 "and then rerun with `uv run python run.py`."
             ) from exc
 
+        if mpp is None:
+            mpp = 8
         self.mpp = mpp
         self.segmenter_func = create_tissue_mask
         self.dilation_disk_size = dilation_disk_size

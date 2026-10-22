@@ -9,10 +9,11 @@
 #SBATCH --time=8:00:00
 #SBATCH --nodes=1
 #SBATCH --requeue
-#SBATCH --container-mounts=/data/pathology/projects:/happiny/projects,/data/pathology/archives:/happiny/archives,/data/pa_cpgarchive:/pa_cpgarchive
+#SBATCH --container-mounts=/data/pathology/projects:/happiny/projects,/data/pathology/archives:/happiny/archives,/data/pathology/archives/projects/tissue-segmentation/models:/weights,/data/pa_cpgarchive/projects/tissue-segmentation/data/stains-in-the-wild/hhgm-vanhuizen/HHG/:/dataset,/data/pathology/projects/siemdejong/tissue-segmentation/hhg-output:/outputs
 #SBATCH --container-image="dockerdex.umcn.nl:5005#siemdejong/segmenteer"
 
-# First we need to make all the model weights available. They are not in the Docker image.
-cp -r /pa_cpgarchive/projects/tissue-segmentation/models/ /app
+# segmenteer --help
 
-python run.py --input-dir /pa_cpgarchive/projects/tissue-segmentation/data/stains-in-the-wild/hhgm-vanhuizen/HHG/ --output-root /happiny/projects/siemdejong/tissue-segmentation/hhg-output
+segmenteer \
+    --dataset /dataset \
+    --output-dir /outputs/output

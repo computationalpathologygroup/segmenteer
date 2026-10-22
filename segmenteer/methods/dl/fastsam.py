@@ -24,7 +24,7 @@ class FastSAMSegmenter(NumpySegmenter):
 
     def __init__(
         self,
-        mpp: int = 10,
+        mpp: float | None = 10,
         model_name: str = "FastSAM-x.pt",
         text_prompt: str | None = None,
         conf: float = 0.4,
@@ -42,6 +42,8 @@ class FastSAMSegmenter(NumpySegmenter):
                 "Install with: uv sync --extra fastsam"
             ) from None
         super().__init__(*args, **kwargs)
+        if mpp is None:
+            mpp = 10
         self.mpp = mpp
         self.model_name = model_name
         self.text_prompt = text_prompt

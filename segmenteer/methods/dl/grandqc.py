@@ -28,7 +28,7 @@ class GrandQCSegmenter(NumpySegmenter):
 
     def __init__(
         self,
-        mpp: float = 10,
+        mpp: float | None = 10,
         checkpoint_path: str | None = None,
         device: str | None = None,
         confidence_threshold: float = 0.5,
@@ -41,6 +41,8 @@ class GrandQCSegmenter(NumpySegmenter):
                 "Install with: uv sync --extra grandqc"
             )
         super().__init__(*args, **kwargs)
+        if mpp is None:
+            mpp = 10
         self.mpp = mpp
         self.checkpoint_path = checkpoint_path
         self.confidence_threshold = confidence_threshold

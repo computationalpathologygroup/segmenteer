@@ -41,7 +41,7 @@ class RTLucassenSlideSegmenter(NumpySegmenter):
 
     def __init__(
         self,
-        mpp: float = 7.04,  # 7.04 mpp corresponds to 1.25x magnification described in paper.
+        mpp: float | None = 7.04,  # 7.04 mpp corresponds to 1.25x magnification described in paper.
         device: str | None = None,
         *args,
         **kwargs,
@@ -56,6 +56,8 @@ class RTLucassenSlideSegmenter(NumpySegmenter):
         # SlideSegmenter does not support MPS, so retain CUDA-or-CPU selection.
         device = resolve_torch_device(device, allow_mps=False)
         super().__init__(*args, **kwargs)
+        if mpp is None:
+            mpp = 7.04
         self.mpp = mpp
         self.segmenter = SlideSegmenter(
             device=device,
