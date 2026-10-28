@@ -1,60 +1,40 @@
-"""Classical image processing methods for segmentation."""
+from __future__ import annotations
+from importlib import import_module
+from typing import Any
 
-try:
-    from segmenteer.methods.classical.background_subtractor import (
-        BackgroundSubtractorMOG2Segmenter,
-    )
-except ImportError:
-    BackgroundSubtractorMOG2Segmenter = None  # type: ignore[assignment]
+_EXPORTS = {
+    "CannyForegroundSegmenter": ("canny_foreground", "CannyForegroundSegmenter"),
+    "DoublePassSegmenter": ("double_pass", "DoublePassSegmenter"),
+    "FESISegmenter": ("fesi", "FESISegmenter"),
+    "MorphologicalSegmenter": ("morphological", "MorphologicalSegmenter"),
+    "WatershedTissueSegmenter": ("morphological", "WatershedTissueSegmenter"),
+    "EntropyMaskerSegmenter": ("threshold", "EntropyMaskerSegmenter"),
+    "LiTissueSegmenter": ("threshold", "LiTissueSegmenter"),
+    "OtsuTissueSegmenter": ("threshold", "OtsuTissueSegmenter"),
+    "YenTissueSegmenter": ("threshold", "YenTissueSegmenter"),
+    "HistomicsTKMaskType": ("histomicstk", "HistomicsTKMaskType"),
+    "HistomicsTKTissueSegmenter": ("histomicstk", "HistomicsTKTissueSegmenter"),
+    "BackgroundSubtractorMOG2Segmenter": (
+        "background_subtractor",
+        "BackgroundSubtractorMOG2Segmenter",
+    ),
+    "HSVThresholdSegmenter": ("hsv_threshold", "HSVThresholdSegmenter"),
+    "HSVThreshold_v2": ("hsv_threshold_v2", "HSVThreshold_v2"),
+}
 
-from segmenteer.methods.classical.fesi import FESISegmenter
-from segmenteer.methods.classical.morphological import (
-    MorphologicalSegmenter,
-    WatershedSegmenter,
-    WatershedTissueSegmenter,
-)
-try:
-    from segmenteer.methods.classical.od_gmm import ODGMMSlideSegmenter
-except ImportError:
-    ODGMMSlideSegmenter = None  # type: ignore[assignment]
-from segmenteer.methods.classical.threshold import (
-    EntropyMaskerSegmenter,
-    LiSegmenter,
-    LiTissueSegmenter,
-    OtsuSegmenter,
-    OtsuTissueSegmenter,
-    YenSegmenter,
-    YenTissueSegmenter,
-)
 
-try:
-    from segmenteer.methods.classical.histomicstk import (
-        HistomicsTKSegmenter,
-        HistomicsTKTissueSegmenter,
-    )
-except ImportError:
-    HSVThresholdSegmenter = None  # type: ignore[assignment]
+def __getattr__(name: str) -> Any:
+    try:
+        module, attribute = _EXPORTS[name]
+    except KeyError as exc:
+        raise AttributeError(name) from exc
+    result = getattr(import_module(f"{__name__}.{module}"), attribute)
+    globals()[name] = result
+    return result
 
-try:
-    from segmenteer.methods.classical.histomicstk import HistomicsTKSegmenter
-except ImportError:
-    HistomicsTKSegmenter = None  # type: ignore[assignment]
 
-__all__ = [
-    "OtsuSegmenter",
-    "OtsuTissueSegmenter",
-    "LiSegmenter",
-    "YenSegmenter",
-    "EntropyMaskerSegmenter",
-    "MorphologicalSegmenter",
-    "WatershedSegmenter",
-    "WatershedTissueSegmenter",
-    "BackgroundSubtractorMOG2Segmenter",
-    "ODGMMSlideSegmenter",
-    "HistomicsTKSegmenter",
-    "HistomicsTKTissueSegmenter",
-    "FESISegmenter",
-    "HSVThresholdSegmenter",
-    "LiTissueSegmenter",
-    "YenTissueSegmenter",
-]
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(_EXPORTS))
+
+
+__all__ = list(_EXPORTS)

@@ -1,16 +1,9 @@
-/**
- * segmenteer decoupled viewer.
- *
- * Predictions are the primary runner artifact. Ground truth is an optional
- * GeoJSON overlay. Metrics are optional evaluator artifacts. The viewer never
- * never computes benchmark metrics. TP/FP/FN are transient visual comparisons
- * computed on demand for only the currently inspected slide + method.
- */
+/** Viewer for Segmenteer predictions and optional evaluator metrics. */
 
 "use strict";
 
 const COLORS = {
-  ground_truth: "#2563eb",   // fixed GT blue
+  ground_truth: "#2563eb",   // Reserved ground-truth color
   true_positive: "#16a34a",
   false_positive: "#dc2626",
   false_negative: "#f59e0b",
@@ -31,18 +24,8 @@ const EVALUATION_COLS = [
   { key: "under_segmentation_rate", label: "Under-segmentation" },
 ];
 
-const SUPERVISED_COLS = EVALUATION_COLS;
-const UNSUPERVISED_COLS = [
-  { key: "num_objects", label: "Objects" },
-  { key: "total_area", label: "Total area" },
-  { key: "mean_area", label: "Mean area" },
-  { key: "mean_compactness", label: "Compactness" },
-  { key: "mean_solidity", label: "Solidity" },
-  { key: "coverage_ratio", label: "Coverage" },
-];
-
 const METRIC_LABELS = Object.fromEntries(
-  [...EVALUATION_COLS, ...UNSUPERVISED_COLS].map(({ key, label }) => [key, label])
+  EVALUATION_COLS.map(({ key, label }) => [key, label])
 );
 
 const S = {
@@ -59,7 +42,7 @@ const S = {
   overviewViewers: {},
   viewer: null,
   overlayCanvas: null,
-  metricKey: "num_objects",
+  metricKey: "dice",
   overviewSort: "default",
   gtVisible: false,
   evaluationRunId: null,
@@ -75,8 +58,8 @@ async function init() {
     const res = await fetch("/api/index");
     if (!res.ok) throw new Error(res.statusText);
     S.index = normaliseIndexPayload(await res.json());
-    if (S.index.viewer_build !== "20260807_18") {
-      throw new Error(`Viewer frontend/backend build mismatch (frontend 20260807_18, backend ${S.index.viewer_build || "unknown"}). Reload the page.`);
+    if (S.index.viewer_build !== "20261028_01") {
+      throw new Error(`Viewer frontend/backend build mismatch (frontend 20261028_01, backend ${S.index.viewer_build || "unknown"}). Reload the page.`);
     }
   } catch (err) {
     document.body.innerHTML = `<p style="padding:2rem;color:#dc2626">Failed to load viewer index: ${escapeHtml(String(err))}</p>`;
@@ -88,7 +71,7 @@ async function init() {
 
   document.getElementById("run-label").textContent = outputDir.split("/").at(-1);
   document.getElementById("slide-count").textContent = String(wsis.length);
-  // Keep first paint cheap: do not open WSI/GeoJSON until requested.
+  // Defer WSI and polygon loading until requested.
   S.summary = null;
   configureOptionalUI();
   buildSidebar();
@@ -160,9 +143,7 @@ function configureOptionalUI() {
   document.getElementById("ground-truth-panel").hidden = !hasGroundTruth;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Sidebar and selection
-// ─────────────────────────────────────────────────────────────────────────────
 
 function buildSidebar() {
   const list = document.getElementById("wsi-list");
@@ -185,13 +166,10 @@ function _runStatusBadge(wsi, compact) {
   if (!S.index.metrics_available) return "";
   const perSlide = S.index.scores?.[wsi.stem] ?? {};
   const hasSupervised = Object.values(perSlide).some((entry) => Boolean(entry?.metrics?.supervised && Object.keys(entry.metrics.supervised).length));
-  const hasUnsupervised = Object.values(perSlide).some((entry) => Boolean(entry?.metrics?.unsupervised && Object.keys(entry.metrics.unsupervised).length));
-  const status = hasSupervised ? "supervised" : hasUnsupervised ? "unsupervised" : null;
+  const status = hasSupervised ? "supervised" : null;
   const info = status === "supervised"
     ? { label: compact ? "EVAL" : "evaluated", title: "Supervised evaluator metrics are loaded" }
-    : status === "unsupervised"
-      ? { label: compact ? "UNSUP" : "reference-free", title: "Reference-free evaluator metrics are loaded" }
-      : null;
+    : null;
   if (!info) return "";
   return `<span class="run-status status-${escapeAttr(status)}" title="${escapeAttr(info.title)}">${escapeHtml(info.label)}</span>`;
 }
@@ -211,9 +189,7 @@ async function selectStem(stem) {
   await switchView("inspect");
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Inspect view
-// ─────────────────────────────────────────────────────────────────────────────
 
 async function openInspect(stem) {
   const wsiInfo = _getWsi(stem);
@@ -223,7 +199,7 @@ async function openInspect(stem) {
   document.getElementById("panel-overview").style.display = "none";
   document.getElementById("panel-inspect").style.display = "flex";
 
-  // Opening a slide does not fetch polygons until a layer is selected.
+  // Fetch polygons only when an overlay is selected.
   S.activeMethodSet = new Set();
   S.gtVisible = false;
   S.evaluationRunId = null;
@@ -288,9 +264,7 @@ async function openInspect(stem) {
   });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Prediction and optional GT controls
-// ─────────────────────────────────────────────────────────────────────────────
 
 function buildMethodToggles(stem) {
   const container = document.getElementById("method-toggles");
@@ -430,9 +404,7 @@ async function _fetchGeojson(url) {
 }
 
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Transient TP / FP / FN spatial comparison for the inspected pair
-// ─────────────────────────────────────────────────────────────────────────────
 
 function _spatialComparisonRunIds(stem) {
   const wsi = _getWsi(stem);
@@ -517,9 +489,7 @@ async function _fetchEvaluationLayer(stem, runId, layer) {
   return true;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Overview
-// ─────────────────────────────────────────────────────────────────────────────
 
 function buildOverviewToggles() {
   const groundTruthBar = document.getElementById("overview-ground-truth-bar");
@@ -553,9 +523,7 @@ function buildOverviewToggles() {
 async function toggleOverviewGroundTruth(button) {
   S.overviewGroundTruthVisible = !S.overviewGroundTruthVisible;
   button.classList.toggle("active", S.overviewGroundTruthVisible);
-  // Do not bulk-fetch all ground-truth polygons in the overview. This viewer
-  // is intended for interactive inspection; polygon GeoJSON is fetched only for
-  // visible overview cards, and in the inspect view only after the user clicks.
+  // Fetch ground-truth polygons only for visible or selected slides.
   await _loadVisibleOverviewOverlays();
   redrawOverviewCanvases();
 }
@@ -583,8 +551,7 @@ async function toggleOverviewMethod(runId, button) {
   } else {
     _updateCardScoreVisibility();
   }
-  // Do not fetch prediction GeoJSON for every slide. Load only overlays for
-  // currently instantiated overview cards; inspect-view layers are fetched on click.
+  // Load predictions only for instantiated overview cards.
   await _loadVisibleOverviewOverlays();
   redrawOverviewCanvases();
 }
@@ -644,9 +611,7 @@ function _diceSortScore(stem) {
   const selected = [...S.overviewMethodSet];
   if (!selected.length) return null;
   const values = selected.map((runId) => _getMetric(S.index.scores, stem, runId, "dice"));
-  // A multi-method mean represents all selected methods. If any selected
-  // method lacks Dice for this slide, the sort score is missing and the slide
-  // is placed after slides with a complete score.
+  // Sort incomplete multi-method scores after fully evaluated slides.
   if (values.some((value) => value === null)) return null;
   return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
@@ -768,7 +733,6 @@ function renderOverview() {
   grid.innerHTML = "";
   const methods = Object.values(S.index.methods);
   const hasMetrics = Boolean(S.index.metrics_available);
-  const metricScope = _isSupervisedMetric(S.metricKey) ? "supervised" : "reference-free";
 
   for (const wsi of _orderedWsis()) {
     const card = document.createElement("div");
@@ -799,7 +763,7 @@ function renderOverview() {
           ${_runStatusBadge(wsi, false)}
         </div>
         ${hasMetrics ? `<div class="card-scores-wrap" style="display:${S.overviewMethodSet.size ? "block" : "none"}">
-          <div class="card-scores-label">${metricScope} metric</div>
+          <div class="card-scores-label">supervised metric</div>
           <div class="card-scores">${scoreRows || "<span class='no-scores'>no score for selected metric</span>"}</div>
         </div>` : ""}
       </div>`;
@@ -895,8 +859,7 @@ function redrawOverviewCanvases() {
 }
 
 function _setupCardObserver() {
-  // Lazily instantiate only overview cards that enter the viewport. This keeps
-  // the overview usable without opening hundreds of WSI tile sources at once.
+  // Create overview viewers only when their cards enter the viewport.
   const observer = new IntersectionObserver((entries) => {
     for (const entry of entries) {
       if (!entry.isIntersecting) continue;
@@ -916,23 +879,20 @@ async function _loadOverviewOverlaysForStem(stem) {
     tasks.push(_fetchGroundTruth(stem));
   }
   for (const runId of S.overviewMethodSet) {
-    // Prediction availability comes from runner artifacts, independently of metrics.
+    // Predictions define layer availability independently of metrics.
     if (S.index.scores[stem]?.[runId]) tasks.push(_fetchPrediction(stem, runId));
   }
   await Promise.all(tasks);
 }
 
 async function _loadVisibleOverviewOverlays() {
-  // Fetch polygons only for cards whose OpenSeadragon thumbnails already exist.
-  // Toggling a method never loads predictions for all slides.
+  // Fetch overlays only for initialized overview cards.
   await Promise.all(Object.keys(S.overviewViewers).map((stem) => _loadOverviewOverlaysForStem(stem)));
 }
 
 
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Self-contained Overview HTML report
-// ─────────────────────────────────────────────────────────────────────────────
 
 async function downloadOverviewHtml() {
   const button = document.getElementById("download-overview-html");
@@ -1062,8 +1022,7 @@ function _geojsonSvgPaths(features, color, dashed) {
   const d = [];
   for (const feature of features || []) _geometryToSvgPath(feature?.geometry, d);
   if (!d.length) return "";
-  // Match the interactive Overview canvas styling in screen pixels.
-  // vector-effect keeps these widths constant as the self-contained report card scales.
+  // Maintain constant-width outlines in exported SVG reports.
   const strokeWidth = dashed ? 2.3 : 1.8;
   const dash = dashed ? ' stroke-dasharray="7 4"' : "";
   return `<path d="${d.join(" ")}" fill="none" stroke="${escapeAttr(color)}" stroke-width="${strokeWidth}" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"${dash}/>`;
@@ -1100,9 +1059,7 @@ function _safeFilename(value) {
   return String(value || "segmenteer").replace(/[^A-Za-z0-9_.-]+/g, "_").replace(/^_+|_+$/g, "") || "segmenteer";
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // OpenSeadragon canvas overlay rendering
-// ─────────────────────────────────────────────────────────────────────────────
 
 let redrawPending = false;
 
@@ -1235,9 +1192,7 @@ function _traceRing(ctx, ring, scale, viewer) {
   ctx.closePath();
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Metrics
-// ─────────────────────────────────────────────────────────────────────────────
 
 function buildMetricsTable(stem) {
   if (!S.index.metrics_available) return;
@@ -1249,13 +1204,9 @@ function buildMetricsTable(stem) {
   }
 
   const supervisedMethods = methods.filter((method) => Boolean(S.index.scores[stem]?.[method.run_id]?.metrics?.supervised));
-  const unsupervisedMethods = methods.filter((method) => Boolean(S.index.scores[stem]?.[method.run_id]?.metrics?.unsupervised));
   const tables = [];
   if (supervisedMethods.length) {
     tables.push(_metricTableHtml("Evaluation", stem, supervisedMethods, EVALUATION_COLS));
-  }
-  if (unsupervisedMethods.length) {
-    tables.push(_metricTableHtml("Reference-free metrics", stem, unsupervisedMethods, UNSUPERVISED_COLS));
   }
   container.innerHTML = tables.join("") || '<p class="panel-note">No evaluator metrics loaded for this slide.</p>';
 }
@@ -1277,9 +1228,7 @@ function _metricTableHtml(title, stem, methods, columns) {
     <table class="metrics-tbl"><thead><tr><th>Method</th>${header}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // View switching
-// ─────────────────────────────────────────────────────────────────────────────
 
 async function switchView(view) {
   S.view = view;
@@ -1308,20 +1257,14 @@ async function switchView(view) {
   if (view === "inspect" && S.activeStem) await openInspect(S.activeStem);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Metric/data helpers
-// ─────────────────────────────────────────────────────────────────────────────
 
 function _getMetric(scores, stem, runId, key) {
   const entry = scores[stem]?.[runId];
   if (!entry) return null;
-  const source = _isSupervisedMetric(key) ? entry.metrics?.supervised : entry.metrics?.unsupervised;
+  const source = entry.metrics?.supervised;
   const value = source?.[key] ?? entry.metrics?.[key] ?? entry[key] ?? null;
   return value !== null && value !== undefined && Number.isFinite(Number(value)) ? Number(value) : null;
-}
-
-function _isSupervisedMetric(key) {
-  return SUPERVISED_COLS.some((column) => column.key === key);
 }
 
 function _hasAnySupervisedMetric() {
@@ -1340,13 +1283,7 @@ function _getWsi(stem) {
 }
 
 function _fmtVal(value, key) {
-  if (key === "num_objects") return String(Math.round(value));
-  if (key === "mean_area") {
-    if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-    if (value >= 1_000) return `${(value / 1_000).toFixed(1)}k`;
-    return String(Math.round(value));
-  }
-  if (["over_segmentation_rate", "under_segmentation_rate", "coverage_ratio"].includes(key)) {
+  if (["over_segmentation_rate", "under_segmentation_rate"].includes(key)) {
     return `${(value * 100).toFixed(1)}%`;
   }
   if (key === "execution_time_s") return `${value.toFixed(2)}s`;

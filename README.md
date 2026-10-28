@@ -1,473 +1,74 @@
-<img src="docs/title.svg" alt="segmenteer" height="42">
+<img src="docs/title.svg" alt="Segmenteer" height="42">
 
-A repository for tissue segmentation on whole-slide images (WSI).
+Segmenteer generates tissue annotations from whole-slide images (WSIs). It supports classical image processing and pretrained segmentation models. Predictions can be saved as **GeoJSON** or **ASAP XML**.
 
-**Current package version: `0.1.0`.**
+## Installation
 
-## Architecture
-
-Segmenteer separates segmentation, evaluation, and visualization into three independent components:
-
-```text
-RUNNER
-  WSI files
-     ↓
-  prediction GeoJSON + config.yaml
-
-EVALUATOR
-  runner predictions
-  + optional ground-truth GeoJSON
-     ↓
-  metrics.csv or metrics.sqlite3
-
-VIEWER
-  runner output
-  + optional WSI directory
-  + optional ground-truth GeoJSON
-  + optional evaluator metrics
-     ↓
-  interactive browser + overview HTML export
-```
-
-### Runner
-
-The runner discovers the configured WSI dataset and executes the selected segmentation methods.
-
-For each method it writes:
-
-- one prediction GeoJSON per slide;
-- the method configuration in `config.yaml`.
-
-At experiment level it writes `dataset_manifest.json` with the number and names of slides in the cohort.
-
-### Evaluator
-
-The evaluator reads prediction GeoJSON files from an existing runner experiment.
-
-- With matching ground-truth GeoJSON files, it computes supervised segmentation metrics.
-- Without matching ground truth, it computes reference-free structural metrics.
-- Results can be written as CSV or SQLite.
-
-### Viewer
-
-The viewer opens an existing runner experiment and can optionally add:
-
-- source WSI files for thumbnails and interactive slide browsing;
-- ground-truth GeoJSON overlays;
-- evaluator metrics from CSV or SQLite.
-
-The interface adapts to the supplied inputs. Evaluation summaries, EVAL indicators, and Dice sorting are enabled when usable evaluator metrics are loaded.
-
----
-
-## Setup
-
-### Prerequisites
-
-- Python 3.12+
-- [`uv`](https://docs.astral.sh/uv/) is recommended
-
-### Quick start: install everything
+Requires Python 3.12 and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-git clone <repo-url>
-cd segmenteer
 uv sync --extra all
 ```
 
-The `all` extra installs the supported segmentation backends plus viewer/runtime dependencies.
+Some methods need additional packages or pretrained model weights. Install the dependencies for the methods you want to use. Dependency groups are listed in `pyproject.toml`.
 
-You can run the examples below with `python` after activating the environment, or prefix them with `uv run`, for example:
+## Generate predictions
 
-```bash
-uv run python run.py
-```
+1. Select the segmentation methods in the `METHODS` list in `run.py`. For example:
 
-### Install selected functionality
+   ```python
+   METHODS = [
+       seg.AtlasPatchSAM2Segmenter(device="cpu"),
+   ]
+   ```
 
-```bash
-# WSI/runtime support
-uv sync --extra wsi
-uv sync --extra openslide
-uv sync --extra app
-uv sync --extra runtime
+2. Run segmentation on a directory of slides:
 
-# Classical methods
-uv sync --extra background-subtractor
-uv sync --extra od-gmm
-uv sync --extra entropymasker
-uv sync --extra histomicstk
+   ```bash
+   uv run python run.py \
+     --input-dir /path/to/slides \
+     --output-dir outputs/tissue-masks \
+     --workers 1 \
+     --output-format geojson
+   ```
 
-# Deep-learning methods/backends
-uv sync --extra torch
-uv sync --extra atlaspatch-sam2
-uv sync --extra bigpicture
-uv sync --extra cpg
-uv sync --extra fastsam
-uv sync --extra grandqc
-uv sync --extra hest
-uv sync --extra pathprofiler
-uv sync --extra rtlucassen
-uv sync --extra trident
+Use `--output-format xml` to write ASAP XML annotations instead. Run `uv run python run.py --help` for other options.
 
-# All supported deep-learning adapters
-uv sync --extra dl
-```
+Segmenteer saves predictions for each method. It also saves configurations and timing records. Completed predictions can be reused when the input files and method settings have not changed.
 
-For the interactive viewer with WSI tile support:
+## View predictions
+
+The optional browser viewer can display WSIs and prediction overlays:
 
 ```bash
-uv sync --extra runtime
+uv run python -m app \
+  --output outputs/tissue-masks \
+  --data /path/to/slides
 ```
 
-Use `uv sync --extra <name>` so versions and pinned Git dependencies declared in `pyproject.toml` are resolved consistently.
+Open `http://127.0.0.1:8765` in your browser. Install the `app` dependency group if the viewer dependencies are not already available.
 
----
+## Model downloads
 
-## 1. Run segmentation
-
-Edit `run.py` and configure:
-
-- `WSI_DIR` — directory containing WSI files;
-- `METHODS` — methods/configurations to run;
-- optional runtime settings such as device, slide order, and worker count.
-
-Run with a new timestamped experiment directory:
+Methods with pretrained models may download weights when they first run. Downloaded weights are cached for later runs. Some downloads require explicit approval:
 
 ```bash
-python run.py
+SEGMENTEER_ALLOW_UNPINNED_DOWNLOADS=1 uv run python run.py --input-dir /path/to/slides
 ```
 
-Or choose/reuse an experiment directory explicitly:
+Use this setting only with trusted sources. Set `SEGMENTEER_OFFLINE=1` to disable Segmenteer-managed downloads. Make sure the required models are already cached.
+
+## Evaluation (optional)
+
+Segmenteer also supports supervised evaluation when ground-truth annotations are available. Metrics include Dice, IoU, and boundary measures. Evaluation is optional.
 
 ```bash
-python run.py --output-dir outputs/<experiment>
-```
-
-Useful runner options:
-
-```bash
-python run.py --help
-
-python run.py --new
-python run.py --slide-order alphabetical
-python run.py --slide-order smallest-first
-python run.py --workers 4
-```
-
-When an existing Segmenteer 0.1.0 experiment directory is reused, `dataset_manifest.json` restores its saved slide-name cohort and completed prediction artifacts can be reused.
-
-`run.py` is intentionally a thin experiment launcher. Slide discovery, manifest handling,
-resume, worker selection, and sharding are implemented by `segmenteer.runner`.
-
-### Runner output
-
-```text
-outputs/<experiment>/
-├── dataset_manifest.json
-├── <method-run-id>/
-│   ├── config.yaml
-│   └── predictions/
-│       ├── slide_001.geojson
-│       ├── slide_002.geojson
-│       └── ...
-└── ...
-```
-
-A dataset manifest contains the experiment slide count and names:
-
-```json
-{
-  "n_slides": 2,
-  "slides": [
-    "slide_001.svs",
-    "slide_002.svs"
-  ]
-}
-```
-
-### Method configuration
-
-Each method directory contains the configuration used to create its predictions. Downstream tools use this saved configuration to identify the method and its parameters.
-
-For wrapped methods such as TRIDENT, the underlying saved model metadata is used in the UI. For example:
-
-```yaml
-class: segmenteer.core.base.TRIDENTSegmenter
-params:
-  model_id: PathProfiler
-  target_mag: 4
-```
-
-is shown as a PathProfiler/TRIDENT method with target magnification `4×`.
-
-Resolution metadata is displayed directly from saved configuration:
-
-- explicit `mpp` values are shown as µm/px;
-- `target_mag` values are shown as magnification.
-
----
-
-## 2. Evaluate predictions
-
-The evaluator discovers prediction files under:
-
-```text
-outputs/<experiment>/<method-run-id>/predictions/*.geojson
-```
-
-### Supervised evaluation with GeoJSON ground truth
-
-Ground-truth files are matched to predictions by filename/stem:
-
-```text
-ground_truth_geojson/
-├── slide_001.geojson
-├── slide_002.geojson
-└── ...
-```
-
-#### CSV
-
-```bash
-python -m segmenteer.evaluator \
-  --output outputs/<experiment> \
-  --ground-truth ground_truth_geojson \
-  --format csv \
-  --metrics outputs/<experiment>/metrics.csv
-```
-
-#### SQLite
-
-```bash
-python -m segmenteer.evaluator \
-  --output outputs/<experiment> \
-  --ground-truth ground_truth_geojson \
-  --format sqlite \
-  --metrics outputs/<experiment>/metrics.sqlite3
-```
-
-If `--metrics` is omitted, the evaluator writes to the experiment directory using the selected format:
-
-```text
-outputs/<experiment>/metrics.csv
-```
-
-or:
-
-```text
-outputs/<experiment>/metrics.sqlite3
-```
-
-### Reference-free evaluation
-
-Ground truth is optional:
-
-```bash
-python -m segmenteer.evaluator \
-  --output outputs/<experiment> \
-  --format sqlite
-```
-
-Predictions without a matching ground-truth GeoJSON receive reference-free structural metrics.
-
-### Supervised metrics
-
-The supervised evaluator reports:
-
-- Dice;
-- IoU;
-- precision;
-- recall;
-- over-segmentation rate;
-- under-segmentation rate.
-
-### SQLite resume
-
-SQLite provides resumable evaluation. Unchanged `(slide, method)` inputs can reuse existing rows based on saved file signatures.
-
-CSV is written as a complete snapshot of the current evaluation run.
-
----
-
-## 3. View an experiment
-
-Launch the viewer from the repository root:
-
-```bash
-python -m app --output outputs/<experiment>
-```
-
-The viewer opens at:
-
-```text
-http://127.0.0.1:8765
-```
-
-Use `--port <PORT>` or `--host <HOST>` when needed.
-
-### Predictions
-
-```bash
-python -m app \
-  --output outputs/<experiment>
-```
-
-### Predictions + source WSI
-
-```bash
-python -m app \
-  --output outputs/<experiment> \
-  --data /path/to/wsi/files
-```
-
-`--data` enables source WSI thumbnails and interactive WSI tile browsing.
-
-### Predictions + ground truth
-
-```bash
-python -m app \
-  --output outputs/<experiment> \
-  --ground-truth ground_truth_geojson \
-  --data /path/to/wsi/files
-```
-
-Ground truth appears as a dedicated overlay in the viewer.
-
-### Predictions + metrics
-
-```bash
-python -m app \
-  --output outputs/<experiment> \
-  --metrics outputs/<experiment>/metrics.csv \
-  --data /path/to/wsi/files
-```
-
-`--metrics` accepts evaluator CSV or SQLite output. In metrics mode, method controls are scoped to runner methods represented by the loaded metric rows.
-
-### Full viewer
-
-```bash
-python -m app \
-  --output outputs/<experiment> \
-  --ground-truth ground_truth_geojson \
-  --metrics outputs/<experiment>/metrics.csv \
-  --data /path/to/wsi/files
-```
-
-Only `--output` is required. The other inputs can be combined as needed.
-
----
-
-## Viewer
-
-### Overview
-
-The viewer starts on the **Overview** page.
-
-Overview includes:
-
-- the number of slides in the experiment;
-- WSI thumbnails when source slides are available;
-- prediction overlay toggles;
-- optional ground-truth overlay;
-- a distinct color for every prediction method;
-- a fixed blue dashed ground-truth outline;
-- evaluation score cards and summary when metrics are loaded;
-- Dice-based slide sorting when supervised Dice metrics are available;
-- self-contained HTML export of the current visual overview.
-
-Dice sorting supports:
-
-- **Default order**;
-- **Dice ↑**;
-- **Dice ↓**.
-
-With one prediction method selected, sorting uses that method's Dice. With multiple methods selected, sorting uses their mean Dice for each slide.
-
-### Inspect
-
-Clicking any slide in the left sidebar opens **Inspect** for that slide.
-
-Inspect can show:
-
-- the source WSI;
-- selected prediction outlines;
-- ground-truth outline;
-- evaluator metrics;
-- transient TP/FP/FN spatial comparison layers for the currently selected prediction and ground truth.
-
-The TP/FP/FN visualization is generated on demand from the selected geometries and cached in memory for the running viewer session.
-
-### Method identity and resolution
-
-The viewer uses each method's saved `config.yaml` as its method/configuration metadata source.
-
-For TRIDENT and similar wrappers, the underlying model is shown prominently, for example:
-
-```text
-PathProfiler (TRIDENT, 4×)
-```
-
-MPP is shown only when an explicit `mpp` value exists in saved configuration.
-
----
-
-## Download an Overview HTML report
-
-The Overview toolbar contains a subtle **Download overview HTML** action.
-
-The exported file is a self-contained visual snapshot containing:
-
-- the current slide set and ordering;
-- overview thumbnails;
-- currently selected prediction outlines using their viewer colors;
-- the ground-truth outline when enabled.
-
-The exported outline styling matches the interactive Overview page. The downloaded HTML can be opened independently after export.
-
----
-
-## Typical end-to-end workflow
-
-```bash
-# 1. Install
-uv sync --extra all
-
-# 2. Configure WSI_DIR and METHODS in run.py, then run segmentation
-python run.py --output-dir outputs/my_experiment
-
-# 3. Evaluate against GeoJSON ground truth
-python -m segmenteer.evaluator \
-  --output outputs/my_experiment \
-  --ground-truth ground_truth_geojson \
-  --format csv \
-  --metrics outputs/my_experiment/metrics.csv
-
-# 4. Launch the viewer
-python -m app \
-  --output outputs/my_experiment \
-  --ground-truth ground_truth_geojson \
-  --metrics outputs/my_experiment/metrics.csv \
-  --data /path/to/wsi/files
-```
-
-For a prediction-only workflow, the runner output can be opened directly with:
-
-```bash
-python -m app --output outputs/my_experiment
-```
-
-For reference-free evaluation:
-
-```bash
-python -m segmenteer.evaluator \
-  --output outputs/my_experiment \
-  --format sqlite
+uv run python -m segmenteer.evaluator \
+  --output outputs/tissue-masks \
+  --ground-truth /path/to/annotations \
+  --format csv
 ```
 
 ## Citation
 
-> TBD.
-
-When using Segmenteer in a study, please cite the original publication(s) of the segmentation method(s) used.
+When publishing results, cite the original publications for the segmentation methods and models used.

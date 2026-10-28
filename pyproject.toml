@@ -4,7 +4,10 @@ version = "0.1.0"
 requires-python = ">=3.12.0,<3.13"
 dependencies = [
     "geojson>=3.2.0",
-    "numpy>=2.5.2",
+    # A package imported alongside HistomicsTK still references np.in1d,
+    # removed in NumPy 2.4. Restrict the shared environment until the
+    # complete HistomicsTK dependency chain works on newer NumPy versions.
+    "numpy>=2.3.5,<2.4",
     "pillow>=12.1.0",
     "pyyaml>=6.0",
     "requests>=2.34.2",
@@ -13,6 +16,8 @@ dependencies = [
     "scipy>=1.15.3",
     "shapely>=2.1.2",
     "tifffile>=2025.5.10",
+    "rasterio>=1.4,<2",
+    "affine>=2.4,<3",
 ]
 
 [project.scripts]
@@ -32,9 +37,6 @@ openslide = [
 # Classical image-processing methods.
 background-subtractor = [
     "opencv-python-headless>=4.11.0.86",
-]
-od-gmm = [
-    "scikit-learn>=1.7.2",
 ]
 entropymasker = [
     "dask>=2024.10.0",
@@ -102,7 +104,7 @@ trident = [
     "torchvision>=0.24.1",
 ]
 
-# All supported deep-learning adapters that can be selected in run.py.
+# Shared deep-learning method dependencies.
 dl = [
     "atlas-patch==1.1.0",
     "sam-2",
@@ -117,6 +119,10 @@ dl = [
     "tqdm>=4.67.0",
     "trident",
     "ultralytics>=8.4.6",
+    "conflux-segmentation[onnx]>=0.5.0",
+    "nnunetv2",
+    "gdown>=6.4.2",
+    "opencv-python-headless>=4.11.0.86",
 ]
 
 # Standalone viewer and WSI-reader support.
@@ -133,9 +139,7 @@ runtime = [
     "uvicorn[standard]>=0.32.0",
 ]
 
-# One resolver-stable environment for every supported method used by run.py.
-# This is deliberately flat: it does not depend on segmenteer extras from
-# inside segmenteer's own metadata, which avoids self-referential resolution.
+# Combined runtime for supported methods.
 all = [
     "atlas-patch==1.1.0",
     "sam-2",
@@ -159,22 +163,38 @@ all = [
     "ultralytics>=8.4.6",
     "uvicorn[standard]>=0.32.0",
     "opencv-python-headless>=4.11.0.86",
-    "histomicstk>=1.3.14",
+    "histomicstk>=1.4.0,<1.5",
+    "pyvips[binary]>=3.0.0",
+    "conflux-segmentation[onnx]>=0.5.0",
+    "nnunetv2",
+    "gdown>=6.4.2",
 ]
 
 dev = [
     "pytest>=9.0.2",
 ]
 histomicstk = [
-    "histomicstk>=1.3.14",
+    "histomicstk>=1.4.0,<1.5",
+    # HistomicsTK brings in pyvips. Use the cross-platform bundled libvips
+    # rather than requiring a separate Homebrew/apt installation.
+    "pyvips[binary]>=3.0.0",
 ]
+canny = ["opencv-python-headless>=4.11.0.86"]
+double-pass = ["opencv-python-headless>=4.11.0.86", "scikit-learn>=1.7.2", "openslide-python>=1.3.0", "openslide-bin>=4.0.0.11", "matplotlib>=3.10.8", "tqdm>=4.67.0"]
+cx-tissueseg = ["conflux-segmentation[onnx]>=0.5.0", "onnxruntime>=1.24.4", "huggingface-hub>=0.36.0"]
+icgi = ["nnunetv2", "torch>=2.9.1", "torchvision>=0.24.1", "gdown>=6.4.2"]
+wsidicom = ["wsidicom>=0.20.0"]
+pyvips = ["pyvips[binary]>=3.0.0"]
 
 [build-system]
 requires = ["uv_build>=0.9.26,<0.10.0"]
 build-backend = "uv_build"
 
+# Linux-only wheels are used solely for explicitly routed packages.
 [[tool.uv.index]]
+name = "large-image-wheels"
 url = "https://girder.github.io/large_image_wheels"
+explicit = true
 
 [[tool.uv.index]]
 name = "pytorch-cu129"
@@ -186,26 +206,41 @@ module-root = ""
 module-name = "segmenteer"
 
 [tool.uv.sources]
+# The ICGI source is tracked at master until an exact commit is verified.
+# Freeze its resolved Git commit in uv.lock before HPC deployment.
+# Linux-only wheelhouse packages use their platform-specific source.
+# OpenSlide and pyvips use PyPI.
+gdal = { index = "large-image-wheels", marker = "sys_platform == 'linux'" }
+glymur = { index = "large-image-wheels", marker = "sys_platform == 'linux'" }
+mapnik = { index = "large-image-wheels", marker = "sys_platform == 'linux'" }
+pylibtiff = { index = "large-image-wheels", marker = "sys_platform == 'linux'" }
+python-bioformats = { index = "large-image-wheels", marker = "sys_platform == 'linux'" }
+python-javabridge = { index = "large-image-wheels", marker = "sys_platform == 'linux'" }
 slidesegmenter = { git = "https://github.com/RTLucassen/slidesegmenter", rev = "9d9d690913d6e8520a24d678f54decccd59dce9e" }
 trident = { git = "https://github.com/mahmoodlab/trident.git", rev = "adf3b7e8fdd7c815f33bec79da0d8d265200c2d6"}
 tissue-segmentation = { git = "https://github.com/imi-bigpicture/tissue-segmentation.git", subdirectory = "tissue_segmentation", rev = "6d97a25a8255f591eb2c705611a32a5f56101a25"}
 sam-2 = { git = "https://github.com/facebookresearch/sam2.git", rev = "2b90b9f5ceec907a1c18123530e92e794ad901a4" }
 torch = [
-  { index = "pytorch-cu129", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+  { index = "pytorch-cu129", marker = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
 ]
 torchvision = [
-  { index = "pytorch-cu129", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+  { index = "pytorch-cu129", marker = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
 ]
 
+[tool.uv.sources.nnunetv2]
+git = "https://github.com/icgi/Reliable-and-Efficient-Tissue-Segmentation-in-Whole-Slide-Images.git"
+rev = "master"
 [tool.uv]
-index-strategy = "unsafe-best-match"
-# The pinned BigPicture package requires tensorflow-cpu>=2.20, but PyPI ships
-# no matching macOS ARM wheel. No other supported project dependency requires
-# tensorflow-cpu, so omit it globally and install tensorflow>=2.20 explicitly
-# through the BigPicture extra instead.
+# The default first-index strategy is safe now that the specialized indexes
+# are explicit and all other packages resolve from the official PyPI index.
+# BigPicture uses tensorflow instead of the upstream tensorflow-cpu dependency.
 exclude-dependencies = [
     "tensorflow-cpu",
-    "opencv-python",  # ultralytics installs the wrong opencv package
+    "opencv-python",  # Use headless OpenCV for server execution
+    # large-image[common] installs this optional memcached cache backend,
+    # which has no CPython 3.12 macOS arm64 wheel and needs a local C build.
+    # Segmenteer does not use memcached tile caching.
+    "pylibmc",
 ]
 
 [tool.uv.extra-build-dependencies]

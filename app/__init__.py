@@ -1,1 +1,1 @@
-"""Official-results viewer for segmenteer evaluation artifacts."""
+"""Viewer for Segmenteer predictions and evaluation results."""

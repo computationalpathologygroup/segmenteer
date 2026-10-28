@@ -14,16 +14,25 @@ from app.loader import IndexData
 METRIC_SPECS: tuple[dict[str, str], ...] = (
     {"key": "dice", "label": "Dice", "group": "Evaluation", "source": "supervised"},
     {"key": "iou", "label": "IoU", "group": "Evaluation", "source": "supervised"},
-    {"key": "precision", "label": "Precision", "group": "Evaluation", "source": "supervised"},
+    {
+        "key": "precision",
+        "label": "Precision",
+        "group": "Evaluation",
+        "source": "supervised",
+    },
     {"key": "recall", "label": "Recall", "group": "Evaluation", "source": "supervised"},
-    {"key": "over_segmentation_rate", "label": "Over-segmentation", "group": "Evaluation", "source": "supervised"},
-    {"key": "under_segmentation_rate", "label": "Under-segmentation", "group": "Evaluation", "source": "supervised"},
-    {"key": "num_objects", "label": "Objects", "group": "Reference-free", "source": "unsupervised"},
-    {"key": "total_area", "label": "Total area", "group": "Reference-free", "source": "unsupervised"},
-    {"key": "mean_area", "label": "Mean area", "group": "Reference-free", "source": "unsupervised"},
-    {"key": "mean_compactness", "label": "Compactness", "group": "Reference-free", "source": "unsupervised"},
-    {"key": "mean_solidity", "label": "Solidity", "group": "Reference-free", "source": "unsupervised"},
-    {"key": "coverage_ratio", "label": "Coverage", "group": "Reference-free", "source": "unsupervised"},
+    {
+        "key": "over_segmentation_rate",
+        "label": "Over-segmentation",
+        "group": "Evaluation",
+        "source": "supervised",
+    },
+    {
+        "key": "under_segmentation_rate",
+        "label": "Under-segmentation",
+        "group": "Evaluation",
+        "source": "supervised",
+    },
 )
 
 
@@ -46,7 +55,6 @@ class DatasetCounts:
     ground_truth_available_slides: int
     prediction_only_slides: int
     supervised_slides: int
-    unsupervised_slides: int
 
 
 def dataset_counts(index: IndexData) -> DatasetCounts:
@@ -57,7 +65,6 @@ def dataset_counts(index: IndexData) -> DatasetCounts:
         ground_truth_available_slides=sum(wsi.has_ground_truth for wsi in wsis),
         prediction_only_slides=sum(wsi.run_status == "prediction_only" for wsi in wsis),
         supervised_slides=sum(wsi.run_status == "supervised" for wsi in wsis),
-        unsupervised_slides=sum(wsi.run_status == "unsupervised" for wsi in wsis),
     )
 
 
@@ -117,15 +124,31 @@ def summary_payload(index: IndexData) -> dict[str, Any]:
 def summary_csv(index: IndexData) -> str:
     output = io.StringIO(newline="")
     writer = csv.writer(output)
-    writer.writerow([
-        "scope", "method_name", "run_id", "metric_group", "metric",
-        "n_slides", "mean", "sample_standard_deviation",
-    ])
+    writer.writerow(
+        [
+            "scope",
+            "method_name",
+            "run_id",
+            "metric_group",
+            "metric",
+            "n_slides",
+            "mean",
+            "sample_standard_deviation",
+        ]
+    )
     for row in metric_summary(index):
-        writer.writerow([
-            "viewer metrics file", row.method_name, row.run_id, row.metric_group,
-            row.metric_label, row.n,
-            "" if row.mean is None else f"{row.mean:.12g}",
-            "" if row.standard_deviation is None else f"{row.standard_deviation:.12g}",
-        ])
+        writer.writerow(
+            [
+                "viewer metrics file",
+                row.method_name,
+                row.run_id,
+                row.metric_group,
+                row.metric_label,
+                row.n,
+                "" if row.mean is None else f"{row.mean:.12g}",
+                ""
+                if row.standard_deviation is None
+                else f"{row.standard_deviation:.12g}",
+            ]
+        )
     return output.getvalue()
