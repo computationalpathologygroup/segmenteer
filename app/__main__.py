@@ -14,10 +14,25 @@ def build_parser() -> argparse.ArgumentParser:
         ),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--output", required=True, metavar="DIR", help="Runner experiment directory containing <method>/predictions/.")
-    parser.add_argument("--ground-truth", metavar="DIR", help="Optional GeoJSON ground-truth directory.")
-    parser.add_argument("--metrics", metavar="FILE", help="Optional evaluator CSV or SQLite metrics file.")
-    parser.add_argument("--data", metavar="DIR", help="Optional source WSI directory for image browsing.")
+    parser.add_argument(
+        "--output",
+        required=True,
+        metavar="DIR",
+        help="Runner experiment directory containing <method>/predictions/.",
+    )
+    parser.add_argument(
+        "--ground-truth", metavar="DIR", help="Optional GeoJSON ground-truth directory."
+    )
+    parser.add_argument(
+        "--metrics",
+        metavar="FILE",
+        help="Optional evaluator CSV or SQLite metrics file.",
+    )
+    parser.add_argument(
+        "--data",
+        metavar="DIR",
+        help="Optional source WSI directory for image browsing.",
+    )
     parser.add_argument("--host", default="127.0.0.1", help="Bind host.")
     parser.add_argument("--port", type=int, default=8765, help="Bind port.")
     return parser
@@ -31,14 +46,18 @@ def main(argv: Sequence[str] | None = None) -> None:
     if args.metrics and not Path(args.metrics).expanduser().is_file():
         raise SystemExit(f"--metrics does not exist or is not a file: {args.metrics}")
     if args.ground_truth and not Path(args.ground_truth).expanduser().is_dir():
-        raise SystemExit(f"--ground-truth does not exist or is not a directory: {args.ground_truth}")
+        raise SystemExit(
+            f"--ground-truth does not exist or is not a directory: {args.ground_truth}"
+        )
     if args.data and not Path(args.data).expanduser().is_dir():
         print(f"Warning: --data is not mounted or not a directory: {args.data}")
 
     try:
         import uvicorn
     except ImportError as exc:  # pragma: no cover
-        raise SystemExit("The viewer needs FastAPI/uvicorn runtime dependencies.") from exc
+        raise SystemExit(
+            "The viewer needs FastAPI/uvicorn runtime dependencies."
+        ) from exc
 
     from app.server import create_app
 
@@ -62,7 +81,9 @@ def main(argv: Sequence[str] | None = None) -> None:
             if isinstance(entry, dict) and entry.get("metrics")
         )
         metric_names = ", ".join(index_data.available_metrics) or "none"
-        print(f"  Metrics matched: {metric_entries} slide/method row(s); fields: {metric_names}")
+        print(
+            f"  Metrics matched: {metric_entries} slide/method row(s); fields: {metric_names}"
+        )
     print()
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
 

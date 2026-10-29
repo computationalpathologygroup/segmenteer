@@ -5,12 +5,7 @@ from pathlib import Path
 
 
 class WSITileServer:
-    """Serve a WSI as Deep Zoom tiles for the standalone viewer.
-
-    The viewer intentionally keeps WSI reading separate from runner/evaluator
-    logic. OpenSlide is used for vendor WSI formats and pyramidal TIFFs because
-    it can read individual regions without decoding the entire slide.
-    """
+    """Serve OpenSlide-compatible WSIs as Deep Zoom tiles."""
 
     TILE_SIZE = 256
     OVERLAP = 1
@@ -31,8 +26,10 @@ class WSITileServer:
 
         try:
             self._slide = openslide.OpenSlide(str(self.path))
-        except Exception as exc:  # openslide raises backend-specific exceptions
-            raise RuntimeError(f"OpenSlide could not open {self.path.name}: {exc}") from exc
+        except Exception as exc:  # OpenSlide may raise backend-specific errors
+            raise RuntimeError(
+                f"OpenSlide could not open {self.path.name}: {exc}"
+            ) from exc
 
         self._deepzoom = DeepZoomGenerator(
             self._slide,

@@ -1,12 +1,8 @@
-"""Disk indexes for inference-only runner artifacts."""
-
 from __future__ import annotations
-
 import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterator
-
 import yaml
 
 PREDICTIONS_DIR = "predictions"
@@ -24,7 +20,6 @@ class CompletedArtifact:
 
 
 def iter_completed_artifacts(output_dir: Path | str) -> Iterator[CompletedArtifact]:
-    """Yield valid prediction/config pairs from one runner experiment."""
     root = Path(output_dir)
     if not root.is_dir():
         return
@@ -33,17 +28,24 @@ def iter_completed_artifacts(output_dir: Path | str) -> Iterator[CompletedArtifa
         if not method_dir.is_dir() or not predictions.is_dir():
             continue
         try:
-            config = yaml.safe_load((method_dir / CONFIG_FILE).read_text(encoding="utf-8"))
+            config = yaml.safe_load(
+                (method_dir / CONFIG_FILE).read_text(encoding="utf-8")
+            )
         except (OSError, UnicodeDecodeError, yaml.YAMLError):
             config = {}
         if not isinstance(config, dict):
             config = {}
-        for prediction_path in sorted(predictions.glob("*.geojson"), key=lambda path: path.name.casefold()):
+        for prediction_path in sorted(
+            predictions.glob("*.geojson"), key=lambda path: path.name.casefold()
+        ):
             try:
                 geojson = json.loads(prediction_path.read_text(encoding="utf-8"))
             except (OSError, UnicodeDecodeError, json.JSONDecodeError):
                 continue
-            if not isinstance(geojson, dict) or geojson.get("type") != "FeatureCollection":
+            if (
+                not isinstance(geojson, dict)
+                or geojson.get("type") != "FeatureCollection"
+            ):
                 continue
             yield CompletedArtifact(
                 run_id=method_dir.name,

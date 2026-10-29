@@ -8,6 +8,37 @@ __pycache__/
 
 .github
 
+
+# Custom
+data
+models
+*.lock
+!uv.lock
+segmentation_results
+trident
+data*
+
+visualizations
+.DS_Store
+sandbox
+app_older/
+qupath
+
+outputs*
+*.zip
+
+TODO
+
+*.ndpi
+*.svs
+
+uv.toml
+overrides.txt
+
+TODO.md
+xml_output_checked
+benchmark_data_annotation.xlsx
+
 # Distribution / packaging
 .Python
 build/
@@ -248,29 +279,4 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-
-data
-models
-*.lock
-!uv.lock
-segmentation_results
-trident
-data*
-
-visualizations
-.DS_Store
-sandbox
-app_older/
-qupath
-
-outputs*
-*.zip
-
-TODO
-
-*.ndpi
-*.svs
-
-uv.toml
-overrides.txt
 

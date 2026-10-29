@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import Optional, Tuple, Union
-
 import numpy as np
 from PIL import Image
-from skimage.transform import rescale
+from skimage.transform import resize
+from segmenteer.wsi.reader import NativeWSIReader
 
 
 class WSIMetadata:
@@ -15,328 +15,272 @@ class WSIMetadata:
         num_levels: Optional[int] = None,
         level_dimensions: Optional[list] = None,
         level_downsamples: Optional[list] = None,
+        mpp_x: Optional[float] = None,
+        mpp_y: Optional[float] = None,
     ):
-        self.width = width
-        self.height = height
-        self.mpp = mpp
+        self.width = int(width)
+        self.height = int(height)
+        self.mpp_x = mpp if mpp_x is None else mpp_x
+        self.mpp_y = mpp if mpp_y is None else mpp_y
+        self.mpp = self.mpp_x if self.mpp_x == self.mpp_y else None
         self.num_levels = num_levels
         self.level_dimensions = level_dimensions or []
         self.level_downsamples = level_downsamples or []
 
     def __repr__(self):
-        return (
-            f"WSIMetadata(width={self.width}, height={self.height}, "
-            f"mpp={self.mpp}, num_levels={self.num_levels})"
-        )
+        return f"WSIMetadata(width={self.width}, height={self.height}, mpp_x={self.mpp_x}, mpp_y={self.mpp_y}, num_levels={self.num_levels})"
 
 
 def get_wsi_metadata(path: Union[str, Path]) -> WSIMetadata:
     path = Path(path)
-
     if path.is_dir():
         return _get_dicom_metadata(path)
-
-    suffix = path.suffix.lower()
-
-    if suffix in [".tif", ".tiff"]:
-        return _get_tiff_metadata(path)
-    elif suffix == ".mrxs":
-        return _get_openslide_metadata(path)
-    else:
-        try:
-            import openslide
-
-            if openslide.OpenSlide.detect_format(str(path)):
-                return _get_openslide_metadata(path)
-        except:
-            pass
-
+    try:
+        reader = NativeWSIReader()
+        wsi = reader.read(path)
+    except Exception:
         return _get_pillow_metadata(path)
+    if wsi.backend == "openslide":
+        slide = reader._open_openslide(path)
+        try:
+            level_dimensions = [tuple(dim) for dim in slide.level_dimensions]
+        finally:
+            slide.close()
+    else:
+        with reader._open_tiff(path) as tif:
+            level_dimensions = [
+                reader._level_size(level) for level in reader._tiff_levels(tif)
+            ]
+    try:
+        mpp_x, mpp_y = reader.get_mpp(wsi, 0)
+    except ValueError as exc:
+        if "Cannot determine level-0 MPP" not in str(exc):
+            raise
+        mpp_x = mpp_y = None
+    return _metadata_from_levels(level_dimensions, mpp_x, mpp_y)
+
+
+def _metadata_from_levels(level_dimensions, mpp_x=None, mpp_y=None):
+    width, height = level_dimensions[0]
+    return WSIMetadata(
+        width=width,
+        height=height,
+        mpp_x=mpp_x,
+        mpp_y=mpp_y,
+        num_levels=len(level_dimensions),
+        level_dimensions=list(level_dimensions),
+        level_downsamples=[width / w for w, _ in level_dimensions],
+    )
 
 
 def _get_dicom_metadata(path: Path) -> WSIMetadata:
     from wsidicom import WsiDicom
 
     wsi = WsiDicom.open(path)
-
     try:
-        mpp_obj = wsi.mpp
-        if hasattr(mpp_obj, "width") and hasattr(mpp_obj, "height"):
-            mpp = (mpp_obj.width + mpp_obj.height) / 2.0
+        spacing = wsi.mpp
+        if hasattr(spacing, "width") and hasattr(spacing, "height"):
+            mpp_x, mpp_y = float(spacing.width), float(spacing.height)
         else:
-            mpp = float(mpp_obj)
-    except:
-        mpp = None
-
-    level_dimensions = [(lvl.size.width, lvl.size.height) for lvl in wsi.levels]
-
-    level_downsamples = [
-        wsi.levels[0].size.width / lvl.size.width for lvl in wsi.levels
-    ]
-
-    metadata = WSIMetadata(
-        width=wsi.levels[0].size.width,
-        height=wsi.levels[0].size.height,
-        mpp=mpp,
-        num_levels=len(wsi.levels),
-        level_dimensions=level_dimensions,
-        level_downsamples=level_downsamples,
-    )
-
-    wsi.close()
-    return metadata
+            mpp_x = mpp_y = float(spacing)
+        mpp_x, mpp_y = NativeWSIReader._normalise_target_mpp((mpp_x, mpp_y))
+        levels = [
+            (int(level.size.width), int(level.size.height)) for level in wsi.levels
+        ]
+        return _metadata_from_levels(levels, mpp_x, mpp_y)
+    finally:
+        wsi.close()
 
 
 def _get_tiff_metadata(path: Path) -> WSIMetadata:
-    import tifffile
-
-    with tifffile.TiffFile(path) as tif:
-        page = tif.pages[0]
-        width = page.imagewidth
-        height = page.imagelength
-
-        mpp = None
-        if page.tags.get("XResolution") and page.tags.get("YResolution"):
-            x_res = page.tags["XResolution"].value
-            y_res = page.tags["YResolution"].value
-
-            unit = page.tags.get("ResolutionUnit")
-            if unit and unit.value == 3:
-                mpp = 10000.0 / x_res[0] * x_res[1]
-
-        num_levels = len(tif.pages)
-        level_dimensions = [(p.imagewidth, p.imagelength) for p in tif.pages]
-        level_downsamples = [width / p.imagewidth for p in tif.pages]
-
-        return WSIMetadata(
-            width=width,
-            height=height,
-            mpp=mpp,
-            num_levels=num_levels,
-            level_dimensions=level_dimensions,
-            level_downsamples=level_downsamples,
-        )
+    reader = NativeWSIReader(backend="tifffile")
+    wsi = reader.read(path)
+    with reader._open_tiff(path) as tif:
+        levels = [reader._level_size(level) for level in reader._tiff_levels(tif)]
+    try:
+        mpp_x, mpp_y = reader.get_mpp(wsi)
+    except ValueError as exc:
+        if "Cannot determine level-0 MPP" not in str(exc):
+            raise
+        mpp_x = mpp_y = None
+    return _metadata_from_levels(levels, mpp_x, mpp_y)
 
 
 def _get_openslide_metadata(path: Path) -> WSIMetadata:
+    reader = NativeWSIReader(backend="openslide")
+    wsi = reader.read(path)
+    slide = reader._open_openslide(path)
     try:
-        import openslide
-    except ImportError:
-        raise ImportError(
-            f"OpenSlide is required to read {path.suffix} files. "
-            "Install with: pip install openslide-python"
-        )
-
-    slide = openslide.OpenSlide(str(path))
-
-    width, height = slide.dimensions
-
-    mpp = None
-    if "openslide.mpp-x" in slide.properties:
-        mpp = float(slide.properties["openslide.mpp-x"])
-
-    num_levels = slide.level_count
-    level_dimensions = slide.level_dimensions
-    level_downsamples = slide.level_downsamples
-
-    slide.close()
-
-    return WSIMetadata(
-        width=width,
-        height=height,
-        mpp=mpp,
-        num_levels=num_levels,
-        level_dimensions=list(level_dimensions),
-        level_downsamples=list(level_downsamples),
-    )
+        levels = [tuple(dim) for dim in slide.level_dimensions]
+    finally:
+        slide.close()
+    try:
+        mpp_x, mpp_y = reader.get_mpp(wsi)
+    except ValueError as exc:
+        if "Cannot determine level-0 MPP" not in str(exc):
+            raise
+        mpp_x = mpp_y = None
+    return _metadata_from_levels(levels, mpp_x, mpp_y)
 
 
 def _get_pillow_metadata(path: Path) -> WSIMetadata:
-    img = Image.open(path)
-    width, height = img.size
-
-    mpp = None
-    if "dpi" in img.info:
-        dpi = img.info["dpi"][0]
-        mpp = 25400.0 / dpi
-
-    img.close()
-
-    return WSIMetadata(width=width, height=height, mpp=mpp, num_levels=1)
+    with Image.open(path) as img:
+        width, height = img.size
+        dpi = img.info.get("dpi")
+        mpp_x = mpp_y = None
+        if dpi is not None:
+            try:
+                mpp_x, mpp_y = 25400 / float(dpi[0]), 25400 / float(dpi[1])
+                mpp_x, mpp_y = NativeWSIReader._normalise_target_mpp((mpp_x, mpp_y))
+            except (ValueError, IndexError, TypeError, ZeroDivisionError):
+                mpp_x = mpp_y = None
+    return _metadata_from_levels([(width, height)], mpp_x, mpp_y)
 
 
 def calculate_target_level(
-    metadata: WSIMetadata, target_mpp: float
-) -> Tuple[int, float]:
-    if metadata.mpp is None:
-        raise ValueError("WSI does not have MPP metadata")
-
-    target_downsample = target_mpp / metadata.mpp
-
-    if metadata.num_levels is None or metadata.num_levels == 1:
-        return 0, target_downsample
-
-    best_level = 0
-    best_diff = float("inf")
-
-    for i, downsample in enumerate(metadata.level_downsamples):
-        diff = abs(downsample - target_downsample)
-        if diff < best_diff:
-            best_diff = diff
-            best_level = i
-
-    level_downsample = metadata.level_downsamples[best_level]
-    additional_scale = target_downsample / level_downsample
-
-    return best_level, additional_scale
+    metadata: WSIMetadata, target_mpp: float | tuple[float, float]
+) -> Tuple[int, float | tuple[float, float]]:
+    if metadata.mpp_x is None or metadata.mpp_y is None:
+        raise ValueError("WSI does not have calibrated X/Y MPP metadata.")
+    target_x, target_y = NativeWSIReader._normalise_target_mpp(target_mpp)
+    sizes = metadata.level_dimensions or [(metadata.width, metadata.height)]
+    size = NativeWSIReader._target_size(
+        metadata.width,
+        metadata.height,
+        metadata.mpp_x,
+        metadata.mpp_y,
+        target_x,
+        target_y,
+    )
+    level = NativeWSIReader._choose_level(sizes, size)
+    width, height = sizes[level]
+    ratio_x = target_x / (metadata.mpp_x * metadata.width / width)
+    ratio_y = target_y / (metadata.mpp_y * metadata.height / height)
+    additional_scale = ratio_x if ratio_x == ratio_y else (ratio_x, ratio_y)
+    return (level, additional_scale)
 
 
 def resample_to_mpp(
-    image: np.ndarray, current_mpp: float, target_mpp: float
+    image: np.ndarray,
+    current_mpp: float | tuple[float, float],
+    target_mpp: float | tuple[float, float],
 ) -> np.ndarray:
-    if current_mpp is None or target_mpp is None:
-        raise ValueError("Both current_mpp and target_mpp must be specified")
-
-    scale_factor = current_mpp / target_mpp
-
-    if abs(scale_factor - 1.0) < 0.01:
+    current_x, current_y = NativeWSIReader._normalise_target_mpp(current_mpp)
+    target_x, target_y = NativeWSIReader._normalise_target_mpp(target_mpp)
+    width, height = NativeWSIReader._target_size(
+        image.shape[1], image.shape[0], current_x, current_y, target_x, target_y
+    )
+    if (width, height) == (image.shape[1], image.shape[0]):
         return image
-
-    if image.ndim == 3:
-        resampled = rescale(
-            image,
-            scale_factor,
-            channel_axis=2,
-            preserve_range=True,
-            anti_aliasing=True,
-        )
-    else:
-        resampled = rescale(
-            image, scale_factor, preserve_range=True, anti_aliasing=True
-        )
-
-    return resampled.astype(image.dtype)
+    output_shape = (height, width) + image.shape[2:]
+    resized = resize(
+        image,
+        output_shape,
+        order=1,
+        preserve_range=True,
+        anti_aliasing=(width < image.shape[1] or height < image.shape[0]),
+    )
+    return resized.astype(image.dtype)
 
 
 def load_wsi_at_mpp(
-    path: Union[str, Path], target_mpp: float, verbose: bool = True
+    path: Union[str, Path],
+    target_mpp: float | tuple[float, float],
+    verbose: bool = True,
 ) -> Tuple[np.ndarray, WSIMetadata]:
     path = Path(path)
     metadata = get_wsi_metadata(path)
-
-    if metadata.mpp is None:
-        raise ValueError(
-            f"Cannot determine MPP for {path}. Please provide MPP explicitly."
+    if metadata.mpp_x is None or metadata.mpp_y is None:
+        raise ValueError(f"Cannot determine calibrated X/Y MPP for {path}.")
+    target_x, target_y = NativeWSIReader._normalise_target_mpp(target_mpp)
+    if verbose:
+        print(f"WSI native MPP: X={metadata.mpp_x:.6g}, Y={metadata.mpp_y:.6g}")
+        print(f"Target MPP: X={target_x:.6g}, Y={target_y:.6g}")
+    if path.is_dir():
+        level, _ = calculate_target_level(metadata, (target_x, target_y))
+        image = _load_dicom_level(path, level)
+        level_width, level_height = metadata.level_dimensions[level]
+        current = (
+            metadata.mpp_x * metadata.width / level_width,
+            metadata.mpp_y * metadata.height / level_height,
         )
-
-    if verbose:
-        print(f"WSI native MPP: {metadata.mpp:.3f}")
-        print(f"Target MPP: {target_mpp:.3f}")
-
-    if metadata.num_levels and metadata.num_levels > 1:
-        level, additional_scale = calculate_target_level(metadata, target_mpp)
-
-        if verbose:
-            level_mpp = metadata.mpp * metadata.level_downsamples[level]
-            print(f"Using pyramid level {level} (MPP: {level_mpp:.3f})")
-            if abs(additional_scale - 1.0) > 0.01:
-                print(f"Additional resampling: {additional_scale:.3f}x")
-
-        if path.is_dir():
-            image = _load_dicom_level(path, level)
-        elif path.suffix.lower() in [".tif", ".tiff"]:
-            image = _load_tiff_level(path, level)
-        else:
-            image = _load_openslide_level(path, level)
-
-        current_mpp = metadata.mpp * metadata.level_downsamples[level]
-
-        if abs(additional_scale - 1.0) > 0.01:
-            image = resample_to_mpp(image, current_mpp, target_mpp)
+        image = resample_to_mpp(image, current, (target_x, target_y))
     else:
-        if path.is_dir():
-            image = _load_dicom_level(path, 0)
-        elif path.suffix.lower() in [".tif", ".tiff"]:
-            import tifffile
-
-            image = tifffile.imread(path)
+        reader = NativeWSIReader()
+        try:
+            wsi = reader.read(path)
+        except (OSError, ValueError, RuntimeError):
+            with Image.open(path) as source:
+                image = resample_to_mpp(
+                    np.asarray(source),
+                    (metadata.mpp_x, metadata.mpp_y),
+                    (target_x, target_y),
+                )
         else:
-            image = _load_openslide_level(path, 0)
-
-        image = resample_to_mpp(image, metadata.mpp, target_mpp)
-
+            image = reader.get_wsi_at_mpp(wsi, (target_x, target_y))
     if verbose:
-        print(f"Final image size: {image.shape[0]}x{image.shape[1]}")
-
-    return image, metadata
+        achieved_x = metadata.width * metadata.mpp_x / image.shape[1]
+        achieved_y = metadata.height * metadata.mpp_y / image.shape[0]
+        print(
+            f"Final image size: {image.shape[0]}x{image.shape[1]}, effective MPP: X={achieved_x:.6g}, Y={achieved_y:.6g}"
+        )
+    return (image, metadata)
 
 
 def _load_dicom_level(path: Path, level: int) -> np.ndarray:
     from wsidicom import WsiDicom
 
     wsi = WsiDicom.open(path)
-    level_size = wsi.levels[level].size
-    size_tuple = (level_size.width, level_size.height)
-    region = wsi.read_region((0, 0), level, size_tuple)
-    image_array = np.array(region)
-    wsi.close()
-    return image_array
+    try:
+        level_size = wsi.levels[level].size
+        return np.asarray(
+            wsi.read_region((0, 0), level, (level_size.width, level_size.height))
+        )
+    finally:
+        wsi.close()
 
 
 def _load_tiff_level(path: Path, level: int) -> np.ndarray:
-    import tifffile
-
-    with tifffile.TiffFile(path) as tif:
-        if level >= len(tif.pages):
-            level = len(tif.pages) - 1
-        return tif.pages[level].asarray()
+    reader = NativeWSIReader(backend="tifffile")
+    with reader._open_tiff(path) as tif:
+        levels = reader._tiff_levels(tif)
+        return reader._normalise_tiff_array(
+            levels[level].asarray(), getattr(levels[level], "axes", "")
+        )
 
 
 def _load_openslide_level(path: Path, level: int) -> np.ndarray:
+    reader = NativeWSIReader(backend="openslide")
+    slide = reader._open_openslide(path)
     try:
-        import openslide
-    except ImportError:
-        raise ImportError(
-            f"OpenSlide is required to read {path.suffix} files. "
-            "Install with: pip install openslide-python"
+        return np.asarray(
+            slide.read_region((0, 0), level, slide.level_dimensions[level]).convert(
+                "RGB"
+            )
         )
-
-    slide = openslide.OpenSlide(str(path))
-
-    if level >= slide.level_count:
-        level = slide.level_count - 1
-
-    level_dimensions = slide.level_dimensions[level]
-    region = slide.read_region((0, 0), level, level_dimensions)
-    image_array = np.array(region.convert("RGB"))
-    slide.close()
-    return image_array
+    finally:
+        slide.close()
 
 
 def _load_pillow(path: Path) -> np.ndarray:
-    return np.array(Image.open(path))
+    with Image.open(path) as image:
+        return np.asarray(image)
 
 
 def estimate_mpp_from_magnification(magnification: float) -> float:
-    mpp_map = {
-        1: 10.0,
-        2: 5.0,
-        5: 2.0,
-        7: 1.5,
-        10: 1.0,
-        20: 0.5,
-        40: 0.25,
-    }
-
+    magnification = float(magnification)
+    NativeWSIReader._positive_mpp(magnification, "Magnification")
+    mpp_map = {1: 10.0, 2: 5.0, 5: 2.0, 7: 1.5, 10: 1.0, 20: 0.5, 40: 0.25}
     if magnification in mpp_map:
         return mpp_map[magnification]
-
     closest_mag = min(mpp_map.keys(), key=lambda x: abs(x - magnification))
-    base_mpp = mpp_map[closest_mag]
-    return base_mpp * (closest_mag / magnification)
+    return mpp_map[closest_mag] * closest_mag / magnification
 
 
 def calculate_scale_factor_for_coordinates(
-    source_mpp: float, target_mpp: float
-) -> float:
-    return source_mpp / target_mpp
+    source_mpp: float | tuple[float, float], target_mpp: float | tuple[float, float]
+) -> float | tuple[float, float]:
+    source_x, source_y = NativeWSIReader._normalise_target_mpp(source_mpp)
+    target_x, target_y = NativeWSIReader._normalise_target_mpp(target_mpp)
+    ratio_x, ratio_y = source_x / target_x, source_y / target_y
+    return ratio_x if ratio_x == ratio_y else (ratio_x, ratio_y)
