@@ -442,6 +442,10 @@ def generate_performance_figures(
     bootstrap_seed=42,
     formats=("png", "svg"),
     dpi=250,
+    pareto=True,
+    timing_source=None,
+    pareto_timing_scope="available",
+    min_pareto_timing_slides=5,
 ):
     if metric not in METRICS:
         raise ValueError(f"metric must be one of {', '.join(METRICS)}")
@@ -465,6 +469,14 @@ def generate_performance_figures(
     )
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
+    pareto_info = None
+    if pareto:
+        from .speed_accuracy import generate_speed_accuracy_figure
+        pareto_info = generate_speed_accuracy_figure(
+            rows, metrics=metrics, output_dir=output, timing_source=timing_source,
+            timing_scope=pareto_timing_scope, matched=matched,
+            min_method_slides=min_method_slides, min_timing_slides=min_pareto_timing_slides,
+            formats=formats, dpi=dpi)
     figures = {}
     coverage = []
     excluded_groups = []
@@ -571,6 +583,7 @@ def generate_performance_figures(
         else None,
         "methods": len(rows),
         "figures": figures,
+        **({"speed_accuracy": pareto_info} if pareto_info is not None else {}),
         "excluded_subgroup_counts": dict(
             Counter(dimension for dimension, _, _ in excluded_groups)
         ),

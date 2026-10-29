@@ -13,7 +13,9 @@ resolution-markers = [
 ]
 
 [manifest]
+constraints = [{ name = "gdal", marker = "python_full_version == '3.12.*' and platform_machine == 'x86_64' and sys_platform == 'linux'", specifier = "==3.13.3.2", index = "https://girder.github.io/large_image_wheels" }]
 excludes = [
+    "large-image-source-bioformats",
     "opencv-python",
     "pylibmc",
     "tensorflow-cpu",
@@ -227,34 +229,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/a9/c4/e1673cc731ec3da81d016b4879ff08ff73352a16101845d0e5032af4d2e7/blosc2-4.14.1-cp311-abi3-pyemscripten_2026_0_wasm32.whl", hash = "sha256:696fdfc471191679e6c1b3b2d5db4ae7cc40675e10997d0b5eb6caf7d470253e", size = 2739534, upload-time = "2026-09-30T10:49:02.346Z" },
     { url = "https://files.pythonhosted.org/packages/f1/ca/37bb03edf4717d9cbe7f0ccb6ac07c49b2514e63839ec1809344d9f3918c/blosc2-4.14.1-cp311-abi3-win_amd64.whl", hash = "sha256:79b7c096401f75bea1a0f24b28aa8e783cf6c10178cf077f9260a022abb7b245", size = 4770021, upload-time = "2026-09-30T10:49:03.938Z" },
     { url = "https://files.pythonhosted.org/packages/56/16/bb0435b3d63b9e29101ca92c92a9624e3b5822ebac650a63c55e08c0f54f/blosc2-4.14.1-cp311-abi3-win_arm64.whl", hash = "sha256:aec524576f3241f1e411d47e586421e1947c274cd7c715da83b65a81e2c52ead", size = 4119881, upload-time = "2026-09-30T10:49:05.553Z" },
-]
-
-[[package]]
-name = "boto3"
-version = "1.43.74"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "botocore" },
-    { name = "jmespath" },
-    { name = "s3transfer" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/02/3b/a8c14b2390a54189b0b14c03376e05150dcc4c1a875d18bff8f6594d7494/boto3-1.43.74.tar.gz", hash = "sha256:9d4d0dcf81c941cfe7d927486435521e0f3bf657cb68b10dfe445cfe311f8839", size = 112608, upload-time = "2026-08-18T21:20:33.506Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/5b/a1/61f89804cfa2f3517319bd92fffca12d35dfe90621f9d4f2ca95818eaa96/boto3-1.43.74-py3-none-any.whl", hash = "sha256:d7f6a921efbda61ed787b403df8b64a95bc66e66299e9772fc40c235c28a5bde", size = 140027, upload-time = "2026-08-18T21:20:31.615Z" },
-]
-
-[[package]]
-name = "botocore"
-version = "1.43.74"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "jmespath" },
-    { name = "python-dateutil" },
-    { name = "urllib3" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/1d/fb/00969dfa9fee1d1e278a0e65109d07acacceae4acd177d9d9413479720ab/botocore-1.43.74.tar.gz", hash = "sha256:b127b24d49532b5d7b0851b4abb3d3b99f58a121f87f07c23dac7c4d88b25c72", size = 15964456, upload-time = "2026-08-18T21:20:28.088Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c6/b0/d1446c501d8a59db3881b2bca136024e0ee4f381efb58122a0608a276a16/botocore-1.43.74-py3-none-any.whl", hash = "sha256:5793d9170b2b9f3194fb6f667feed8986eb81f767528d52ceaf45df2242d56e9", size = 15658675, upload-time = "2026-08-18T21:20:23.835Z" },
 ]
 
 [[package]]
@@ -857,7 +831,23 @@ wheels = [
 name = "gdal"
 version = "3.13.3"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "platform_machine != 'aarch64' and platform_machine != 'x86_64' and sys_platform == 'linux'",
+    "sys_platform == 'linux2'",
+]
 sdist = { url = "https://files.pythonhosted.org/packages/78/64/78639efe3f1df027f0028e1faf9719dae609b9fd02d4ffd6c2dd7a9a9757/gdal-3.13.3.tar.gz", hash = "sha256:af547af72d2a153d658c1deb2fe595eccb38c18f3d9d298882fbdeee9806a6d2", size = 940613, upload-time = "2026-08-18T09:32:21.609Z" }
+
+[[package]]
+name = "gdal"
+version = "3.13.3.2"
+source = { registry = "https://girder.github.io/large_image_wheels" }
+resolution-markers = [
+    "platform_machine == 'x86_64' and sys_platform == 'linux'",
+]
+wheels = [
+    { url = "https://github.com/girder/large_image_wheels/raw/wheelhouse/GDAL-3.13.3.2-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:7533a269d28b97ecb41c3a4d2613b3663c52bf0c0591e033aacb422ef641a4a5" },
+]
 
 [[package]]
 name = "gdown"
@@ -1356,15 +1346,6 @@ wheels = [
 ]
 
 [[package]]
-name = "jmespath"
-version = "1.1.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d3/59/322338183ecda247fb5d1763a6cbe46eff7222eaeebafd9fa65d4bf5cb11/jmespath-1.1.0.tar.gz", hash = "sha256:472c87d80f36026ae83c6ddd0f1d05d4e510134ed462851fd5f754c8c3cbb88d", size = 27377, upload-time = "2026-01-22T16:35:26.279Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/14/2f/967ba146e6d58cf6a652da73885f52fc68001525b4197effc174321d70b4/jmespath-1.1.0-py3-none-any.whl", hash = "sha256:a5663118de4908c91729bea0acadca56526eb2698e83de10cd116ae0f4e97c64", size = 20419, upload-time = "2026-01-22T16:35:24.919Z" },
-]
-
-[[package]]
 name = "joblib"
 version = "1.5.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1505,7 +1486,6 @@ common = [
     { name = "simplejpeg" },
 ]
 sources = [
-    { name = "large-image-source-bioformats" },
     { name = "large-image-source-deepzoom" },
     { name = "large-image-source-dicom" },
     { name = "large-image-source-dummy" },
@@ -1539,19 +1519,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b6/18/54a5a73e57c21cec29b06b34204f000717d6e68c65ca2bace4d917a141ff/large_image_converter-1.30.5.tar.gz", hash = "sha256:eb35a0dfd91cb9baa30b7f312e674f10ad444ae04c52c5d8ead8637136abf47e", size = 25631, upload-time = "2024-12-12T14:38:53.806Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/34/82/47d35c4b8bc14b894748b6fc3bbc8df7a0e301ebc924397320caaed39e3e/large_image_converter-1.30.5-py3-none-any.whl", hash = "sha256:7ee2ca6e23983757a11b23da20a54c7b454b01491aa1a60408239b251841f445", size = 25499, upload-time = "2024-12-12T14:38:48.544Z" },
-]
-
-[[package]]
-name = "large-image-source-bioformats"
-version = "1.30.5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "large-image" },
-    { name = "python-bioformats" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/7e/33/ce93f81d22c50c545b015ad0b36ce047f27a7dc4fc8ce3d9252ebcc0f707/large_image_source_bioformats-1.30.5.tar.gz", hash = "sha256:41b50f01f45a352e3e76a1b0e57fcaad86f72f741208c0161c275d1977863199", size = 17801, upload-time = "2024-12-12T14:39:10.116Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/10/ad/f6f5d11cf8a99648c362832dfa5d55bebd5f8717088264da98c79e0c457f/large_image_source_bioformats-1.30.5-py3-none-any.whl", hash = "sha256:a4f36d58f5c718beb689e079823dff8a5bcf247aae5d65228058a0bde4002c11", size = 15024, upload-time = "2024-12-12T14:39:07.164Z" },
 ]
 
 [[package]]
@@ -1597,7 +1564,8 @@ name = "large-image-source-gdal"
 version = "1.30.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "gdal" },
+    { name = "gdal", version = "3.13.3", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine != 'x86_64' or sys_platform == 'linux2'" },
+    { name = "gdal", version = "3.13.3.2", source = { registry = "https://girder.github.io/large_image_wheels" }, marker = "platform_machine == 'x86_64' and sys_platform != 'linux2'" },
     { name = "large-image" },
     { name = "packaging" },
     { name = "pyproj" },
@@ -3060,20 +3028,6 @@ wheels = [
 ]
 
 [[package]]
-name = "python-bioformats"
-version = "4.1.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "boto3" },
-    { name = "future" },
-    { name = "python-javabridge" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/e6/90/e713e1431311e86027d191b42bb39eee3ae692e459a3a92ce02c214aaf5c/python_bioformats-4.1.0.tar.gz", hash = "sha256:85373f70a4a8b48fd87414e5eab0aa961e7bb07772645f5e009a6f17457cb4eb", size = 42554705, upload-time = "2024-09-13T18:55:09.152Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/7c/01/cba5e0436a0d5deee6f97ba9d50ad10988f045f5b20b2e268a4b08482d68/python_bioformats-4.1.0-py3-none-any.whl", hash = "sha256:a245ed2a19b8cab3dfe1454b3e31a745fba22e23db316f8eab6031a65ab962d5", size = 42553369, upload-time = "2024-09-13T18:55:02.96Z" },
-]
-
-[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -3106,15 +3060,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/c7/56/75f9518a0a8401295a55a11220700e4e6a36d01d65a12be71aa306ecf959/python_gdcm-3.2.6-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:512d0d903e12c5ad389939a257817bf182ce288431b3d474d62cb0c0833b8b56", size = 13278949, upload-time = "2026-05-11T00:40:20.583Z" },
     { url = "https://files.pythonhosted.org/packages/7c/de/4ee4d1022fcf6519471d84aa662beadcc2e3b656f28a566a8688a727f4d6/python_gdcm-3.2.6-cp312-cp312-win_amd64.whl", hash = "sha256:3ad86fffde082e068a9ebef940be21079c5d80dae30787eaaccf822ecaac964d", size = 34239099, upload-time = "2026-05-11T00:40:27.265Z" },
 ]
-
-[[package]]
-name = "python-javabridge"
-version = "4.0.5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "numpy" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/d4/8b/6e3fe46376fd2053004aeee97825e82c21dd52f662073c93eea3ef8552da/python_javabridge-4.0.5.tar.gz", hash = "sha256:0cf3292466142468a6134c91c118d453497eaf0e76b59be442bf4985683dcccd", size = 1312339, upload-time = "2026-04-08T16:52:40.643Z" }
 
 [[package]]
 name = "pyvips"
@@ -3357,18 +3302,6 @@ wheels = [
 ]
 
 [[package]]
-name = "s3transfer"
-version = "0.19.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "botocore" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/76/43/35e4d8aa320bffe8287fe8f65f578fa2d2db0a64212f0e710dce58267854/s3transfer-0.19.2.tar.gz", hash = "sha256:ba0309fd86be3c27dbf78cdd813c13c5e1df16e5874b99d2535ebbdfb9892993", size = 165592, upload-time = "2026-07-22T19:30:44.432Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/bc/e7/5c595c75e9f41a44f30e526eda465ea0b4eec93470e074e4a111b253f13a/s3transfer-0.19.2-py3-none-any.whl", hash = "sha256:d8168eccca828cbb2cd573675333f3bddd254313a9c42494b84c76b539e8ba25", size = 90216, upload-time = "2026-07-22T19:30:43.251Z" },
-]
-
-[[package]]
 name = "safetensors"
 version = "0.8.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3518,6 +3451,7 @@ source = { editable = "." }
 dependencies = [
     { name = "affine" },
     { name = "geojson" },
+    { name = "matplotlib" },
     { name = "numpy" },
     { name = "pillow" },
     { name = "pyyaml" },
@@ -3540,7 +3474,6 @@ all = [
     { name = "histomicstk" },
     { name = "huggingface-hub" },
     { name = "imagecodecs" },
-    { name = "matplotlib" },
     { name = "nnunetv2" },
     { name = "onnxruntime" },
     { name = "opencv-python-headless" },
@@ -3618,7 +3551,6 @@ dl = [
     { name = "ultralytics" },
 ]
 double-pass = [
-    { name = "matplotlib" },
     { name = "opencv-python-headless" },
     { name = "openslide-bin" },
     { name = "openslide-python" },
@@ -3688,7 +3620,6 @@ rtlucassen = [
 runtime = [
     { name = "fastapi" },
     { name = "imagecodecs" },
-    { name = "matplotlib" },
     { name = "openslide-bin" },
     { name = "openslide-python" },
     { name = "uvicorn", extra = ["standard"] },
@@ -3741,9 +3672,7 @@ requires-dist = [
     { name = "imagecodecs", marker = "extra == 'all'", specifier = ">=2025.3.30" },
     { name = "imagecodecs", marker = "extra == 'runtime'", specifier = ">=2025.3.30" },
     { name = "imagecodecs", marker = "extra == 'wsi'", specifier = ">=2025.3.30" },
-    { name = "matplotlib", marker = "extra == 'all'", specifier = ">=3.10.8" },
-    { name = "matplotlib", marker = "extra == 'double-pass'", specifier = ">=3.10.8" },
-    { name = "matplotlib", marker = "extra == 'runtime'", specifier = ">=3.10.8" },
+    { name = "matplotlib", specifier = ">=3.10.8" },
     { name = "nnunetv2", marker = "extra == 'all'", git = "https://github.com/icgi/Reliable-and-Efficient-Tissue-Segmentation-in-Whole-Slide-Images.git?rev=master" },
     { name = "nnunetv2", marker = "extra == 'dl'", git = "https://github.com/icgi/Reliable-and-Efficient-Tissue-Segmentation-in-Whole-Slide-Images.git?rev=master" },
     { name = "nnunetv2", marker = "extra == 'icgi'", git = "https://github.com/icgi/Reliable-and-Efficient-Tissue-Segmentation-in-Whole-Slide-Images.git?rev=master" },

@@ -85,35 +85,35 @@ METHODS = [
     seg.CannyForegroundSegmenter(mpp=5),
     seg.AtlasPatchSAM2Segmenter(device="cpu"),
     seg.GrandQCPatchwiseSegmenter(),
-    # seg.NKIAllStainsSegmenter(
-    #     mpp=12,
-    #     device=BENCHMARK_DEVICE,
-    #     batch_size=1,
-    # ),
+    seg.TRIDENTGrandQCSegmenter,
+
+    seg.NKIAllStainsSegmenter(
+        mpp=12,
+        device=BENCHMARK_DEVICE,
+        batch_size=1,
+    ),
     seg.FastSAMSegmenter(mpp=20, device=BENCHMARK_DEVICE),
-    # seg.BigPictureSegmenter(
-    #     mpp=8,
-    #     device=BENCHMARK_DEVICE,
-    #     select_largest_tissue_objects=True,
-    #     apply_hole_filling=False,
-    # ),
-    # seg.RTLucassenSlideSegmenter(mpp=7.04, device=BENCHMARK_DEVICE),
-    # seg.TRIDENTHESTSegmenter,
-    # seg.TRIDENTPathProfilerSegmenter,
-    # seg.ICGINnUNetV2Segmenter(
-    #     mpp=10,
-    #     device=BENCHMARK_DEVICE,
-    # ),
-    # seg.ICGIResEncSegmenter(
-    #     mpp=10,
-    #     device=BENCHMARK_DEVICE,
-    # ),
-    #
+    seg.BigPictureSegmenter(
+        mpp=8,
+        device=BENCHMARK_DEVICE,
+        select_largest_tissue_objects=True,
+        apply_hole_filling=False,
+    ),
+    seg.RTLucassenSlideSegmenter(mpp=7.04, device=BENCHMARK_DEVICE),
+    seg.TRIDENTRTLucassenSlideSegmenterSegmenter,
+
+    seg.TRIDENTHESTSegmenter,
+    seg.TRIDENTPathProfilerSegmenter,
+    seg.ICGINnUNetV2Segmenter(
+        mpp=10,
+        device=BENCHMARK_DEVICE,
+    ),
+    seg.ICGIResEncSegmenter(
+        mpp=10,
+        device=BENCHMARK_DEVICE,
+    ),
+
     # # seg.TRIDENTCPGSegmenter,
-    # # seg.TRIDENTPathProfilerSegmenter,
-    # # seg.TRIDENTGrandQCSegmenter,
-    # # seg.TRIDENTHESTSegmenter,
-    # # seg.TRIDENTRTLucassenSlideSegmenterSegmenter,
 ]
 
 

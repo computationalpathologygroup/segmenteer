@@ -4,6 +4,7 @@ version = "0.1.0"
 requires-python = ">=3.12.0,<3.13"
 dependencies = [
     "geojson>=3.2.0",
+    "matplotlib>=3.10.8",
     # A package imported alongside HistomicsTK still references np.in1d,
     # removed in NumPy 2.4. Restrict the shared environment until the
     # complete HistomicsTK dependency chain works on newer NumPy versions.
@@ -135,7 +136,6 @@ runtime = [
     "imagecodecs>=2025.3.30",
     "openslide-bin>=4.0.0.11",
     "openslide-python>=1.3.0",
-    "matplotlib>=3.10.8",
     "uvicorn[standard]>=0.32.0",
 ]
 
@@ -149,7 +149,6 @@ all = [
     "fastapi>=0.115.0",
     "huggingface-hub>=0.36.0",
     "imagecodecs>=2025.3.30",
-    "matplotlib>=3.10.8",
     "onnxruntime>=1.24.4",
     "openslide-bin>=4.0.0.11",
     "openslide-python>=1.3.0",
@@ -180,7 +179,7 @@ histomicstk = [
     "pyvips[binary]>=3.0.0",
 ]
 canny = ["opencv-python-headless>=4.11.0.86"]
-double-pass = ["opencv-python-headless>=4.11.0.86", "scikit-learn>=1.7.2", "openslide-python>=1.3.0", "openslide-bin>=4.0.0.11", "matplotlib>=3.10.8", "tqdm>=4.67.0"]
+double-pass = ["opencv-python-headless>=4.11.0.86", "scikit-learn>=1.7.2", "openslide-python>=1.3.0", "openslide-bin>=4.0.0.11", "tqdm>=4.67.0"]
 cx-tissueseg = ["conflux-segmentation[onnx]>=0.5.0", "onnxruntime>=1.24.4", "huggingface-hub>=0.36.0"]
 icgi = ["nnunetv2", "torch>=2.9.1", "torchvision>=0.24.1", "gdown>=6.4.2"]
 wsidicom = ["wsidicom>=0.20.0"]
@@ -231,6 +230,9 @@ torchvision = [
 git = "https://github.com/icgi/Reliable-and-Efficient-Tissue-Segmentation-in-Whole-Slide-Images.git"
 rev = "master"
 [tool.uv]
+constraint-dependencies = [
+    "gdal==3.13.3.2; sys_platform == 'linux' and platform_machine == 'x86_64' and python_version == '3.12'",
+]
 # The default first-index strategy is safe now that the specialized indexes
 # are explicit and all other packages resolve from the official PyPI index.
 # BigPicture uses tensorflow instead of the upstream tensorflow-cpu dependency.
@@ -241,6 +243,8 @@ exclude-dependencies = [
     # which has no CPython 3.12 macOS arm64 wheel and needs a local C build.
     # Segmenteer does not use memcached tile caching.
     "pylibmc",
+    # HistomicsTK tissue detection receives RGB arrays and does not use Bio-Formats.
+    "large-image-source-bioformats",
 ]
 
 [tool.uv.extra-build-dependencies]
