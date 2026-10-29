@@ -32,7 +32,7 @@ def _instantiate_segmenters(
     return (segmenters, skipped)
 
 
-def main(argv: list[str] | None = None) -> None:
+def _legacy_main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         prog="segmenteer", description="Tissue segmentation benchmarking CLI"
     )
@@ -202,6 +202,21 @@ def main(argv: list[str] | None = None) -> None:
         images, annotation_dir=annotations_dir, suffix=args.annotation_suffix
     )
     seg.run_dataset(segmenters, images, output_dir=Path(args.output_dir))
+
+
+def main(argv: list[str] | None = None) -> None:
+    """Dispatch new method-first commands, or preserve the original flag CLI."""
+    actual = list(sys.argv[1:]) if argv is None else list(argv)
+    if actual and actual[0] in ("multi-method", "benchmark"):
+        from segmenteer.cli.benchmark import main as benchmark_main
+        return benchmark_main(actual[1:], command_name=actual[0])
+    if actual and actual[0] == "evaluate":
+        from segmenteer.benchmark.evaluation import main as evaluate_main
+        return evaluate_main(actual[1:])
+    if actual and not actual[0].startswith("-"):
+        from segmenteer.cli.commands import main as method_main
+        return method_main(actual)
+    return _legacy_main(actual)
 
 
 if __name__ == "__main__":

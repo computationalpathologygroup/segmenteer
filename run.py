@@ -87,11 +87,11 @@ METHODS = [
     seg.GrandQCPatchwiseSegmenter(),
     seg.TRIDENTGrandQCSegmenter,
 
-    seg.NKIAllStainsSegmenter(
-        mpp=12,
-        device=BENCHMARK_DEVICE,
-        batch_size=1,
-    ),
+    # seg.NKIAllStainsSegmenter(
+    #     mpp=12,
+    #     device=BENCHMARK_DEVICE,
+    #     batch_size=1,
+    # ),
     seg.FastSAMSegmenter(mpp=20, device=BENCHMARK_DEVICE),
     seg.BigPictureSegmenter(
         mpp=8,
@@ -100,18 +100,18 @@ METHODS = [
         apply_hole_filling=False,
     ),
     seg.RTLucassenSlideSegmenter(mpp=7.04, device=BENCHMARK_DEVICE),
-    seg.TRIDENTRTLucassenSlideSegmenterSegmenter,
+    # seg.TRIDENTRTLucassenSlideSegmenterSegmenter,
 
     seg.TRIDENTHESTSegmenter,
     seg.TRIDENTPathProfilerSegmenter,
-    seg.ICGINnUNetV2Segmenter(
-        mpp=10,
-        device=BENCHMARK_DEVICE,
-    ),
-    seg.ICGIResEncSegmenter(
-        mpp=10,
-        device=BENCHMARK_DEVICE,
-    ),
+    # seg.ICGINnUNetV2Segmenter(
+    #     mpp=10,
+    #     device=BENCHMARK_DEVICE,
+    # ),
+    # seg.ICGIResEncSegmenter(
+    #     mpp=10,
+    #     device=BENCHMARK_DEVICE,
+    # ),
 
     # # seg.TRIDENTCPGSegmenter,
 ]

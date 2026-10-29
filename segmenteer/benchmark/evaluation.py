@@ -209,6 +209,71 @@ def _ground_truth_match_inventory(
     return matched, records
 
 
+def _ground_truth_csv_inventory(
+    csv_path: Path, predictions: list
+) -> tuple[dict[str, Path | None], list[dict[str, str]]]:
+    """Map slide IDs to exact annotation files; never guess based on filenames.
+
+    `slide_id` is the WSI stem (case-insensitive), not a full slide path.
+    Relative ground-truth paths are resolved relative to annotations.csv.
+    """
+    selected: dict[str, tuple[str, Path]] = {}
+    try:
+        with csv_path.open(encoding="utf-8-sig", newline="") as stream:
+            reader = csv.DictReader(stream)
+            fields = reader.fieldnames or []
+            if len(fields) != len(set(fields)) or not {"slide_id", "ground_truth_annotation"} <= set(fields):
+                raise ValueError(
+                    "annotations.csv requires distinct slide_id and ground_truth_annotation columns"
+                )
+            for row_number, row in enumerate(reader, 2):
+                if None in row:
+                    raise ValueError(f"Extra fields at annotations.csv row {row_number}.")
+                identifier = (row.get("slide_id") or "").strip()
+                raw_path = (row.get("ground_truth_annotation") or "").strip()
+                if not identifier or not raw_path or Path(identifier).name != identifier or Path(identifier).stem != identifier:
+                    raise ValueError(f"Invalid slide_id or annotation path in annotations.csv row {row_number}.")
+                key = identifier.casefold()
+                if key in selected:
+                    raise ValueError(f"Duplicate annotations.csv slide_id {identifier!r} (row {row_number}).")
+                annotation = Path(raw_path).expanduser()
+                if not annotation.is_absolute():
+                    annotation = csv_path.parent / annotation
+                annotation = annotation.resolve()
+                if annotation.suffix.casefold() not in ANNOTATION_EXTENSIONS:
+                    raise ValueError(f"Unsupported annotation format in row {row_number}: {annotation}")
+                if not annotation.is_file():
+                    raise FileNotFoundError(f"Annotation not found in row {row_number}: {annotation}")
+                selected[key] = (identifier, annotation)
+    except (OSError, UnicodeDecodeError) as exc:
+        raise ValueError(f"Could not read annotation manifest {csv_path}: {exc}") from exc
+    if not selected:
+        raise ValueError(f"Annotation CSV contains no entries: {csv_path}")
+
+    unique_stems = {
+        prediction.stem.casefold(): prediction.stem
+        for _, prediction, _, _ in predictions
+    }
+    matches: dict[str, Path | None] = {}
+    rows: list[dict[str, str]] = []
+    for key, stem in sorted(unique_stems.items()):
+        annotation = selected[key][1] if key in selected else None
+        matches[key] = annotation
+        rows.append({
+            "slide_stem": stem,
+            "status": "matched" if annotation is not None else "missing_annotation",
+            "annotation_file": str(annotation) if annotation else "",
+        })
+    for key, (identifier, annotation) in sorted(selected.items()):
+        if key not in unique_stems:
+            rows.append({
+                "slide_stem": identifier,
+                "status": "unmatched_annotation",
+                "annotation_file": str(annotation),
+            })
+    return matches, rows
+
+
 def _write_ground_truth_matching(path: Path, rows: list[dict[str, str]]) -> None:
     from io import StringIO
 
@@ -672,6 +737,7 @@ def evaluate_output_directory(
     output_dir: str | Path,
     *,
     ground_truth_dir: str | Path | None = None,
+    annotations_csv: str | Path | None = None,
     annotation_suffix: str | None = None,
     output_format: str = "sqlite",
     metrics_path: str | Path | None = None,
@@ -710,6 +776,14 @@ def evaluate_output_directory(
     output_root = Path(output_dir).expanduser().resolve()
     if not output_root.is_dir():
         raise NotADirectoryError(f"Runner output directory not found: {output_root}")
+    if annotations_csv is not None and ground_truth_dir is not None:
+        raise ValueError("Use either --annotations-csv or --ground-truth, not both.")
+    if annotations_csv is not None and annotation_suffix is not None:
+        raise ValueError("--annotation-suffix is only valid with --ground-truth.")
+    annotations_manifest = (
+        Path(annotations_csv).expanduser().resolve()
+        if annotations_csv is not None else None
+    )
     gt_root = (
         Path(ground_truth_dir).expanduser().resolve() if ground_truth_dir else None
     )
@@ -744,13 +818,19 @@ def evaluate_output_directory(
         raise FileNotFoundError(
             f"No <method>/predictions/*.geojson or *.xml files found under: {output_root}"
         )
-    if ground_truth_dir is None:
+    if gt_root is None and annotations_manifest is None:
         raise ValueError(
-            "Supervised evaluation requires --ground-truth / ground_truth_dir. Predictions can be inspected without evaluation in the viewer."
+            "Supervised evaluation requires --ground-truth or --annotations-csv. "
+            "Inference and benchmarking do not require reference annotations."
         )
-    ground_truth_matches, match_rows = _ground_truth_match_inventory(
-        gt_root, predictions, annotation_suffix
-    )
+    if annotations_manifest is not None:
+        ground_truth_matches, match_rows = _ground_truth_csv_inventory(
+            annotations_manifest, predictions
+        )
+    else:
+        ground_truth_matches, match_rows = _ground_truth_match_inventory(
+            gt_root, predictions, annotation_suffix
+        )
     matching_path = output_root / "ground_truth_matching.csv"
     _write_ground_truth_matching(matching_path, match_rows)
     missing_count = sum(row["status"] == "missing_annotation" for row in match_rows)
@@ -997,7 +1077,7 @@ def evaluate_output_directory(
             if validation_path is not None
             else (
                 output_root / "evaluation_validation.csv"
-                if gt_root is not None
+                if gt_root is not None or annotations_manifest is not None
                 else None
             )
         )
@@ -1036,7 +1116,7 @@ def evaluate_output_directory(
             validation_path=report,
             total_slides=len(slides) if data_dir is not None else None,
             output_format=output_format,
-            ground_truth_dir=gt_root,
+            ground_truth_dir=gt_root or annotations_manifest,
             data_dir=data_dir,
             boundary_tolerance_um=boundary_tolerance_um,
             boundary_step_um=boundary_step_um,
@@ -1068,7 +1148,7 @@ def _build_parser() -> argparse.ArgumentParser:
         description="Evaluate Segmenteer runner predictions independently of inference."
     )
     parser.add_argument(
-        "--output",
+        "--output", "--output-dir",
         required=True,
         metavar="DIR",
         help="Runner experiment directory containing <method>/predictions/.",
@@ -1077,6 +1157,11 @@ def _build_parser() -> argparse.ArgumentParser:
         "--ground-truth",
         metavar="DIR",
         help="GeoJSON, JSON, or ASAP XML ground-truth directory.",
+    )
+    parser.add_argument(
+        "--annotations-csv",
+        metavar="FILE",
+        help="CSV mapping slide_id to ground_truth_annotation; alternative to --ground-truth.",
     )
     parser.add_argument(
         "--annotation-suffix",
@@ -1202,6 +1287,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     summary = evaluate_output_directory(
         args.output,
         ground_truth_dir=args.ground_truth,
+        annotations_csv=args.annotations_csv,
         annotation_suffix=args.annotation_suffix,
         output_format=args.output_format,
         metrics_path=args.metrics,

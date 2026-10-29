@@ -1,3 +1,5 @@
+from __future__ import annotations
+import os
 from pathlib import Path
 from typing import Any
 from segmenteer.model_cache import get_method_model_dir
@@ -32,6 +34,32 @@ def get_model_cache_dir() -> Path:
     return get_method_model_dir("cpg")
 
 
+def _onnx_intra_op_threads() -> int:
+    """Limit ONNX threads to the Slurm allocation or allowed CPU affinity.
+
+    Explicitly setting ORT intra_op_num_threads also suppresses its default
+    CPU affinity assignments, which fail in some Slurm/Pyxis cpusets.
+    """
+    for variable in (
+        "SEGMENTEER_ONNX_THREADS", "SLURM_CPUS_PER_TASK", "SLURM_CPUS_PER_GPU"
+    ):
+        value = os.environ.get(variable)
+        if value is None or not value.strip():
+            continue
+        try:
+            count = int(value)
+        except ValueError as exc:
+            raise ValueError(f"{variable} must be a positive integer, got {value!r}") from exc
+        if count <= 0:
+            raise ValueError(f"{variable} must be a positive integer, got {value!r}")
+        return count
+    if hasattr(os, "sched_getaffinity"):
+        allowed = len(os.sched_getaffinity(0))
+        if allowed:
+            return allowed
+    return max(1, os.cpu_count() or 1)
+
+
 class LIBTRIDENTCPGSegmenter(_TridentSegmentationModel):
     def __init__(self, **build_kwargs: dict[str, Any]):
         if not _TORCH_AVAILABLE or not _ONNX_AVAILABLE:
@@ -51,8 +79,10 @@ class LIBTRIDENTCPGSegmenter(_TridentSegmentationModel):
         providers = ["CPUExecutionProvider"]
         if "CUDAExecutionProvider" in available_providers:
             providers.insert(0, "CUDAExecutionProvider")
+        options = onnxruntime.SessionOptions()
+        options.intra_op_num_threads = _onnx_intra_op_threads()
         self.ort_session = onnxruntime.InferenceSession(
-            weights_path, providers=providers
+            str(weights_path), sess_options=options, providers=providers
         )
         self.input_size = 224
         self.precision = torch.float32

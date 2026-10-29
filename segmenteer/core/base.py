@@ -296,9 +296,14 @@ class TRIDENTSegmenter:
     def display_name(self) -> str:
         return f"TRIDENT {self.model_id}"
 
-    @staticmethod
-    def _best_device() -> str:
-        configured = os.environ.get("SEGMENTEER_TRIDENT_DEVICE", "auto").strip()
+    def _best_device(self) -> str:
+        # A method-specific CLI --device override is stored on the instance
+        # and in its benchmark config; legacy TRIDENT instances continue to
+        # use the SEGMENTEER_TRIDENT_DEVICE environment variable unchanged.
+        configured = str(
+            getattr(self, "device", None)
+            or os.environ.get("SEGMENTEER_TRIDENT_DEVICE", "auto")
+        ).strip()
         if configured and configured.casefold() != "auto":
             return configured
         return resolve_torch_device("auto")

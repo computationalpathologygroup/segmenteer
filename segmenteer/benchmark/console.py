@@ -28,7 +28,7 @@ class BenchmarkReporter:
     def print_dataset_header(self, n_methods: int, n_images: int) -> None:
         self.console.print(
             Panel.fit(
-                f"[header]segmenteer[/header] · benchmark\nSlides: {n_images}  Methods: {n_methods}  Runs: {n_images * n_methods}",
+                f"[header]segmenteer[/header] · segmentation\nSlides: {n_images}  Methods: {n_methods}  Runs: {n_images * n_methods}",
                 border_style="cyan",
             )
         )
