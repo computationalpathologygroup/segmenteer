@@ -488,8 +488,9 @@ def _write_validation_report(path: Path, rows: Iterable[dict[str, Any]]) -> None
         raise
 
 
-def _connect(path: Path) -> sqlite3.Connection:
-    path.parent.mkdir(parents=True, exist_ok=True)
+def _connect(path: Path | str) -> sqlite3.Connection:
+    if isinstance(path, Path):
+        path.parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(path, timeout=30.0)
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA journal_mode=WAL")
@@ -912,8 +913,10 @@ def evaluate_output_directory(
         "forced": 0,
     }
     report_rows = []
-    cache_path = (
-        destination if output_format == "sqlite" else output_root / "metrics.sqlite3"
+    # CSV output is standalone and must not depend on a potentially locked
+    # persistent SQLite cache from another evaluation process.
+    cache_path: Path | str = (
+        destination if output_format == "sqlite" else ":memory:"
     )
     with EvaluationProgress(
         len(predictions),
