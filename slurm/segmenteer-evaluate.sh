@@ -10,10 +10,11 @@
 #SBATCH --nodes=1
 #SBATCH --requeue
 #SBATCH --container-mounts=/data/pathology/projects:/happiny/projects,/data/pathology/archives:/happiny/archives,/data/pathology/archives/projects/tissue-segmentation/models:/weights,/data/pa_cpgarchive/projects/tissue-segmentation/data/stains-in-the-wild/hhgm-vanhuizen/HHG/:/dataset,/data/pathology/projects/siemdejong/tissue-segmentation/hhg-output:/outputs
-#SBATCH --container-image="dockerdex.umcn.nl:5005#siemdejong/segmenteer"
+#SBATCH --container-image="dockerdex.umcn.nl:5005#siemdejong/segmenteer:pr66"
 
-# segmenteer --help
+# segmenteer evaluate --help
 
-segmenteer \
-    --dataset /dataset \
-    --output-dir /outputs/output
+segmenteer evaluate \
+  --output /happiny/projects/projects/tissue-segmentation/segmenteer/segmenteer-fixes-updates/outputs/multi-method/tissue-masks \
+  --annotations-csv /happiny/projects/projects/tissue-segmentation/segmenteer/segmenteer-fixes-updates/slurm/example-annotations.csv \
+  --format csv
