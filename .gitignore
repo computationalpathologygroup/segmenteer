@@ -16,7 +16,6 @@ models
 !uv.lock
 segmentation_results
 trident
-data*
 
 visualizations
 .DS_Store
