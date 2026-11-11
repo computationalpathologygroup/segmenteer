@@ -15,6 +15,6 @@
 # segmenteer evaluate --help
 
 segmenteer evaluate \
-  --output /happiny/projects/projects/tissue-segmentation/segmenteer/segmenteer-fixes-updates/outputs/multi-method/tissue-masks \
-  --annotations-csv /happiny/projects/projects/tissue-segmentation/segmenteer/segmenteer-fixes-updates/slurm/example-annotations.csv \
+  --output /happiny/projects/projects/tissue-segmentation/segmenteer/segmenteer-fixes-updates/outputs/multi-method/benchmark-tissue-masks \
+  --annotations-csv /happiny/projects/projects/tissue-segmentation/segmenteer/segmenteer-fixes-updates/slurm/annotation-mappings/benchmark-annotations.csv \
   --format csv

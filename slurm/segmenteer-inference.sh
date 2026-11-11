@@ -19,9 +19,9 @@
 #     --output-dir /outputs/output
 
 segmenteer multi-method \
-  --dataset /happiny/projects/projects/tissue-segmentation/segmenteer/segmenteer-fixes-updates/slurm/example-dataset.csv \
-  --output-dir /happiny/projects/projects/tissue-segmentation/segmenteer/segmenteer-fixes-updates/outputs/multi-method/tissue-masks \
-  --configs /happiny/projects/projects/tissue-segmentation/segmenteer/segmenteer-fixes-updates/slurm/example-configs.yaml \
+  --dataset /happiny/projects/projects/tissue-segmentation/segmenteer/segmenteer-fixes-updates/slurm/datasets/benchmark-dataset.csv \
+  --output-dir /happiny/projects/projects/tissue-segmentation/segmenteer/segmenteer-fixes-updates/outputs/multi-method/benchmark-tissue-masks \
+  --configs /happiny/projects/projects/tissue-segmentation/segmenteer/segmenteer-fixes-updates/slurm/configs/benchmark-configs.yaml \
   --workers 1 \
   --device cuda:0 \
   --output-format geojson
