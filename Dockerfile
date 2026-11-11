@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 FROM nvidia/cuda:12.9.2-base-ubuntu22.04 AS builder
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.5 /uv /uvx /bin/
