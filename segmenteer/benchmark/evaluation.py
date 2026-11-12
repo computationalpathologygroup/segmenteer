@@ -231,8 +231,8 @@ def _ground_truth_csv_inventory(
                     raise ValueError(f"Extra fields at annotations.csv row {row_number}.")
                 identifier = (row.get("slide_id") or "").strip()
                 raw_path = (row.get("ground_truth_annotation") or "").strip()
-                if not identifier or not raw_path or Path(identifier).name != identifier or Path(identifier).stem != identifier:
-                    raise ValueError(f"Invalid slide_id or annotation path in annotations.csv row {row_number}.")
+                if not identifier or not raw_path:
+                    raise ValueError(f"Invalid slide_id or annotation path in annotations.csv row {row_number}: {identifier}, {raw_path}.")
                 key = identifier.casefold()
                 if key in selected:
                     raise ValueError(f"Duplicate annotations.csv slide_id {identifier!r} (row {row_number}).")
