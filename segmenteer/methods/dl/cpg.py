@@ -66,6 +66,7 @@ class LIBTRIDENTCPGSegmenter(_TridentSegmentationModel):
             raise ImportError(
                 "torch, torchvision, trident, and onnxruntime are required for CPG tissue segmenter.\nInstall with: pip install 'segmenteer[cpg]'"
             )
+        self.batch_size = 64
         super().__init__(**build_kwargs)
 
     def _build(self) -> tuple[nn.Module, transforms.Compose]:
@@ -86,7 +87,7 @@ class LIBTRIDENTCPGSegmenter(_TridentSegmentationModel):
         )
         self.input_size = 224
         self.precision = torch.float32
-        self.target_mag = 4
+        self.target_mag = 2.5
         eval_transforms = transforms.Compose(
             [
                 transforms.ToTensor(),

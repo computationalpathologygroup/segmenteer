@@ -32,8 +32,9 @@ from segmenteer.wsi.reader import NativeWSIReader
 __all__ = ["EvaluationSummary", "evaluate_output_directory", "main"]
 PREDICTIONS_DIR = "predictions"
 CONFIG_FILE = "config.yaml"
-SQLITE_SCHEMA_VERSION = 5
-EVALUATION_PROTOCOL_VERSION = 4
+SQLITE_SCHEMA_VERSION = 6
+EVALUATION_PROTOCOL_VERSION = 5
+SIGNATURE_SAMPLE_BYTES = 1024 * 1024
 VECTOR_SUPERVISED_COLUMNS = (
     "dice",
     "iou",
@@ -286,11 +287,19 @@ def _write_ground_truth_matching(path: Path, rows: list[dict[str, str]]) -> None
     write_text_atomic(path, stream.getvalue())
 
 
-def _signature(path: Path | None) -> tuple[int, int]:
+def _signature(path: Path | None) -> tuple[int, str]:
     if path is None or not path.is_file():
-        return (-1, -1)
-    stat = path.stat()
-    return (int(stat.st_size), int(stat.st_mtime_ns))
+        return (-1, "")
+    size = path.stat().st_size
+    digest = hashlib.blake2b(digest_size=16)
+    sample_size = min(size, SIGNATURE_SAMPLE_BYTES)
+    offsets = {0, max(0, (size - sample_size) // 2), max(0, size - sample_size)}
+    with path.open("rb") as handle:
+        for offset in sorted(offsets):
+            handle.seek(offset)
+            digest.update(offset.to_bytes(8, "little"))
+            digest.update(handle.read(sample_size))
+    return (int(size), digest.hexdigest())
 
 
 def _empty_metrics() -> dict[str, Any]:
@@ -563,6 +572,9 @@ def _connect(path: Path | str) -> sqlite3.Connection:
         if column in existing_columns:
             connection.execute(f"ALTER TABLE metrics DROP COLUMN {column}")
             existing_columns.remove(column)
+    for column in ("prediction_digest", "ground_truth_digest"):
+        if column not in existing_columns:
+            connection.execute(f"ALTER TABLE metrics ADD COLUMN {column} TEXT")
     for column, sql_type in {
         "formal_name": "TEXT",
         "dice_score": "REAL",
@@ -642,15 +654,15 @@ def _evaluation_fingerprint(
     boundary_step_um: float,
     tissue_groups: tuple[str, ...],
     annotation_suffix: str | None = None,
-    slide_signature: tuple[int, int] | None = None,
+    slide_signature: tuple[int, str] | None = None,
 ) -> str:
     def file_state(
-        path: Path | None, signature: tuple[int, int] | None = None
+        path: Path | None, signature: tuple[int, str] | None = None
     ) -> dict[str, Any] | None:
         if path is None:
             return None
-        size, mtime_ns = signature if signature is not None else _signature(path)
-        return {"path": str(path.resolve()), "size": size, "mtime_ns": mtime_ns}
+        size, digest = signature if signature is not None else _signature(path)
+        return {"path": str(path.resolve()), "size": size, "digest": digest}
 
     payload = {
         "protocol": EVALUATION_PROTOCOL_VERSION,
@@ -681,15 +693,15 @@ def _evaluation_fingerprint(
 
 def _sqlite_row_matches(
     existing: sqlite3.Row,
-    pred_sig: tuple[int, int],
-    gt_sig: tuple[int, int],
+    pred_sig: tuple[int, str],
+    gt_sig: tuple[int, str],
     fingerprint: str | None = None,
 ) -> bool:
     valid = (
         int(existing["prediction_size"]) == pred_sig[0]
-        and int(existing["prediction_mtime_ns"]) == pred_sig[1]
         and int(existing["ground_truth_size"]) == gt_sig[0]
-        and int(existing["ground_truth_mtime_ns"]) == gt_sig[1]
+        and existing["prediction_digest"] == pred_sig[1]
+        and existing["ground_truth_digest"] == gt_sig[1]
     )
     if fingerprint is not None:
         valid = (
@@ -703,8 +715,8 @@ def _sqlite_row_matches(
 def _upsert_sqlite(
     connection: sqlite3.Connection,
     row: dict[str, Any],
-    pred_sig: tuple[int, int],
-    gt_sig: tuple[int, int],
+    pred_sig: tuple[int, str],
+    gt_sig: tuple[int, str],
     fingerprint: str | None = None,
 ) -> None:
     columns = list(PUBLIC_COLUMNS) + [
@@ -712,11 +724,17 @@ def _upsert_sqlite(
         "prediction_mtime_ns",
         "ground_truth_size",
         "ground_truth_mtime_ns",
+        "prediction_digest",
+        "ground_truth_digest",
         "evaluation_fingerprint",
     ]
     values = [row.get(column) for column in PUBLIC_COLUMNS] + [
-        *pred_sig,
-        *gt_sig,
+        pred_sig[0],
+        -1,
+        gt_sig[0],
+        -1,
+        pred_sig[1],
+        gt_sig[1],
         fingerprint,
     ]
     placeholders = ",".join(("?" for _ in columns))
