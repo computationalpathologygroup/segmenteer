@@ -1,0 +1,84 @@
+methods:
+  # Global thresholding
+  - name: li (lowres)
+    params: {mpp: 20, min_area: 1000}
+  - name: li (mediumres)
+    params: {mpp: 10, min_area: 1000}
+  - name: otsu (lowres)
+    params: {mpp: 20, min_area: 1000}
+  - name: otsu (mediumres)
+    params: {mpp: 10, min_area: 1000}
+  - name: yen (lowres)
+    params: {mpp: 20, min_area: 1000}
+  - name: yen (mediumres)
+    params: {mpp: 10, min_area: 1000}
+
+  # Morphology and watershed
+  - name: morphological
+    params: {mpp: 20, disk_size: 3, min_area: 1000}
+
+  - name: watershed (lowres)
+    params: {mpp: 20, min_distance_um: 200, min_area: 1000, merge_regions: true}
+  - name: watershed (mediumres)
+    params: {mpp: 10, min_distance_um: 200, min_area: 1000, merge_regions: true}
+
+  # HSV thresholding
+  - name: hsv-threshold (lowres)
+    params: {mpp: 20, min_area: 1000}
+  - name: hsv-threshold (mediumres)
+    params: {mpp: 10, min_area: 1000}
+
+  - name: hsv-threshold-v2 (lowres)
+    params: {mpp: 20, min_area: 1000}
+  - name: hsv-threshold-v2 (mediumres)
+    params: {mpp: 10, min_area: 1000}
+
+  # FESI (improved and original variants)
+  - name: fesi-improved (lowres)
+    params: {mpp: 20, improved: true}
+  - name: fesi-improved (mediumres)
+    params: {mpp: 10, improved: true}
+  - name: fesi-basic (lowres)
+    params: {mpp: 20}
+  - name: fesi-basic (mediumres)
+    params: {mpp: 10}
+
+  # Other classical image processing
+  - name: entropy-masker (lowres)
+    params: {mpp: 20}
+  - name: entropy-masker (mediumres)
+    params: {mpp: 10}
+  - name: histomicstk (lowres)
+    params: {mpp: 20}
+  - name: histomicstk (mediumres)
+    params: {mpp: 10}
+  - name: double-pass (mediumres)
+    params: {mpp: 10}
+  - name: cx-tissue-seg (lowlowres)
+    params: {mpp: 40}
+  - name: canny-foreground (mediumres)
+    params: {mpp: 5}
+
+  # Deep learning methods
+  - name: atlaspatch-sam2
+  - name: grandqc-patchwise
+  - name: trident-grandqc
+  - name: nki-all-stains (mediumres)
+    params: {mpp: 12}
+  - name: fastsam (lowres)
+    params: {mpp: 20}
+  - name: bigpicture (mediumres)
+    params: {mpp: 8, select_largest_tissue_objects: true, apply_hole_filling: false}
+  - name: rtlucassen (mediumres)
+    params: {mpp: 7.04}
+  - name: trident-rtlucassen
+  - name: trident-hest
+  - name: trident-pathprofiler
+  - name: icgi-nnunetv2
+    params: {mpp: 10}
+  - name: icgi-resenc
+    params: {mpp: 10}
+  - name: trident-cpg
+
+  - name: background-subtractor
+    params: {mpp: 20}

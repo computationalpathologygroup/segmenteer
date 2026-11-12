@@ -1,0 +1,39 @@
+methods:
+  # Global thresholding
+  - name: li
+    params: {mpp: 20, min_area: 1000}
+  - name: otsu
+    params: {mpp: 20, min_area: 1000}
+  - name: yen
+    params: {mpp: 20, min_area: 1000}
+
+  # Morphology and watershed
+  - name: morphological
+    params: {mpp: 20, disk_size: 3, min_area: 1000}
+
+  - name: watershed
+    params: {mpp: 20, min_distance_um: 200, min_area: 1000, merge_regions: true}
+
+  # HSV thresholding
+  - name: hsv-threshold
+    params: {mpp: 20, min_area: 1000}
+
+  - name: hsv-threshold-v2
+    params: {mpp: 20, min_area: 1000}
+
+  # FESI (improved and original variants)
+  - name: fesi
+    params: {mpp: 20, improved: true}
+  - name: fesi-basic
+    params: {mpp: 20}
+
+  # Other classical image processing
+  - name: entropy-masker
+    params: {mpp: 20}
+  - name: histomicstk
+    params: {mpp: 20}
+  - name: canny-foreground
+    params: {mpp: 5}
+
+  - name: background-subtractor
+    params: {mpp: 20}

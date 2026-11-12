@@ -1,7 +1,6 @@
+from segmenteer.benchmark.profiling import measure_phase
 from pathlib import Path
-
 import numpy as np
-
 from segmenteer.core.base import NumpySegmenter
 from segmenteer.core.runtime import resolve_torch_device
 from segmenteer.model_cache import (
@@ -9,6 +8,8 @@ from segmenteer.model_cache import (
     get_method_model_dir,
     promote_to_method_cache,
 )
+from segmenteer.external_assets import require_network
+from segmenteer.methods.dl._checkpoint_validation import load_complete_state_dict
 
 try:
     import torch
@@ -19,13 +20,10 @@ try:
     _TORCH_AVAILABLE = True
 except ImportError:
     _TORCH_AVAILABLE = False
-
-
 _MODEL_NAMESPACE = "hest"
 
 
 def get_model_cache_dir() -> Path:
-    """Return the shared local HEST weights directory."""
     return get_method_model_dir(_MODEL_NAMESPACE)
 
 
@@ -45,8 +43,7 @@ class HESTSegmenter(NumpySegmenter):
     ):
         if not _TORCH_AVAILABLE:
             raise ImportError(
-                "torch and torchvision are required for HESTSegmenter.\n"
-                "Install with: uv sync --extra hest"
+                "torch and torchvision are required for HESTSegmenter.\nInstall with: uv sync --extra hest"
             )
         super().__init__(*args, **kwargs)
         self.model_repo = model_repo
@@ -56,23 +53,12 @@ class HESTSegmenter(NumpySegmenter):
         if mpp is None:
             mpp = 8
         self.mpp = mpp
-
         self.device = torch.device(resolve_torch_device(device))
-
         print(f"Initializing HEST model at {self.mpp} MPP")
-
         self._model = None
         self._transform = None
-        self._load_model()
 
     def _checkpoint_file(self) -> Path:
-        """Resolve a local HEST weight before consulting Hugging Face.
-
-        Earlier releases passed ``models/hest`` as Hugging Face's cache path.
-        Hugging Face therefore nested the checkpoint below ``models--...`` and
-        this wrapper never saw it on later runs.  ``find_local_model`` accepts
-        that legacy layout, direct project-local files, and the canonical path.
-        """
         if self.checkpoint_path:
             checkpoint_file = Path(self.checkpoint_path).expanduser()
             if not checkpoint_file.is_file():
@@ -80,22 +66,15 @@ class HESTSegmenter(NumpySegmenter):
                     f"HEST checkpoint_path does not exist: {checkpoint_file}"
                 )
             return checkpoint_file
-
         local_file = find_local_model(_MODEL_NAMESPACE, self.model_file)
         if local_file is not None:
             return local_file
-
         try:
             from huggingface_hub import hf_hub_download
         except ImportError as exc:
             raise ImportError(
-                "huggingface-hub is required to download missing HEST weights. "
-                "Run: uv sync --extra hest"
+                "huggingface-hub is required to download missing HEST weights. Run: uv sync --extra hest"
             ) from exc
-
-        # Check Hugging Face's existing global cache before attempting network
-        # access.  This helps projects that previously downloaded the model
-        # through a different cache location.
         try:
             cached_file = Path(
                 hf_hub_download(
@@ -106,12 +85,11 @@ class HESTSegmenter(NumpySegmenter):
             )
         except Exception:
             cached_file = None
-
         if cached_file is not None and cached_file.is_file():
             return promote_to_method_cache(
                 cached_file, _MODEL_NAMESPACE, self.model_file
             )
-
+        require_network("HEST Hugging Face checkpoint (unversioned)", pinned=False)
         print(f"Downloading HEST model from Hugging Face: {self.model_repo}...")
         downloaded_file = Path(
             hf_hub_download(
@@ -125,30 +103,52 @@ class HESTSegmenter(NumpySegmenter):
         )
 
     def _load_model(self):
-        self._model = deeplabv3_resnet50(weights=None, num_classes=2)
-        checkpoint_file = self._checkpoint_file()
-
+        # Expose the model only after complete checkpoint loading.
+        self._model = None
+        self._transform = None
+        model = deeplabv3_resnet50(weights=None, num_classes=2)
         try:
-            checkpoint = torch.load(
-                checkpoint_file, map_location=self.device, weights_only=False
+            checkpoint_file = self._checkpoint_file()
+            import os
+
+            # Unsafe pickle loading requires explicit operator approval.
+            trust_pickle = os.getenv(
+                "SEGMENTEER_TRUST_PICKLE_CHECKPOINTS", ""
+            ).lower() in ("1", "true", "yes", "on")
+            try:
+                checkpoint = torch.load(
+                    checkpoint_file,
+                    map_location=self.device,
+                    weights_only=not trust_pickle,
+                )
+            except Exception as exc:
+                if not trust_pickle:
+                    raise RuntimeError(
+                        "HEST checkpoint cannot be loaded with safe weights-only deserialization. "
+                        "Only for a checkpoint whose origin you have independently verified, "
+                        "set SEGMENTEER_TRUST_PICKLE_CHECKPOINTS=1 to permit legacy pickle loading."
+                    ) from exc
+                raise
+            state_dict = (
+                checkpoint.get("state_dict", checkpoint)
+                if isinstance(checkpoint, dict)
+                else checkpoint
             )
-            state_dict = checkpoint.get("state_dict", checkpoint)
-
-            new_state_dict = {}
-            for k, v in state_dict.items():
-                new_key = k.replace("model.", "") if k.startswith("model.") else k
-                new_state_dict[new_key] = v
-
-            self._model.load_state_dict(new_state_dict, strict=False)
+            load_complete_state_dict(
+                model,
+                state_dict,
+                model_name="HEST",
+                checkpoint_path=checkpoint_file,
+                lightning_model_prefix=True,
+                drop_hest_aux_classifier=True,
+            )
             print(f"Loaded HEST weights from {checkpoint_file}")
         except Exception as e:
             print(f"Error loading HEST model weights from {checkpoint_file}: {e}")
             raise
-
-        self._model = self._model.to(self.device)
-        self._model.eval()
-
-        self._transform = transforms.Compose(
+        model = model.to(self.device)
+        model.eval()
+        transform = transforms.Compose(
             [
                 transforms.ToTensor(),
                 transforms.Normalize(
@@ -156,6 +156,8 @@ class HESTSegmenter(NumpySegmenter):
                 ),
             ]
         )
+        self._model = model
+        self._transform = transform
 
     @property
     def name(self) -> str:
@@ -165,31 +167,25 @@ class HESTSegmenter(NumpySegmenter):
     def _preprocess_image(self, image: np.ndarray) -> torch.Tensor:
         if image.dtype != np.uint8:
             image = (image * 255).astype(np.uint8)
-
         tensor = self._transform(image)
         return tensor.unsqueeze(0).to(self.device)
 
     def _postprocess_output(self, outputs: dict, original_shape: tuple) -> np.ndarray:
         logits = outputs["out"]
-
         upsampled_logits = F.interpolate(
-            logits,
-            size=original_shape[:2],
-            mode="bilinear",
-            align_corners=False,
+            logits, size=original_shape[:2], mode="bilinear", align_corners=False
         )
-
         probs = torch.softmax(upsampled_logits, dim=1)
         tissue_probs = probs[:, 1, :, :]
         mask = (tissue_probs > self.confidence_threshold).squeeze().cpu().numpy()
-
         return mask.astype(bool)
 
     def _segment_numpy(self, image):
+        if self._model is None:
+            with measure_phase("model_initialization"):
+                self._load_model()
         original_shape = image.shape
         input_tensor = self._preprocess_image(image)
-
         with torch.no_grad():
             outputs = self._model(input_tensor)
-
         return self._postprocess_output(outputs, original_shape)

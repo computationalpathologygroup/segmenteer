@@ -10,22 +10,24 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://computationalpathologygroup.github.io/segmenteer/">
   <link rel="canonical" href="https://computationalpathologygroup.github.io/segmenteer/">
-  <title>segmenteer/docs</title>
+  <title>Segmenteer | Whole-slide tissue segmentation</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=2">
   <link rel="shortcut icon" href="assets/favicon.svg?v=2">
-  <link rel="stylesheet" href="assets/site.css">
-  <script src="assets/site.js" defer></script>
+  <link rel="stylesheet" href="assets/site.css?v=script-controlled-display-v1">
+  <script src="assets/site.js?v=script-controlled-display-v1" defer></script>
 </head>
-<body>
+<body id="top">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header" data-header>
     <a class="wordmark" href="#top" aria-label="Segmenteer home">segmenteer</a>
     <nav class="site-nav" aria-label="Primary navigation">
+      <a href="#leaderboard">Leaderboard</a>
+      <a href="#performance">Subgroups</a>
       <a href="#overview">Overview</a>
       <a href="#viewer">Viewer</a>
       <a href="#use">Use</a>
-      <a class="repo-link" data-repo-link href="#">GitHub ↗</a>
+      <a class="repo-link" data-repo-link href="https://github.com/computationalpathologygroup/segmenteer" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
     </nav>
     <button class="menu-button" type="button" aria-label="Open navigation" aria-expanded="false" data-menu-button>
       <span></span><span></span>
@@ -33,49 +35,190 @@
   </header>
 
   <main id="main">
-    <section class="hero" id="top" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <p class="eyebrow">Whole-slide tissue segmentation</p>
-        <h1 id="hero-title">Tissue segmentation<br><em>across methods.</em></h1>
-        <p class="hero-intro">Segmenteer provides a common workflow for tissue segmentation on whole-slide images, optional evaluation, and visual inspection of results on any dataset.</p>
-        <div class="hero-actions">
-          <a class="text-action" href="#overview">See the workflow <span aria-hidden="true">↓</span></a>
-          <a class="text-action repo-link" data-repo-link href="#">Repository <span aria-hidden="true">↗</span></a>
+    <section class="lb-section" id="leaderboard" aria-labelledby="lb-title">
+      <div class="lb-heading">
+        <div>
+          <p class="lb-eyebrow">BENCHMARK / METHOD COMPARISON</p>
+          <h1 id="lb-title">Tissue-background segmentation leaderboard<span class="lb-title-period">.</span></h1>
+        </div>
+        <div class="lb-aside">
+          <p class="lb-instruction"><span class="lb-desktop-instruction">Click a metric to sort</span><span class="lb-mobile-instruction">Swipe horizontally to compare →</span></p>
+          <p class="lb-order-status" data-order-status aria-live="polite"></p>
         </div>
       </div>
 
-      <figure class="boundary-study" data-boundary-study>
-        <svg class="study-svg" viewBox="0 0 760 600" role="img" aria-labelledby="study-title study-desc">
-          <title id="study-title">Illustrative tissue boundary disagreement</title>
-          <desc id="study-desc">An illustrative tissue region with reference and prediction contours.</desc>
-          <defs>
-            <pattern id="microgrid" width="20" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" stroke-width="0.55" opacity="0.2"/>
-            </pattern>
-            <clipPath id="specimen-clip">
-              <path id="specimen-path" d="M151,152 C206,91 282,91 336,119 C394,149 449,115 511,143 C579,174 639,240 616,309 C593,378 628,441 565,480 C497,522 438,474 372,493 C293,516 230,488 185,436 C141,386 110,332 124,271 C134,226 117,190 151,152 Z"/>
-            </clipPath>
-          </defs>
-          <rect width="760" height="600" class="study-paper"/>
-          <rect x="34" y="34" width="692" height="532" class="study-frame"/>
-          <rect x="34" y="34" width="692" height="532" fill="url(#microgrid)" class="study-grid"/>
-          <g class="registration-marks" aria-hidden="true">
-            <path d="M20 34h28M34 20v28M712 34h28M726 20v28M20 566h28M34 552v28M712 566h28M726 552v28"/>
-          </g>
-          <g clip-path="url(#specimen-clip)" class="specimen-fill">
-            <rect x="80" y="70" width="580" height="460"/>
-            <path d="M120 210 C210 165 281 246 356 203 C437 157 517 187 641 259 L650 340 C522 295 476 362 383 337 C293 313 212 376 118 321 Z" class="specimen-band specimen-band-a"/>
-            <path d="M170 123 C259 188 319 151 395 171 C497 198 543 272 585 341 C506 320 463 424 363 388 C275 356 216 400 152 342 C94 288 104 192 170 123 Z" class="specimen-band specimen-band-b"/>
-            <g class="specimen-speckles" aria-hidden="true"></g>
-          </g>
-          <path class="contour contour-a" data-contour="0" d="M151,152 C206,91 282,91 336,119 C394,149 449,115 511,143 C579,174 639,240 616,309 C593,378 628,441 565,480 C497,522 438,474 372,493 C293,516 230,488 185,436 C141,386 110,332 124,271 C134,226 117,190 151,152 Z"/>
-          <path class="contour contour-b" data-contour="1" d="M158,164 C211,105 279,96 339,126 C399,157 452,123 503,151 C571,188 627,246 606,313 C585,379 612,430 556,466 C489,509 431,468 368,485 C293,506 237,477 194,430 C151,382 121,329 135,273 C145,231 126,199 158,164 Z"/>
-          <path class="contour contour-c" data-contour="2" d="M143,143 C205,82 289,86 341,111 C401,140 445,104 519,135 C593,166 650,239 625,314 C599,389 638,449 573,489 C501,533 435,488 376,501 C292,519 219,493 176,441 C128,383 99,329 114,267 C125,219 108,181 143,143 Z"/>
-          <path class="contour contour-d" data-contour="3" d="M166,154 C223,112 282,105 336,132 C384,157 450,136 497,158 C553,185 607,239 594,299 C578,368 600,416 541,451 C483,487 424,454 364,470 C303,487 247,461 208,419 C169,376 139,329 149,281 C158,237 138,188 166,154 Z"/>
-          <path class="consensus" data-consensus d="M158,154 C213,102 281,98 338,124 C394,151 449,122 507,150 C573,183 628,242 608,309 C587,376 615,432 558,469 C493,510 434,471 370,488 C295,508 235,480 190,432 C147,384 117,331 130,273 C140,229 122,195 158,154 Z"/>
-        </svg>
+      <div class="lb-scroll" role="region" aria-label="Development and test benchmark results, horizontally scrollable on smaller screens" tabindex="0">
+        <table class="lb-table" data-leaderboard>
+          <caption class="visually-hidden">Tissue-background segmentation benchmark. Higher is better for Dice and NSD; lower is better for Under, Over, and average time per slide.</caption>
+          <colgroup><col class="lb-col-method" /><col class="lb-col-metric" /><col class="lb-col-metric" /><col class="lb-col-metric" /><col class="lb-col-metric" /><col class="lb-col-metric" /><col class="lb-col-metric" /><col class="lb-col-metric" /><col class="lb-col-metric" /><col class="lb-col-metric" /><col class="lb-col-metric" /></colgroup>
+          <thead>
+            <tr class="lb-groups">
+              <th scope="col" rowspan="2" class="lb-method-heading">Method / architecture</th>
+              <th scope="colgroup" colspan="5" class="lb-group lb-group-dev"><span class="lb-group-title">Tissue-with-issues</span><span class="lb-group-subtitle">Development benchmarking dataset</span></th>
+              <th scope="colgroup" colspan="5" class="lb-group lb-group-test"><span class="lb-group-label"><svg class="lb-lock" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="11" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg><span class="lb-group-title">Private hidden</span></span><span class="lb-group-subtitle">Test dataset · Results not published</span></th>
+            </tr>
+            <tr class="lb-metric-headings">
+              <th scope="col" data-sort-key="development:dice">
+                <button type="button" data-sort="development:dice" aria-label="Sort by Dice on Tissue-with-issues development benchmarking dataset (higher is better)" title="Dice · higher is better">Dice <span class="lb-direction" aria-hidden="true">↑</span></button>
+              </th>
+              <th scope="col" data-sort-key="development:nsd">
+                <button type="button" data-sort="development:nsd" aria-label="Sort by NSD on Tissue-with-issues development benchmarking dataset (higher is better)" title="NSD · higher is better">NSD <span class="lb-direction" aria-hidden="true">↑</span></button>
+              </th>
+              <th scope="col" data-sort-key="development:under">
+                <button type="button" data-sort="development:under" aria-label="Sort by Under-segmentation on Tissue-with-issues development benchmarking dataset (lower is better)" title="Under-segmentation · lower is better">Under <span class="lb-direction" aria-hidden="true">↓</span></button>
+              </th>
+              <th scope="col" data-sort-key="development:over">
+                <button type="button" data-sort="development:over" aria-label="Sort by Over-segmentation on Tissue-with-issues development benchmarking dataset (lower is better)" title="Over-segmentation · lower is better">Over <span class="lb-direction" aria-hidden="true">↓</span></button>
+              </th>
+              <th scope="col" data-sort-key="development:speed">
+                <button type="button" data-sort="development:speed" aria-label="Sort by Average seconds per slide on Tissue-with-issues development benchmarking dataset (lower is better)" title="Average seconds per slide · lower is better">s / slide <span class="lb-direction" aria-hidden="true">↓</span></button>
+              </th>
+              <th scope="col" data-sort-key="test:dice">
+                <button type="button" data-sort="test:dice" disabled aria-label="Sort by Dice on Private hidden test dataset (higher is better; unavailable)" title="Dice · higher is better">Dice <span class="lb-direction" aria-hidden="true">↑</span></button>
+              </th>
+              <th scope="col" data-sort-key="test:nsd">
+                <button type="button" data-sort="test:nsd" disabled aria-label="Sort by NSD on Private hidden test dataset (higher is better; unavailable)" title="NSD · higher is better">NSD <span class="lb-direction" aria-hidden="true">↑</span></button>
+              </th>
+              <th scope="col" data-sort-key="test:under">
+                <button type="button" data-sort="test:under" disabled aria-label="Sort by Under-segmentation on Private hidden test dataset (lower is better; unavailable)" title="Under-segmentation · lower is better">Under <span class="lb-direction" aria-hidden="true">↓</span></button>
+              </th>
+              <th scope="col" data-sort-key="test:over">
+                <button type="button" data-sort="test:over" disabled aria-label="Sort by Over-segmentation on Private hidden test dataset (lower is better; unavailable)" title="Over-segmentation · lower is better">Over <span class="lb-direction" aria-hidden="true">↓</span></button>
+              </th>
+              <th scope="col" data-sort-key="test:speed">
+                <button type="button" data-sort="test:speed" disabled aria-label="Sort by Average seconds per slide on Private hidden test dataset (lower is better; unavailable)" title="Average seconds per slide · lower is better">s / slide <span class="lb-direction" aria-hidden="true">↓</span></button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+      <div class="lb-notes">
+        <p><span class="lb-note-emphasis">↑</span> Higher is better · <span class="lb-note-emphasis">↓</span> Lower is better · Under/Over = mean FN/FP area ÷ reference area (%)</p>
+        <time class="lb-updated" data-benchmark-updated hidden></time>
+      </div>
+    </section>
+
+
+
+    <section class="tradeoff-section" id="tradeoff" aria-labelledby="tradeoff-title" data-tradeoff>
+      <div class="tradeoff-heading">
+        <div>
+          <p class="lb-eyebrow">BENCHMARK / EFFICIENCY</p>
+          <h2 id="tradeoff-title">Speed–accuracy trade-off<span class="lb-title-period">.</span></h2>
+          <p class="tradeoff-description">Tissue-with-issues · Overall benchmark performance</p>
+        </div>
+        <div class="tradeoff-controls">
+          <label class="subgroup-control"><span>Accuracy metric</span>
+            <select data-tradeoff-metric aria-label="Select accuracy metric for speed versus accuracy chart">
+              <option value="dice" selected>Dice ↑</option>
+              <option value="nsd">NSD ↑</option>
+            </select>
+          </label>
+          <label class="tradeoff-frontier-control"><input type="checkbox" data-tradeoff-frontier checked> <span>Show Pareto frontier</span></label>
+        </div>
+      </div>
+      <p class="tradeoff-swipe-hint">Scroll horizontally to inspect the trade-off →</p>
+      <div class="tradeoff-visual" data-tradeoff-visual>
+        <svg data-tradeoff-svg viewBox="0 0 1040 440" role="img" aria-label="Scatter plot of average seconds per slide versus mean Dice or NSD for all timed methods, with an optional Pareto frontier"></svg>
+        <p class="tradeoff-empty" data-tradeoff-empty hidden>No completed timing measurements available yet.</p>
+      </div>
+      <div class="tradeoff-bottom">
+        <p class="tradeoff-selection" aria-live="polite" data-tradeoff-detail>Loading benchmark measurements…</p>
+        <p class="tradeoff-legend"><span class="tradeoff-legend-dot"></span> All methods <span class="tradeoff-legend-frontier"></span> Pareto-efficient</p>
+      </div>
+      <p class="tradeoff-note">Lower processing time and higher accuracy are preferable. Horizontal axis is logarithmic. Accuracy and timing may reflect different sets of completed slides; comparisons are descriptive.</p>
+    </section>
+
+    <section class="subgroup-section" id="performance" aria-labelledby="subgroup-title" data-subgroup>
+      <div class="subgroup-intro">
+        <div>
+          <p class="lb-eyebrow">BENCHMARK / CLOSER LOOK</p>
+          <h2 id="subgroup-title">Tissue-with-issues subgroup performance<span class="lb-title-period">.</span></h2>
+          <p class="subgroup-description">Compare the same metric across every organ, stain, center, or dataset source.</p>
+        </div>
+        <p class="subgroup-order-status" data-subgroup-order aria-live="polite"></p>
+      </div>
+      <div class="subgroup-controls">
+        <label class="subgroup-control">
+          <span>Explore by</span>
+          <select data-subgroup-dimension aria-label="Break down performance by">
+            <option value="organ" selected>Organ</option>
+            <option value="stain">Stain</option>
+            <option value="center">Center</option>
+            <option value="source">Dataset source</option>
+          </select>
+        </label>
+        <label class="subgroup-control">
+          <span>Metric</span>
+          <select data-subgroup-metric aria-label="Metric displayed across all subgroups">
+            <option value="dice" selected>Dice ↑</option>
+            <option value="nsd">NSD ↑</option>
+            <option value="under">Under-segmentation ↓</option>
+            <option value="over">Over-segmentation ↓</option>
+            <option value="speed">Speed (s / slide) ↓</option>
+          </select>
+        </label>
+      </div>
+      <p class="subgroup-swipe-hint">Scroll horizontally to compare categories <span aria-hidden="true">→</span></p>
+      <div class="lb-scroll subgroup-scroll" role="region" tabindex="0" aria-label="Tissue-with-issues subgroup benchmark; scroll horizontally to compare subgroup metrics">
+        <table class="lb-table subgroup-table" data-subgroup-table>
+          <caption class="visually-hidden">Mean scores by subgroup. Each column shows the selected metric for an organ, stain, center, or dataset source. Click a column to rank methods; arrow indicates which direction is better.</caption>
+          <colgroup data-subgroup-cols><col class="lb-col-method" /></colgroup>
+          <thead>
+            <tr class="lb-groups">
+              <th rowspan="2" scope="col" class="lb-method-heading">Method / architecture</th>
+              <th colspan="1" scope="colgroup" class="lb-group lb-group-dev" data-subgroup-group>
+                <span class="lb-group-title">Tissue-with-issues</span>
+                <span class="lb-group-subtitle" data-subgroup-table-title>Organ · Dice</span>
+              </th>
+            </tr>
+            <tr class="lb-metric-headings" data-subgroup-headings></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="lb-notes subgroup-notes">
+        <p><span class="lb-note-emphasis">↑</span> Higher is better · <span class="lb-note-emphasis">↓</span> Lower is better · Under/Over = mean FN/FP area ÷ reference area (%)</p>
+        <p data-subgroup-note>Columns show subgroup means; sort by any subgroup or overall score.</p>
+      </div>
+    </section>
+
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Whole-slide tissue segmentation</p>
+        <h2 id="hero-title">Tissue segmentation<br><em>across methods.</em></h2>
+        <p class="hero-intro">Segmenteer provides a common workflow for tissue segmentation on whole-slide images, optional evaluation, and visual inspection of results on any dataset.</p>
+        <div class="hero-actions">
+          <a class="text-action" href="#leaderboard">Back to leaderboard <span aria-hidden="true">↑</span></a>
+          <a class="text-action repo-link" data-repo-link href="https://github.com/computationalpathologygroup/segmenteer" target="_blank" rel="noopener noreferrer">Repository <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+
+      <figure class="gd-case" data-gd-case aria-labelledby="gd-case-title">
+        <div class="gd-topline"><span id="gd-case-title">REAL CASE / BENCHMARK SHOWCASE</span><span class="gd-topline-source">DATASET</span></div>
+        <div class="gd-stage" data-gd-stage>
+          <div class="gd-numeric" data-gd-numeric>
+            <div class="gd-specimen"><span class="gd-specimen-name">Tissue specimen</span><span class="gd-specimen-stain"></span></div>
+            <div class="gd-score-heading" data-gd-score-heading>DICE SCORE · THIS SLIDE</div>
+            <div class="gd-score-main"><strong data-gd-dice>—</strong><span data-gd-method>Loading case</span></div>
+            <div class="gd-bar"><span data-gd-bar></span></div>
+            <div class="gd-stat-grid"><div><span data-gd-secondary-label>NSD ↑</span><b data-gd-nsd>—</b></div><div><span>UNDER ↓</span><b data-gd-under>—</b></div><div><span>OVER ↓</span><b data-gd-over>—</b></div></div>
+          </div>
+          <div class="gd-imagery" data-gd-imagery hidden aria-label="Aligned segmentation visualizations for the selected slide">
+            <img data-gd-slide src="" alt="Original whole-slide tissue specimen" />
+            <img data-gd-prediction src="" alt="Selected model prediction overlay" />
+            <span class="gd-image-label" data-gd-image-label></span>
+            <button class="gd-original" type="button" data-gd-original aria-pressed="false">Hold to view original</button>
+          </div>
+        </div>
+        <div class="gd-tabs" role="group" aria-label="Choose a method to inspect this one slide">
+        </div>
+        <figcaption class="gd-caption"><span data-gd-caption>Top 3 by overall Dice · Scores on this slide</span><span class="gd-preview-notice" data-gd-preview></span></figcaption>
       </figure>
     </section>
+
 
     <section class="statement" aria-label="Experiment model">
       <p>One experiment keeps <strong>predictions</strong>, optional evaluation, and visual review aligned to the same slide cohort.</p>
@@ -117,7 +260,7 @@
         </li>
         <li data-step="02">
           <div class="apparatus-name">Evaluate</div>
-          <p>Quantify prediction quality with reference annotations when available, or use reference-free metrics when they are not.</p>
+          <p>Evaluate predictions against reference annotations using supervised metrics.</p>
         </li>
         <li data-step="03">
           <div class="apparatus-name">Inspect</div>
@@ -135,7 +278,7 @@
       </header>
       <div class="evaluation-panel">
         <p>Start with whole-slide images and segmentation predictions. Add GeoJSON ground truth and evaluation metrics when available; the viewer remains useful with predictions alone.</p>
-        <a class="text-action repo-link" data-repo-link href="#">Repository <span aria-hidden="true">↗</span></a>
+        <a class="text-action repo-link" data-repo-link href="https://github.com/computationalpathologygroup/segmenteer" target="_blank" rel="noopener noreferrer">Repository <span aria-hidden="true">↗</span></a>
       </div>
     </section>
   </main>
@@ -147,7 +290,7 @@
       <p class="footer-small">Runner · Evaluator · Viewer</p>
     </div>
     <div class="footer-links">
-      <a class="repo-link" data-repo-link href="#">Repository ↗</a>
+      <a class="repo-link" data-repo-link href="https://github.com/computationalpathologygroup/segmenteer" target="_blank" rel="noopener noreferrer">Repository ↗</a>
       <a href="#top">Back to top ↑</a>
     </div>
   </footer>

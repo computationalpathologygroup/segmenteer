@@ -1,7 +1,7 @@
+from segmenteer.benchmark.profiling import measure_phase
 from pathlib import Path
-
 import numpy as np
-
+from PIL import Image
 from segmenteer.core.base import NumpySegmenter
 from segmenteer.core.runtime import resolve_torch_device
 from segmenteer.model_cache import (
@@ -9,13 +9,12 @@ from segmenteer.model_cache import (
     get_method_model_dir,
     promote_to_method_cache,
 )
-
+from segmenteer.external_assets import require_network
 
 _MODEL_NAMESPACE = "fastsam"
 
 
 def get_model_cache_dir() -> Path:
-    """Return the shared local FastSAM weights directory."""
     return get_method_model_dir(_MODEL_NAMESPACE)
 
 
@@ -34,13 +33,6 @@ class FastSAMSegmenter(NumpySegmenter):
         *args,
         **kwargs,
     ):
-        try:
-            from ultralytics import FastSAM as _FastSAM  # noqa: F401
-        except ImportError:
-            raise ImportError(
-                "ultralytics is required for FastSAMSegmenter.\n"
-                "Install with: uv sync --extra fastsam"
-            ) from None
         super().__init__(*args, **kwargs)
         if mpp is None:
             mpp = 10
@@ -51,20 +43,9 @@ class FastSAMSegmenter(NumpySegmenter):
         self.iou = iou
         self.device = resolve_torch_device(device)
         self.imgsz = imgsz
-
-        print(f"Initializing FastSAM model: {model_name}")
-        print(f"  Device: {self.device}")
-        if text_prompt:
-            print(f"  Text prompt: '{text_prompt}'")
-        else:
-            print("  Mode: segment everything")
-
         self._model = None
-        self._load_model()
-
 
     def _downloaded_checkpoint_path(self) -> Path | None:
-        """Return a checkpoint path exposed by Ultralytics, if available."""
         raw_path = getattr(self._model, "ckpt_path", None)
         if raw_path:
             candidate = Path(raw_path).expanduser()
@@ -74,15 +55,37 @@ class FastSAMSegmenter(NumpySegmenter):
         return candidate if candidate.is_file() else None
 
     def _load_model(self):
-        from ultralytics import FastSAM
-
+        try:
+            from ultralytics import FastSAM
+        except ImportError as exc:
+            raise ImportError(
+                "ultralytics is required for FastSAMSegmenter. Install with: uv sync --extra fastsam"
+            ) from exc
         model_path = find_local_model(_MODEL_NAMESPACE, self.model_name)
         if model_path is not None:
-            print(f"Loading FastSAM weights from {model_path}")
+            mode = (
+                f"text prompt {self.text_prompt!r}"
+                if self.text_prompt
+                else "segment everything"
+            )
+            print(
+                f"Loading FastSAM weights from {model_path} · device={self.device} · {mode}",
+                flush=True,
+            )
             self._model = FastSAM(str(model_path))
             return
-
-        print(f"Downloading FastSAM model: {self.model_name}")
+        mode = (
+            f"text prompt {self.text_prompt!r}"
+            if self.text_prompt
+            else "segment everything"
+        )
+        require_network(
+            "FastSAM Ultralytics-managed download (unversioned)", pinned=False
+        )
+        print(
+            f"Loading FastSAM model {self.model_name} (download if needed) · device={self.device} · {mode}",
+            flush=True,
+        )
         self._model = FastSAM(self.model_name)
         downloaded_path = self._downloaded_checkpoint_path()
         if downloaded_path is not None:
@@ -96,9 +99,13 @@ class FastSAMSegmenter(NumpySegmenter):
         return f"fastsam_{self.model_name.replace('.pt', '').lower()}"
 
     def _segment_numpy(self, image):
+        if self._model is None:
+            with measure_phase("model_initialization"):
+                self._load_model()
+        rgb_image = Image.fromarray(image)
         if self.text_prompt:
             results = self._model(
-                image,
+                rgb_image,
                 device=self.device,
                 retina_masks=True,
                 imgsz=self.imgsz,
@@ -109,7 +116,7 @@ class FastSAMSegmenter(NumpySegmenter):
             )
         else:
             results = self._model(
-                image,
+                rgb_image,
                 device=self.device,
                 retina_masks=True,
                 imgsz=self.imgsz,
@@ -117,28 +124,21 @@ class FastSAMSegmenter(NumpySegmenter):
                 iou=self.iou,
                 verbose=False,
             )
-
         if not results or len(results) == 0:
             return np.zeros(image.shape[:2], dtype=bool)
-
         result = results[0]
-
         if (
             not hasattr(result, "masks")
             or result.masks is None
             or len(result.masks) == 0
         ):
             return np.zeros(image.shape[:2], dtype=bool)
-
         masks = result.masks.data.cpu().numpy()
-
         if len(masks.shape) == 3:
             combined_mask = masks.any(axis=0)
         else:
             combined_mask = masks
-
         combined_mask = combined_mask.astype(bool)
-
         if combined_mask.shape != image.shape[:2]:
             from skimage.transform import resize
 
