@@ -71,6 +71,57 @@ def scale_geojson_coordinates(
     return result
 
 
+def _polygonal_geometry(geometry):
+    if geometry.geom_type != "GeometryCollection":
+        return geometry
+    polygons = [
+        part
+        for part in geometry.geoms
+        if part.geom_type in {"Polygon", "MultiPolygon"} and not part.is_empty
+    ]
+    if not polygons:
+        raise ValueError("Geometry repair produced no polygonal geometry.")
+    if len(polygons) == 1:
+        return polygons[0]
+    from shapely.geometry import MultiPolygon
+
+    return MultiPolygon(
+        [
+            polygon
+            for part in polygons
+            for polygon in (
+                part.geoms if part.geom_type == "MultiPolygon" else (part,)
+            )
+        ]
+    )
+
+
+def repair_geojson_geometries(geojson_data: dict) -> dict:
+    """Repair invalid polygon geometries while preserving GeoJSON metadata."""
+    if (
+        not isinstance(geojson_data, dict)
+        or geojson_data.get("type") != "FeatureCollection"
+        or not isinstance(geojson_data.get("features"), list)
+    ):
+        raise ValueError("Expected GeoJSON FeatureCollection.")
+
+    repaired = dict(geojson_data)
+    repaired_features = []
+    for index, feature in enumerate(geojson_data["features"]):
+        try:
+            geometry = shapely_shape(feature["geometry"])
+            if not geometry.is_valid:
+                geometry = make_valid(geometry)
+            geometry = _polygonal_geometry(geometry)
+            updated_feature = dict(feature)
+            updated_feature["geometry"] = mapping(geometry)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError(f"Unable to repair GeoJSON feature {index}.") from exc
+        repaired_features.append(updated_feature)
+    repaired["features"] = repaired_features
+    return repaired
+
+
 # Track geometry conversion separately from model configuration fingerprints.
 MASK_POLYGONIZATION_PROTOCOL = "pixel-edges-4-connected-v1"
 

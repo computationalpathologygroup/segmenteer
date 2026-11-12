@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 from pathlib import Path
+from segmenteer.core.utils import repair_geojson_geometries
 from segmenteer.io.asap import load_asap_xml, save_asap_xml
 from segmenteer.io.atomic import write_json_atomic
 
@@ -44,6 +45,7 @@ def save_prediction(payload: dict, path: Path | str) -> None:
     if path.suffix.casefold() == ".xml":
         save_asap_xml(payload, path)
     elif path.suffix.casefold() == ".geojson":
+        payload = repair_geojson_geometries(payload)
         write_json_atomic(path, payload)
     else:
         raise ValueError(f"Unsupported prediction extension: {path.suffix}")
