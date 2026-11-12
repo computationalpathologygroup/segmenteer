@@ -52,9 +52,6 @@ Run `segmenteer --help` for other options.
 
 Segmenteer saves predictions for each method. It also saves configurations and timing records. Completed predictions can be reused when the input files and method settings have not changed.
 
-These steps are wrapped in pyxis-enabled slurm jobs in `/slurm`.
-You need to push your docker build to a repository and reference it in the jobscripts.
-
 ## View predictions
 
 The optional browser viewer can display WSIs and prediction overlays:
@@ -88,6 +85,12 @@ segmenteer evaluate \
 Note: retry if you see `Prediction or ground truth changed during evaluation; retry this result`.
 
 You can also see the ground truth and the metrics in the app if you add `--metrics $METRICS_CSV` and `--ground-truth $GROUND_TRUTH` to `segmenteer app`. 
+
+
+## Slurm
+
+Inference, evaluation, and the app are wrapped in pyxis-enabled slurm jobs in `/slurm`.
+You need to push your docker build to a repository and reference it in the jobscripts.
 
 ## Citation
 
