@@ -189,6 +189,7 @@ unsupervised_*.geojson
 output_*.geojson
 *.json
 *.csv
+!slurm/**/*.csv
 # pixi
 #   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
 #pixi.lock

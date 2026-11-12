@@ -1,0 +1,687 @@
+slide_id,ground_truth_annotation
+028c4d99-3c92-44fb-866b-335f9109cf10,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/028c4d99-3c92-44fb-866b-335f9109cf10.geojson
+0495_slide_CD68 (514H12)_3,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/0495_slide_CD68 (514H12)_3.geojson
+0_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/0_HE_val.geojson
+0_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/0_KI67_val.geojson
+0a7bfd65-9c71-4f0c-9dd4-b5f28fb38ee0,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/0a7bfd65-9c71-4f0c-9dd4-b5f28fb38ee0.geojson
+1001.Prostate.Bx1A.slide.02.ERG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx1A.slide.02.ERG.geojson
+1001.Prostate.Bx1A.slide.03.PIN4,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx1A.slide.03.PIN4.geojson
+1001.Prostate.Bx1A.slide.10.PTEN,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx1A.slide.10.PTEN.geojson
+1001.Prostate.Bx3A.slide.02.AR,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx3A.slide.02.AR.geojson
+1001.Prostate.Bx3A.slide.03.PSA,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx3A.slide.03.PSA.geojson
+1001.Prostate.Bx3A.slide.10.ERG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx3A.slide.10.ERG.geojson
+1001.Prostate.Bx3A.slide.11.PIN4,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx3A.slide.11.PIN4.geojson
+1001.Prostate.Bx3A.slide.12.Ki67,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx3A.slide.12.Ki67.geojson
+1001.Prostate.Bx3A.slide.13.GR,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx3A.slide.13.GR.geojson
+1001.Prostate.Bx3A.slide.14.SYP,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx3A.slide.14.SYP.geojson
+1001.Prostate.Bx3A.slide.15.P53,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx3A.slide.15.P53.geojson
+1001.Prostate.Bx3A.slide.16.PTEN,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx3A.slide.16.PTEN.geojson
+1001.Prostate.Bx5A.slide.02.AR,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx5A.slide.02.AR.geojson
+1001.Prostate.Bx5A.slide.03.PSA,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx5A.slide.03.PSA.geojson
+1001.Prostate.Bx5A.slide.10.ERG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx5A.slide.10.ERG.geojson
+1001.Prostate.Bx5A.slide.12.Ki67,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx5A.slide.12.Ki67.geojson
+1001.Prostate.Bx5A.slide.13.GR,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx5A.slide.13.GR.geojson
+1001.Prostate.Bx5A.slide.15.P53,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1001.Prostate.Bx5A.slide.15.P53.geojson
+101f9fc9-5bd7-4487-b7d9-704385b4b464,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/101f9fc9-5bd7-4487-b7d9-704385b4b464.geojson
+1026.Prostate.Bx16A.slide.03.PSA,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1026.Prostate.Bx16A.slide.03.PSA.geojson
+1026.Prostate.Bx16A.slide.11.PIN4,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1026.Prostate.Bx16A.slide.11.PIN4.geojson
+1026.Prostate.Bx16A.slide.15.P53,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1026.Prostate.Bx16A.slide.15.P53.geojson
+10_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/10_ER_val.geojson
+10_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/10_HE_val.geojson
+11_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/11_HE_val.geojson
+11_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/11_KI67_val.geojson
+12_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/12_ER_val.geojson
+12_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/12_HE_val.geojson
+13_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/13_HE_val.geojson
+13_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/13_KI67_val.geojson
+1471910635,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1471910635.geojson
+147_00_11449_B,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_00_11449_B.geojson
+147_00_1311_B,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_00_1311_B.geojson
+147_00_2895_B,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_00_2895_B.geojson
+147_00_8665_B,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_00_8665_B.geojson
+147_00_8950_B-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_00_8950_B-2.geojson
+147_02_2705_C,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_02_2705_C.geojson
+147_05_1068_B-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_05_1068_B-2.geojson
+147_19_2337-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_2337-2.geojson
+147_19_2338-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_2338-2.geojson
+147_19_2457_C,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_2457_C.geojson
+147_19_2924_E-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_2924_E-2.geojson
+147_19_3796_C,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_3796_C.geojson
+147_19_3902_B,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_3902_B.geojson
+147_19_3939_B-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_3939_B-2.geojson
+147_19_4030_B,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_4030_B.geojson
+147_19_4238-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_4238-2.geojson
+147_19_4238,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_4238.geojson
+147_19_7382-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_7382-2.geojson
+147_19_7656_A-4,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_7656_A-4.geojson
+147_19_8240_A-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_8240_A-2.geojson
+147_19_8492,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_8492.geojson
+147_19_9120_C,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_9120_C.geojson
+147_19_9440_A-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_9440_A-2.geojson
+147_19_9629_B-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_19_9629_B-2.geojson
+147_20_170-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_20_170-2.geojson
+147_20_170,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_20_170.geojson
+147_20_2096_A,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_20_2096_A.geojson
+147_21_2200_B,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_21_2200_B.geojson
+147_21_2888_C-3,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_21_2888_C-3.geojson
+147_21_3659_A-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_21_3659_A-2.geojson
+147_21_3726_A,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_21_3726_A.geojson
+147_21_5552_A,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_21_5552_A.geojson
+147_21_6336_A,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_21_6336_A.geojson
+147_21_6665-2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_21_6665-2.geojson
+147_21_6809_G-3,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/147_21_6809_G-3.geojson
+14_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/14_ER_val.geojson
+14_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/14_HE_val.geojson
+156b4d1e-d285-4a84-9f6f-6d6969b8bc58,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/156b4d1e-d285-4a84-9f6f-6d6969b8bc58.geojson
+15_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/15_HE_val.geojson
+15_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/15_KI67_val.geojson
+16_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/16_HE_val.geojson
+16_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/16_KI67_val.geojson
+17_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/17_HE_val.geojson
+17_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/17_PGR_val.geojson
+18_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/18_HE_val.geojson
+18_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/18_PGR_val.geojson
+19_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/19_ER_val.geojson
+19_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/19_HE_val.geojson
+1_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1_HE_val.geojson
+1_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1_PGR_val.geojson
+1d4c700d-07d1-4553-ac65-820559bf8e94,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1d4c700d-07d1-4553-ac65-820559bf8e94.geojson
+1ee4d067-3842-4722-b14f-a3dffee58095,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/1ee4d067-3842-4722-b14f-a3dffee58095.geojson
+20_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/20_HE_val.geojson
+20_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/20_KI67_val.geojson
+21_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/21_HE_val.geojson
+21_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/21_PGR_val.geojson
+22_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/22_HE_val.geojson
+22_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/22_PGR_val.geojson
+22d51948-0438-43b2-82a5-cc82415b6281,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/22d51948-0438-43b2-82a5-cc82415b6281.geojson
+23_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/23_HER2_val.geojson
+23_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/23_HE_val.geojson
+24_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/24_HE_val.geojson
+24_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/24_KI67_val.geojson
+25_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/25_HE_val.geojson
+25_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/25_PGR_val.geojson
+26_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/26_HE_val.geojson
+26_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/26_KI67_val.geojson
+27258,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/27258.geojson
+27_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/27_HE_val.geojson
+27_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/27_KI67_val.geojson
+27a6fda3-4bf0-4319-b9e0-59b7ae722f7b,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/27a6fda3-4bf0-4319-b9e0-59b7ae722f7b.geojson
+28071,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/28071.geojson
+28_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/28_ER_val.geojson
+28_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/28_HE_val.geojson
+29460,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/29460.geojson
+29_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/29_HE_val.geojson
+29_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/29_KI67_val.geojson
+2_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/2_ER_val.geojson
+2_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/2_HE_val.geojson
+30_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/30_HE_val.geojson
+30_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/30_KI67_val.geojson
+31854,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/31854.geojson
+31_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/31_HE_val.geojson
+31_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/31_KI67_val.geojson
+32182,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/32182.geojson
+326364c8-0256-4130-b4fe-68095bc327e0,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/326364c8-0256-4130-b4fe-68095bc327e0.geojson
+32_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/32_ER_val.geojson
+32_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/32_HE_val.geojson
+33_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/33_HER2_val.geojson
+33_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/33_HE_val.geojson
+34_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/34_HE_val.geojson
+34_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/34_KI67_val.geojson
+35_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/35_HE_val.geojson
+35_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/35_PGR_val.geojson
+3690195,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3690195.geojson
+36_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/36_HE_val.geojson
+36_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/36_PGR_val.geojson
+3755985,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3755985.geojson
+3756001,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756001.geojson
+3756012,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756012.geojson
+3756023,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756023.geojson
+3756036,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756036.geojson
+3756049,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756049.geojson
+3756068,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756068.geojson
+3756072,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756072.geojson
+3756078,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756078.geojson
+3756089,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756089.geojson
+3756102,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756102.geojson
+3756109,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756109.geojson
+3756115,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756115.geojson
+3756121,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756121.geojson
+3756130,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756130.geojson
+3756135,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756135.geojson
+3756140,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756140.geojson
+3756144,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756144.geojson
+3756170,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756170.geojson
+3756192,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756192.geojson
+3756226,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756226.geojson
+3756240,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756240.geojson
+3756249,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756249.geojson
+3756254,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756254.geojson
+3756262,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756262.geojson
+3756275,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756275.geojson
+3756282,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756282.geojson
+3756290,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756290.geojson
+3756305,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3756305.geojson
+37_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/37_ER_val.geojson
+37_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/37_HE_val.geojson
+38_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/38_HER2_val.geojson
+38_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/38_HE_val.geojson
+398419e4-bb73-4b7b-bc48-b8c93f1fbd30,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/398419e4-bb73-4b7b-bc48-b8c93f1fbd30.geojson
+39_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/39_HER2_val.geojson
+39_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/39_HE_val.geojson
+3_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3_HE_val.geojson
+3_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/3_PGR_val.geojson
+40_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/40_HE_val.geojson
+40_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/40_PGR_val.geojson
+41_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/41_HER2_val.geojson
+41_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/41_HE_val.geojson
+42_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/42_ER_val.geojson
+42_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/42_HE_val.geojson
+43_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/43_HER2_val.geojson
+43_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/43_HE_val.geojson
+44_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/44_HE_val.geojson
+44_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/44_KI67_val.geojson
+452af889-5a7d-4b58-a147-7d3370f43518,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/452af889-5a7d-4b58-a147-7d3370f43518.geojson
+4534,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/4534.geojson
+453907,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/453907.geojson
+45_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/45_ER_val.geojson
+45_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/45_HE_val.geojson
+46_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/46_HE_val.geojson
+46_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/46_KI67_val.geojson
+47_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/47_ER_val.geojson
+47_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/47_HE_val.geojson
+48_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/48_HE_val.geojson
+48_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/48_PGR_val.geojson
+498841f8-77de-4c01-a531-f5c73748d06e,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/498841f8-77de-4c01-a531-f5c73748d06e.geojson
+49_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/49_HE_val.geojson
+49_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/49_KI67_val.geojson
+4_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/4_HER2_val.geojson
+4_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/4_HE_val.geojson
+50_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/50_HE_val.geojson
+50_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/50_KI67_val.geojson
+51_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/51_HE_val.geojson
+51_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/51_PGR_val.geojson
+529911,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/529911.geojson
+52_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/52_HER2_val.geojson
+52_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/52_HE_val.geojson
+53_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/53_HE_val.geojson
+53_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/53_KI67_val.geojson
+54_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/54_HE_val.geojson
+54_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/54_PGR_val.geojson
+55_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/55_HE_val.geojson
+55_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/55_PGR_val.geojson
+56_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/56_HE_val.geojson
+56_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/56_KI67_val.geojson
+57_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/57_HE_val.geojson
+57_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/57_PGR_val.geojson
+58_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/58_ER_val.geojson
+58_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/58_HE_val.geojson
+59_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/59_HER2_val.geojson
+59_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/59_HE_val.geojson
+59d70849-11d8-4870-8565-b0308b31cd79,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/59d70849-11d8-4870-8565-b0308b31cd79.geojson
+5_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/5_ER_val.geojson
+5_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/5_HE_val.geojson
+60_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/60_HE_val.geojson
+60_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/60_PGR_val.geojson
+61_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/61_ER_val.geojson
+61_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/61_HE_val.geojson
+62_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/62_HE_val.geojson
+62_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/62_PGR_val.geojson
+63_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/63_HE_val.geojson
+63_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/63_KI67_val.geojson
+64458,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/64458.geojson
+64_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/64_HE_val.geojson
+64_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/64_KI67_val.geojson
+65156,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/65156.geojson
+65_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/65_HE_val.geojson
+65_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/65_PGR_val.geojson
+6653f503-e268-46be-93d1-0164a6b7ab70,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/6653f503-e268-46be-93d1-0164a6b7ab70.geojson
+66_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/66_HE_val.geojson
+66_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/66_KI67_val.geojson
+67_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/67_ER_val.geojson
+67_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/67_HE_val.geojson
+68_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/68_HE_val.geojson
+68_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/68_PGR_val.geojson
+69_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/69_ER_val.geojson
+69_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/69_HE_val.geojson
+6_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/6_HE_val.geojson
+6_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/6_KI67_val.geojson
+6c626c0f-a7fb-40fb-917a-ad24e5c96103,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/6c626c0f-a7fb-40fb-917a-ad24e5c96103.geojson
+70356,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/70356.geojson
+70695,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/70695.geojson
+70_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/70_ER_val.geojson
+70_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/70_HE_val.geojson
+71_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/71_ER_val.geojson
+71_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/71_HE_val.geojson
+72_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/72_HE_val.geojson
+72_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/72_KI67_val.geojson
+73_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/73_HE_val.geojson
+73_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/73_PGR_val.geojson
+74_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/74_ER_val.geojson
+74_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/74_HE_val.geojson
+75_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/75_ER_val.geojson
+75_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/75_HE_val.geojson
+76_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/76_HE_val.geojson
+76_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/76_PGR_val.geojson
+77_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/77_HER2_val.geojson
+77_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/77_HE_val.geojson
+78_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/78_ER_val.geojson
+78_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/78_HE_val.geojson
+791a62ff-6f2c-45a7-90cf-c9ace9e4a3a5,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/791a62ff-6f2c-45a7-90cf-c9ace9e4a3a5.geojson
+79_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/79_HE_val.geojson
+79_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/79_PGR_val.geojson
+7_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/7_HE_val.geojson
+7_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/7_PGR_val.geojson
+7a456670-e996-4e5b-81c2-500167f8911e,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/7a456670-e996-4e5b-81c2-500167f8911e.geojson
+7aab5e96-3f66-42af-ad40-bbd5578c0e20,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/7aab5e96-3f66-42af-ad40-bbd5578c0e20.geojson
+7b6e25a9-1722-42b6-806f-ce676ccd8ae8,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/7b6e25a9-1722-42b6-806f-ce676ccd8ae8.geojson
+80_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/80_ER_val.geojson
+80_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/80_HE_val.geojson
+81_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/81_ER_val.geojson
+81_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/81_HE_val.geojson
+82_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/82_HER2_val.geojson
+82_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/82_HE_val.geojson
+83_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/83_HE_val.geojson
+83_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/83_KI67_val.geojson
+8423e553-770a-4ca5-8730-15c0739a9658,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/8423e553-770a-4ca5-8730-15c0739a9658.geojson
+84_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/84_HE_val.geojson
+84_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/84_PGR_val.geojson
+85_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/85_ER_val.geojson
+85_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/85_HE_val.geojson
+86_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/86_HE_val.geojson
+86_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/86_KI67_val.geojson
+872fe3b0-905b-44b1-b55d-080340e90c28,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/872fe3b0-905b-44b1-b55d-080340e90c28.geojson
+87_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/87_HER2_val.geojson
+88_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/88_HE_val.geojson
+88_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/88_PGR_val.geojson
+89_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/89_HE_val.geojson
+89_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/89_PGR_val.geojson
+8_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/8_ER_val.geojson
+8_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/8_HE_val.geojson
+8c135f89-22db-4451-b44d-f392b257d4bb,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/8c135f89-22db-4451-b44d-f392b257d4bb.geojson
+8dddf8e2-4bf1-46e0-8902-54f7d70f9c02,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/8dddf8e2-4bf1-46e0-8902-54f7d70f9c02.geojson
+90_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/90_ER_val.geojson
+90_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/90_HE_val.geojson
+91_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/91_HER2_val.geojson
+91_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/91_HE_val.geojson
+92_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/92_HE_val.geojson
+92_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/92_KI67_val.geojson
+93_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/93_ER_val.geojson
+93_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/93_HE_val.geojson
+94_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/94_ER_val.geojson
+94_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/94_HE_val.geojson
+95_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/95_HE_val.geojson
+95_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/95_KI67_val.geojson
+96_ER_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/96_ER_val.geojson
+96_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/96_HE_val.geojson
+97_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/97_HE_val.geojson
+97_KI67_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/97_KI67_val.geojson
+98_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/98_HE_val.geojson
+98_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/98_PGR_val.geojson
+99_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/99_HE_val.geojson
+99_PGR_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/99_PGR_val.geojson
+9_HER2_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/9_HER2_val.geojson
+9_HE_val,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/9_HE_val.geojson
+9ba7801c-7e73-4585-b536-6498eedf6fbf,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/9ba7801c-7e73-4585-b536-6498eedf6fbf.geojson
+B_P000001_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000001_PAS_CPG.geojson
+B_P000002_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000002_PAS_CPG.geojson
+B_P000003_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000003_PAS_CPG.geojson
+B_P000004_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000004_PAS_CPG.geojson
+B_P000005_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000005_PAS_CPG.geojson
+B_P000007_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000007_PAS_CPG.geojson
+B_P000009_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000009_PAS_CPG.geojson
+B_P000010_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000010_PAS_CPG.geojson
+B_P000011_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000011_PAS_CPG.geojson
+B_P000012_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000012_PAS_CPG.geojson
+B_P000013_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000013_PAS_CPG.geojson
+B_P000014_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000014_PAS_CPG.geojson
+B_P000015_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000015_PAS_CPG.geojson
+B_P000016_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000016_PAS_CPG.geojson
+B_P000017_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000017_PAS_CPG.geojson
+B_P000019_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000019_PAS_CPG.geojson
+B_P000020_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/B_P000020_PAS_CPG.geojson
+C_P000021_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000021_PAS_CPG.geojson
+C_P000022_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000022_PAS_CPG.geojson
+C_P000023_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000023_PAS_CPG.geojson
+C_P000024_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000024_PAS_CPG.geojson
+C_P000025_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000025_PAS_CPG.geojson
+C_P000026_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000026_PAS_CPG.geojson
+C_P000027_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000027_PAS_CPG.geojson
+C_P000028_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000028_PAS_CPG.geojson
+C_P000029_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000029_PAS_CPG.geojson
+C_P000030_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000030_PAS_CPG.geojson
+C_P000031_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000031_PAS_CPG.geojson
+C_P000032_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000032_PAS_CPG.geojson
+C_P000033_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000033_PAS_CPG.geojson
+C_P000034_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000034_PAS_CPG.geojson
+C_P000035_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000035_PAS_CPG.geojson
+C_P000036_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000036_PAS_CPG.geojson
+C_P000037_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000037_PAS_CPG.geojson
+C_P000038_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000038_PAS_CPG.geojson
+C_P000039_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000039_PAS_CPG.geojson
+C_P000040_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/C_P000040_PAS_CPG.geojson
+D_P000001_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000001_PAS_CPG.geojson
+D_P000002_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000002_PAS_CPG.geojson
+D_P000003_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000003_PAS_CPG.geojson
+D_P000004_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000004_PAS_CPG.geojson
+D_P000005_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000005_PAS_CPG.geojson
+D_P000006_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000006_PAS_CPG.geojson
+D_P000007_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000007_PAS_CPG.geojson
+D_P000009_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000009_PAS_CPG.geojson
+D_P000010_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000010_PAS_CPG.geojson
+D_P000011_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000011_PAS_CPG.geojson
+D_P000012_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000012_PAS_CPG.geojson
+D_P000013_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000013_PAS_CPG.geojson
+D_P000014_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000014_PAS_CPG.geojson
+D_P000015_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000015_PAS_CPG.geojson
+D_P000016_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000016_PAS_CPG.geojson
+D_P000017_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000017_PAS_CPG.geojson
+D_P000018_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000018_PAS_CPG.geojson
+D_P000019_PAS_CPG,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/D_P000019_PAS_CPG.geojson
+LTB001_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB001_I-1 overview.geojson
+LTB002_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB002_I-1 overview.geojson
+LTB002_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB002_II-1 overview.geojson
+LTB003_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB003_II-1 overview.geojson
+LTB003_IV-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB003_IV-1 overview.geojson
+LTB004_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB004_I-1 overview.geojson
+LTB004_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB004_II-1 overview.geojson
+LTB004_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB004_III-1 overview.geojson
+LTB005_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB005_II-1 overview.geojson
+LTB005_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB005_III-1 overview.geojson
+LTB006_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB006_II-1 overview.geojson
+LTB006_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB006_III-1 overview.geojson
+LTB006_IV-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB006_IV-1 overview.geojson
+LTB007_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB007_I-1 overview.geojson
+LTB007_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB007_II-1 overview.geojson
+LTB009_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB009_I-1 overview.geojson
+LTB009_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB009_II-1 overview.geojson
+LTB009_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB009_III-1 overview.geojson
+LTB010_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB010_II-1 overview.geojson
+LTB011_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB011_I-1 overview.geojson
+LTB011_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB011_II-1 overview.geojson
+LTB012_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB012_I-1 overview.geojson
+LTB012_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB012_II-1 overview.geojson
+LTB013_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB013_I-1 overview.geojson
+LTB013_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB013_II-1 overview.geojson
+LTB013_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB013_III-1 overview.geojson
+LTB014_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB014_I-1 overview.geojson
+LTB015_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB015_I-1 overview.geojson
+LTB016_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB016_I-1 overview.geojson
+LTB016_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB016_II-1 overview.geojson
+LTB016_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB016_III-1 overview.geojson
+LTB016_IV-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB016_IV-1 overview.geojson
+LTB017_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB017_I-1 overview.geojson
+LTB018_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB018_I-1 overview.geojson
+LTB019_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB019_I-1 overview.geojson
+LTB019_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB019_II-1 overview.geojson
+LTB020_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB020_I-1 overview.geojson
+LTB021_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB021_I-1 overview.geojson
+LTB022_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB022_I-1 overview.geojson
+LTB023_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB023_I-1 overview.geojson
+LTB025_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB025_I-1 overview.geojson
+LTB026_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB026_I-1 overview.geojson
+LTB027_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB027_I-1 overview.geojson
+LTB027_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB027_II-1 overview.geojson
+LTB029_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB029_I-1 overview.geojson
+LTB029_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB029_II-1 overview.geojson
+LTB029_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB029_III-1 overview.geojson
+LTB030_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB030_I-1 overview.geojson
+LTB030_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB030_II-1 overview.geojson
+LTB030_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB030_III-1 overview.geojson
+LTB032_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB032_I-1 overview.geojson
+LTB032_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB032_II-1 overview.geojson
+LTB032_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB032_III-1 overview.geojson
+LTB032_IV-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB032_IV-1 overview.geojson
+LTB033_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB033_II-1 overview.geojson
+LTB033_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB033_III-1 overview.geojson
+LTB033_IV-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB033_IV-1 overview.geojson
+LTB034_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB034_I-1 overview.geojson
+LTB034_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB034_II-1 overview.geojson
+LTB034_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB034_III-1 overview.geojson
+LTB035_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB035_I-1 overview.geojson
+LTB035_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB035_II-1 overview.geojson
+LTB035_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB035_III-1 overview.geojson
+LTB036_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB036_I-1 overview.geojson
+LTB036_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB036_II-1 overview.geojson
+LTB036_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB036_III-1 overview.geojson
+LTB036_IV-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB036_IV-1 overview.geojson
+LTB036_V-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB036_V-1 overview.geojson
+LTB037_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB037_I-1 overview.geojson
+LTB037_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB037_II-1 overview.geojson
+LTB038_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB038_I-1 overview.geojson
+LTB038_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB038_II-1 overview.geojson
+LTB039_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB039_I-1 overview.geojson
+LTB039_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB039_II-1 overview.geojson
+LTB039_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB039_III-1 overview.geojson
+LTB040_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB040_I-1 overview.geojson
+LTB040_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB040_II-1 overview.geojson
+LTB041_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB041_I-1 overview.geojson
+LTB041_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB041_II-1 overview.geojson
+LTB041_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB041_III-1 overview.geojson
+LTB042_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB042_I-1 overview.geojson
+LTB042_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB042_II-1 overview.geojson
+LTB043_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB043_I-1 overview.geojson
+LTB043_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB043_II-1 overview.geojson
+LTB043_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB043_III-1 overview.geojson
+LTB044_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB044_I-1 overview.geojson
+LTB044_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB044_II-1 overview.geojson
+LTB044_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB044_III-1 overview.geojson
+LTB045_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB045_II-1 overview.geojson
+LTB046_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB046_I-1 overview.geojson
+LTB046_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB046_II-1 overview.geojson
+LTB046_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB046_III-1 overview.geojson
+LTB047_I-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB047_I-1 overview.geojson
+LTB047_II-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB047_II-1 overview.geojson
+LTB047_III-1 overview,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/LTB047_III-1 overview.geojson
+TA232_BCL2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA232_BCL2.geojson
+TA232_BCL6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA232_BCL6.geojson
+TA232_CD10,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA232_CD10.geojson
+TA232_HE,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA232_HE.geojson
+TA232_MUM1,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA232_MUM1.geojson
+TA232_MYC,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA232_MYC.geojson
+TA234_BCL2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA234_BCL2.geojson
+TA234_BCL6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA234_BCL6.geojson
+TA234_CD10,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA234_CD10.geojson
+TA234_HE,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA234_HE.geojson
+TA234_MUM1,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA234_MUM1.geojson
+TA234_MYC,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA234_MYC.geojson
+TA255_BCL2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA255_BCL2.geojson
+TA255_BCL6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA255_BCL6.geojson
+TA255_CD10,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA255_CD10.geojson
+TA255_HE,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA255_HE.geojson
+TA255_MUM1,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA255_MUM1.geojson
+TA255_MYC,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA255_MYC.geojson
+TA292_BCL2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA292_BCL2.geojson
+TA292_BCL6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA292_BCL6.geojson
+TA292_CD10,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA292_CD10.geojson
+TA292_HE,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA292_HE.geojson
+TA292_MUM1,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA292_MUM1.geojson
+TA292_MYC,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA292_MYC.geojson
+TA307_BCL2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA307_BCL2.geojson
+TA307_BCL6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA307_BCL6.geojson
+TA307_CD10,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA307_CD10.geojson
+TA307_HE,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA307_HE.geojson
+TA307_MUM1,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA307_MUM1.geojson
+TA307_MYC,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA307_MYC.geojson
+TA407_BCL2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA407_BCL2.geojson
+TA407_BCL6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA407_BCL6.geojson
+TA407_CD10,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA407_CD10.geojson
+TA407_HE,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA407_HE.geojson
+TA407_MUM1,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA407_MUM1.geojson
+TA407_MYC,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA407_MYC.geojson
+TA408_BCL2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA408_BCL2.geojson
+TA408_BCL6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA408_BCL6.geojson
+TA408_CD10,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA408_CD10.geojson
+TA408_HE,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA408_HE.geojson
+TA408_MUM1,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA408_MUM1.geojson
+TA408_MYC,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TA408_MYC.geojson
+TCGA-02-0003-01A-01-TS1.6fc43119-1e2b-4c23-bd58-af026407d094,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-02-0003-01A-01-TS1.6fc43119-1e2b-4c23-bd58-af026407d094.geojson
+TCGA-06-0195-01Z-00-DX4.9118166e-d483-455f-ba81-2a0cdfdc6ad7,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-06-0195-01Z-00-DX4.9118166e-d483-455f-ba81-2a0cdfdc6ad7.geojson
+TCGA-19-5954-01Z-00-DX1.b2e11be4-3f71-4d05-9405-c41dee3fc5b5,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-19-5954-01Z-00-DX1.b2e11be4-3f71-4d05-9405-c41dee3fc5b5.geojson
+TCGA-25-2390-01Z-00-DX1.BC83304E-747C-47EC-BD80-BA0B322C8630,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-25-2390-01Z-00-DX1.BC83304E-747C-47EC-BD80-BA0B322C8630.geojson
+TCGA-29-1710-01A-01-BS1.3c2c042d-eb31-43f1-96e2-206e9ddd3a64,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-29-1710-01A-01-BS1.3c2c042d-eb31-43f1-96e2-206e9ddd3a64.geojson
+TCGA-2F-A9KP-01A-01-TS1.1BD6FF57-7F82-4444-9918-D8CEBA1D8987,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-2F-A9KP-01A-01-TS1.1BD6FF57-7F82-4444-9918-D8CEBA1D8987.geojson
+TCGA-2G-AALT-01Z-00-DX1.3B5A357A-5970-4680-9161-1C941E83366E,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-2G-AALT-01Z-00-DX1.3B5A357A-5970-4680-9161-1C941E83366E.geojson
+TCGA-2J-AABH-01Z-00-DX1.EDC36BC9-F6F9-4253-93FB-8B75D8D55BE0,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-2J-AABH-01Z-00-DX1.EDC36BC9-F6F9-4253-93FB-8B75D8D55BE0.geojson
+TCGA-2Y-A9H3-01Z-00-DX1.813C14D8-DBBC-43AF-9E3A-9EFC1D1AFC98,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-2Y-A9H3-01Z-00-DX1.813C14D8-DBBC-43AF-9E3A-9EFC1D1AFC98.geojson
+TCGA-33-A5GW-01Z-00-DX3.7A1C5169-96C6-4ECB-81E1-1050EFE84B60,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-33-A5GW-01Z-00-DX3.7A1C5169-96C6-4ECB-81E1-1050EFE84B60.geojson
+TCGA-39-5031-01A-01-TS1.82cd48e6-3c13-4565-bea9-403756cf963b,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-39-5031-01A-01-TS1.82cd48e6-3c13-4565-bea9-403756cf963b.geojson
+TCGA-3A-A9IV-01A-01-TS1.C2E5D91C-BCC7-48E2-8ED1-915BE3057A4A,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-3A-A9IV-01A-01-TS1.C2E5D91C-BCC7-48E2-8ED1-915BE3057A4A.geojson
+TCGA-3U-A98E-01Z-00-DX1.9A2C6D9A-9753-411E-8E05-22D381312CED,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-3U-A98E-01Z-00-DX1.9A2C6D9A-9753-411E-8E05-22D381312CED.geojson
+TCGA-3X-AAV9-01Z-00-DX1.308BB261-7A52-434F-94E6-F07379F43A1B,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-3X-AAV9-01Z-00-DX1.308BB261-7A52-434F-94E6-F07379F43A1B.geojson
+TCGA-43-7656-11A-01-TS1.f89a4a31-1712-4be1-9330-5ee4104e1b28,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-43-7656-11A-01-TS1.f89a4a31-1712-4be1-9330-5ee4104e1b28.geojson
+TCGA-44-6146-01A-03-TSC.4A868B18-F1BA-4035-B6FE-9B9A23E32398,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-44-6146-01A-03-TSC.4A868B18-F1BA-4035-B6FE-9B9A23E32398.geojson
+TCGA-4E-A92E-01Z-00-DX1.60ED140E-11EA-49D7-ADF6-6B2150BAE3B9,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-4E-A92E-01Z-00-DX1.60ED140E-11EA-49D7-ADF6-6B2150BAE3B9.geojson
+TCGA-4G-AAZF-11A-01-TS1.C2861329-3F68-4BEF-BA54-ECB5251ACB1A,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-4G-AAZF-11A-01-TS1.C2861329-3F68-4BEF-BA54-ECB5251ACB1A.geojson
+TCGA-4K-AA1H-01Z-00-DX1.6B633FE7-D33E-472B-BE56-B19698280440,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-4K-AA1H-01Z-00-DX1.6B633FE7-D33E-472B-BE56-B19698280440.geojson
+TCGA-4V-A9QM-11A-01-TS1.EF49A1BD-CBE7-4A91-ACE2-DDF50668C1D4,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-4V-A9QM-11A-01-TS1.EF49A1BD-CBE7-4A91-ACE2-DDF50668C1D4.geojson
+TCGA-4X-A9FD-01Z-00-DX9.5A791C7C-5FD8-4E78-A1AF-C0932C250E3E,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-4X-A9FD-01Z-00-DX9.5A791C7C-5FD8-4E78-A1AF-C0932C250E3E.geojson
+TCGA-55-1596-01Z-00-DX1.de65522d-92ab-408e-9b7e-24210d386b97,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-55-1596-01Z-00-DX1.de65522d-92ab-408e-9b7e-24210d386b97.geojson
+TCGA-57-1585-01Z-00-DX1.934E0F30-F804-4CFA-92D5-41576DA6C367,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-57-1585-01Z-00-DX1.934E0F30-F804-4CFA-92D5-41576DA6C367.geojson
+TCGA-5U-AB0E-01A-01-TSA.F8F3AADB-173B-4669-87AC-7B688731F28C,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-5U-AB0E-01A-01-TSA.F8F3AADB-173B-4669-87AC-7B688731F28C.geojson
+TCGA-61-2611-11A-01-BS1.13c59f48-5d1e-426f-a36a-4840672476dd,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-61-2611-11A-01-BS1.13c59f48-5d1e-426f-a36a-4840672476dd.geojson
+TCGA-69-7980-01Z-00-DX1.8bbf8cc0-eca7-49e5-a022-c22e3e6ed6dc,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-69-7980-01Z-00-DX1.8bbf8cc0-eca7-49e5-a022-c22e3e6ed6dc.geojson
+TCGA-73-4659-01Z-00-DX1.578400cd-d284-451b-8fdf-9f82c1458276,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-73-4659-01Z-00-DX1.578400cd-d284-451b-8fdf-9f82c1458276.geojson
+TCGA-74-6573-11A-01-TS1.ac2fa0fb-2f61-49cd-a05a-6eccf302a162,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-74-6573-11A-01-TS1.ac2fa0fb-2f61-49cd-a05a-6eccf302a162.geojson
+TCGA-91-6848-11A-01-TS1.0bb06db2-7b3e-4d0a-bb3f-6c03aa315387,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-91-6848-11A-01-TS1.0bb06db2-7b3e-4d0a-bb3f-6c03aa315387.geojson
+TCGA-94-A4VJ-01Z-00-DX1.FBC6E75E-80D8-42EA-9292-181EC4D5D170,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-94-A4VJ-01Z-00-DX1.FBC6E75E-80D8-42EA-9292-181EC4D5D170.geojson
+TCGA-A6-2676-11A-01-TS1.a2b894be-974e-4031-9b67-9bbe98e37fe4,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-A6-2676-11A-01-TS1.a2b894be-974e-4031-9b67-9bbe98e37fe4.geojson
+TCGA-AA-3672-01A-01-BS1.a0ceb6c5-20ba-4a0b-a957-2079ee83adb9,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-AA-3672-01A-01-BS1.a0ceb6c5-20ba-4a0b-a957-2079ee83adb9.geojson
+TCGA-AG-A01L-01A-02-BS2.6566737c-e511-4a3a-96ed-4bfb244dbad9,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-AG-A01L-01A-02-BS2.6566737c-e511-4a3a-96ed-4bfb244dbad9.geojson
+TCGA-AJ-A3NE-11A-01-TS1.DE5980FA-A4FD-43F7-A8CC-E20E18B890B8,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-AJ-A3NE-11A-01-TS1.DE5980FA-A4FD-43F7-A8CC-E20E18B890B8.geojson
+TCGA-AR-A250-01Z-00-DX1.572A2F73-6BF5-4932-BFEF-4B8904755ACF,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-AR-A250-01Z-00-DX1.572A2F73-6BF5-4932-BFEF-4B8904755ACF.geojson
+TCGA-B4-5377-01A-01-TS1.c221af25-44df-4d62-9e12-81f6ed529c26,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-B4-5377-01A-01-TS1.c221af25-44df-4d62-9e12-81f6ed529c26.geojson
+TCGA-B5-A0JV-01Z-00-DX1.820AB1F8-A37E-4882-A895-0C84E423A627,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-B5-A0JV-01Z-00-DX1.820AB1F8-A37E-4882-A895-0C84E423A627.geojson
+TCGA-B8-5550-01Z-00-DX1.f9c84121-b555-486b-9049-9b87c7268e0a,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-B8-5550-01Z-00-DX1.f9c84121-b555-486b-9049-9b87c7268e0a.geojson
+TCGA-BA-4077-01Z-00-DX1.547A89DF-9628-4594-BEB7-20EA7C5B5A5E,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-BA-4077-01Z-00-DX1.547A89DF-9628-4594-BEB7-20EA7C5B5A5E.geojson
+TCGA-BA-A6DJ-01Z-00-DX1.F83A347E-4442-4F06-9715-32E4C4E1A4FA,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-BA-A6DJ-01Z-00-DX1.F83A347E-4442-4F06-9715-32E4C4E1A4FA.geojson
+TCGA-BB-4227-01Z-00-DX1.7475866c-90bb-4f62-b44e-adccc731cad8,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-BB-4227-01Z-00-DX1.7475866c-90bb-4f62-b44e-adccc731cad8.geojson
+TCGA-BC-A10X-11A-01-TS1.a10e3fb3-3138-4be4-88c8-8c9caf6e93df,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-BC-A10X-11A-01-TS1.a10e3fb3-3138-4be4-88c8-8c9caf6e93df.geojson
+TCGA-BH-A0BL-11A-01-TSA.2d6b96e2-dbea-44dd-bce3-7ed7197ac04c,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-BH-A0BL-11A-01-TSA.2d6b96e2-dbea-44dd-bce3-7ed7197ac04c.geojson
+TCGA-BK-A0CB-01A-03-BS3.9d100a55-f190-49a0-ba18-0b4cadada132,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-BK-A0CB-01A-03-BS3.9d100a55-f190-49a0-ba18-0b4cadada132.geojson
+TCGA-BL-A13I-11A-01-TS1.6f663daa-1b69-4f51-a1e5-fe61e026d700,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-BL-A13I-11A-01-TS1.6f663daa-1b69-4f51-a1e5-fe61e026d700.geojson
+TCGA-BP-4158-01Z-00-DX1.ac231cfd-4baa-4e4e-80ca-acc51255bd91,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-BP-4158-01Z-00-DX1.ac231cfd-4baa-4e4e-80ca-acc51255bd91.geojson
+TCGA-BQ-7044-11A-01-TS1.88058788-1360-478c-8039-99c733d08345,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-BQ-7044-11A-01-TS1.88058788-1360-478c-8039-99c733d08345.geojson
+TCGA-BR-4357-11A-01-BS1.fb40a9fc-898f-4c58-8dc4-562296441c5a,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-BR-4357-11A-01-BS1.fb40a9fc-898f-4c58-8dc4-562296441c5a.geojson
+TCGA-BR-8289-01A-01-TS1.b411a46d-4b8a-482e-aad7-2bc9724baea8,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-BR-8289-01A-01-TS1.b411a46d-4b8a-482e-aad7-2bc9724baea8.geojson
+TCGA-CC-A3MC-01A-01-TSA.2E393F10-62F2-479A-A8CB-EA52C536A8E1,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-CC-A3MC-01A-01-TSA.2E393F10-62F2-479A-A8CB-EA52C536A8E1.geojson
+TCGA-CG-4460-01Z-00-DX1.498845d6-e330-45d7-a5ac-153f2cf9b3c7,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-CG-4460-01Z-00-DX1.498845d6-e330-45d7-a5ac-153f2cf9b3c7.geojson
+TCGA-CH-5751-01Z-00-DX1.6bacc42c-0cc1-4210-80b4-14695e4c6ba2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-CH-5751-01Z-00-DX1.6bacc42c-0cc1-4210-80b4-14695e4c6ba2.geojson
+TCGA-CJ-4869-01Z-00-DX1.0963305A-0BA8-4266-A4D7-B37A98FA342F,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-CJ-4869-01Z-00-DX1.0963305A-0BA8-4266-A4D7-B37A98FA342F.geojson
+TCGA-CS-6666-01Z-00-DX1.6F91FE79-CCA6-401C-9C3C-74B2F9C9DF4A,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-CS-6666-01Z-00-DX1.6F91FE79-CCA6-401C-9C3C-74B2F9C9DF4A.geojson
+TCGA-CV-7238-11A-01-TS1.f29431c8-23db-4bb2-8ec9-352f18e2848f,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-CV-7238-11A-01-TS1.f29431c8-23db-4bb2-8ec9-352f18e2848f.geojson
+TCGA-CZ-4865-11A-01-TS1.79266a8c-caf6-4a3d-834f-0a5ea26710b0,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-CZ-4865-11A-01-TS1.79266a8c-caf6-4a3d-834f-0a5ea26710b0.geojson
+TCGA-D1-A3JP-01Z-00-DX1.1EA8EA61-E887-44DF-9433-D4FA775F64D6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-D1-A3JP-01Z-00-DX1.1EA8EA61-E887-44DF-9433-D4FA775F64D6.geojson
+TCGA-D6-6827-01Z-00-DX2.C31227BB-6152-47D7-BAF7-66F815AD25CB,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-D6-6827-01Z-00-DX2.C31227BB-6152-47D7-BAF7-66F815AD25CB.geojson
+TCGA-DB-A4XH-01Z-00-DX1.56D80999-2AB5-40BB-9326-43B6FF71183A,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-DB-A4XH-01Z-00-DX1.56D80999-2AB5-40BB-9326-43B6FF71183A.geojson
+TCGA-DC-5869-01A-01-TS1.9df301f2-5f88-4566-b6ce-c2fe50d811d6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-DC-5869-01A-01-TS1.9df301f2-5f88-4566-b6ce-c2fe50d811d6.geojson
+TCGA-DD-AACJ-01Z-00-DX1.05506FD0-A106-4A19-929D-162BA04D172A,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-DD-AACJ-01Z-00-DX1.05506FD0-A106-4A19-929D-162BA04D172A.geojson
+TCGA-DJ-A4UR-01A-01-TS1.ED889D3D-797C-4D97-B7BE-52D7DBE5E1FE,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-DJ-A4UR-01A-01-TS1.ED889D3D-797C-4D97-B7BE-52D7DBE5E1FE.geojson
+TCGA-DM-A0X9-01Z-00-DX1.C7FC2C17-12CC-4F10-B54F-7C29379D834E,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-DM-A0X9-01Z-00-DX1.C7FC2C17-12CC-4F10-B54F-7C29379D834E.geojson
+TCGA-DT-5265-01Z-00-DX1.563f09af-8bbe-45cd-9c6d-85a96255e67f,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-DT-5265-01Z-00-DX1.563f09af-8bbe-45cd-9c6d-85a96255e67f.geojson
+TCGA-DW-7842-01Z-00-DX1.939166CE-37A9-4906-8D45-E10C2EEE3CA3,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-DW-7842-01Z-00-DX1.939166CE-37A9-4906-8D45-E10C2EEE3CA3.geojson
+TCGA-DX-A8BS-11A-01-TSA.BD79BFD8-44BB-4ABA-AFF5-D12FA83C92B0,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-DX-A8BS-11A-01-TSA.BD79BFD8-44BB-4ABA-AFF5-D12FA83C92B0.geojson
+TCGA-DY-A1DC-01Z-00-DX1.2DF22B63-011B-4530-ADE4-8245779EDB6F,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-DY-A1DC-01Z-00-DX1.2DF22B63-011B-4530-ADE4-8245779EDB6F.geojson
+TCGA-E2-A15E-01A-01-TSA.2b86c3d9-2b3d-4d2b-9f8f-dfef08275677,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-E2-A15E-01A-01-TSA.2b86c3d9-2b3d-4d2b-9f8f-dfef08275677.geojson
+TCGA-E3-A3E3-01Z-00-DX1.81DD51D2-1888-4BF7-B1F6-B75A132DE424,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-E3-A3E3-01Z-00-DX1.81DD51D2-1888-4BF7-B1F6-B75A132DE424.geojson
+TCGA-EI-6513-01Z-00-DX1.9d978c83-0ec2-46cc-8be5-9721b6c7cbd3,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-EI-6513-01Z-00-DX1.9d978c83-0ec2-46cc-8be5-9721b6c7cbd3.geojson
+TCGA-EJ-7315-11A-01-TS1.8cab7b6f-4b6f-4c10-bde0-956e4668fd6f,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-EJ-7315-11A-01-TS1.8cab7b6f-4b6f-4c10-bde0-956e4668fd6f.geojson
+TCGA-EL-A3TB-11A-01-TS1.6E0966C9-1552-4B30-9008-8ACF737CA8C3,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-EL-A3TB-11A-01-TS1.6E0966C9-1552-4B30-9008-8ACF737CA8C3.geojson
+TCGA-ET-A25G-01Z-00-DX1.379CE9E3-B8D5-4685-80F0-CF09389187B5,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-ET-A25G-01Z-00-DX1.379CE9E3-B8D5-4685-80F0-CF09389187B5.geojson
+TCGA-EW-A1P1-01Z-00-DX1.4B670029-4B3B-4D76-8EA4-F4F29EEF9E37,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-EW-A1P1-01Z-00-DX1.4B670029-4B3B-4D76-8EA4-F4F29EEF9E37.geojson
+TCGA-FA-A4BB-01A-01-TSA.26EF82D0-8CD2-4C89-ABBC-EBE4DAFF62FD,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-FA-A4BB-01A-01-TSA.26EF82D0-8CD2-4C89-ABBC-EBE4DAFF62FD.geojson
+TCGA-FF-8042-01Z-00-DX1.bf80d981-9209-4933-8f80-e9e689971999,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-FF-8042-01Z-00-DX1.bf80d981-9209-4933-8f80-e9e689971999.geojson
+TCGA-FR-A3R1-01A-01-TSA.6FD34AB7-C765-474A-B2E7-A52F553BDFCE,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-FR-A3R1-01A-01-TSA.6FD34AB7-C765-474A-B2E7-A52F553BDFCE.geojson
+TCGA-FW-A3R5-11A-01-TS1.1819E2F3-2A33-4DEE-A218-EFA64BDB8018,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-FW-A3R5-11A-01-TS1.1819E2F3-2A33-4DEE-A218-EFA64BDB8018.geojson
+TCGA-FY-A3R6-01Z-00-DX1.B51917D1-3A4C-4374-A22C-03A339C7582C,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-FY-A3R6-01Z-00-DX1.B51917D1-3A4C-4374-A22C-03A339C7582C.geojson
+TCGA-G2-AA3B-01Z-00-DX5.57084980-934B-4A4A-A720-24FA2E9E0CB2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-G2-AA3B-01Z-00-DX5.57084980-934B-4A4A-A720-24FA2E9E0CB2.geojson
+TCGA-G4-6298-01Z-00-DX1.83055d52-71f7-46ec-be53-11d86b19b4cf,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-G4-6298-01Z-00-DX1.83055d52-71f7-46ec-be53-11d86b19b4cf.geojson
+TCGA-G7-6797-01A-01-BS1.9341f00c-ef4c-4e1b-bbeb-21af388b7e4f,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-G7-6797-01A-01-BS1.9341f00c-ef4c-4e1b-bbeb-21af388b7e4f.geojson
+TCGA-G8-6325-01Z-00-DX1.973b0dd6-d701-4224-9395-eab9603488ce,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-G8-6325-01Z-00-DX1.973b0dd6-d701-4224-9395-eab9603488ce.geojson
+TCGA-G9-7510-01A-01-TS1.b71e2eb0-7bed-4f87-8980-fcedacf1fe51,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-G9-7510-01A-01-TS1.b71e2eb0-7bed-4f87-8980-fcedacf1fe51.geojson
+TCGA-GN-A263-01Z-00-DX1.94D0B4EA-8AF9-415E-9D08-BF1F9903D468,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-GN-A263-01Z-00-DX1.94D0B4EA-8AF9-415E-9D08-BF1F9903D468.geojson
+TCGA-H6-A45N-11A-01-TS1.A42C713B-96DF-4972-BF9A-5924FFC34BD4,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-H6-A45N-11A-01-TS1.A42C713B-96DF-4972-BF9A-5924FFC34BD4.geojson
+TCGA-H8-A6C1-01Z-00-DX1.48F49369-4B4A-4B82-B779-52AE4582DE74,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-H8-A6C1-01Z-00-DX1.48F49369-4B4A-4B82-B779-52AE4582DE74.geojson
+TCGA-HD-7229-01Z-00-DX1.9AF59F80-D653-431E-A134-840A961D96C1,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-HD-7229-01Z-00-DX1.9AF59F80-D653-431E-A134-840A961D96C1.geojson
+TCGA-HQ-A5ND-01Z-00-DX1.EDDFB95C-827E-4533-B49A-56612BC4D9DD,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-HQ-A5ND-01Z-00-DX1.EDDFB95C-827E-4533-B49A-56612BC4D9DD.geojson
+TCGA-HU-A4GJ-01Z-00-DX1.31E71066-5B7B-4866-97A0-0B7B03E6B4B6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-HU-A4GJ-01Z-00-DX1.31E71066-5B7B-4866-97A0-0B7B03E6B4B6.geojson
+TCGA-IG-A4QT-01Z-00-DX1.0D12438B-B44B-434B-AFA0-9C22F8DB1EE9,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-IG-A4QT-01Z-00-DX1.0D12438B-B44B-434B-AFA0-9C22F8DB1EE9.geojson
+TCGA-JY-A6FH-01Z-00-DX1.4065B89C-528B-4D3A-BBE1-81DFE5BD1F4C,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-JY-A6FH-01Z-00-DX1.4065B89C-528B-4D3A-BBE1-81DFE5BD1F4C.geojson
+TCGA-KK-A6E2-01Z-00-DX1.6FD46FC9-EE08-41C0-A11E-B4AEF7AA4B38,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-KK-A6E2-01Z-00-DX1.6FD46FC9-EE08-41C0-A11E-B4AEF7AA4B38.geojson
+TCGA-KL-8323-11A-01-TS1.03244a58-76a3-4550-8065-2a7e765f93e6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-KL-8323-11A-01-TS1.03244a58-76a3-4550-8065-2a7e765f93e6.geojson
+TCGA-KM-8442-01A-01-TS1.dff550c0-c2da-4e6e-85fc-8745b1502baf,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-KM-8442-01A-01-TS1.dff550c0-c2da-4e6e-85fc-8745b1502baf.geojson
+TCGA-KN-8434-01Z-00-DX1.EC2C42B5-DB0D-44A3-8224-E982201AE337,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-KN-8434-01Z-00-DX1.EC2C42B5-DB0D-44A3-8224-E982201AE337.geojson
+TCGA-L5-A4OS-11A-01-TS1.2BE7B126-EFAF-4B54-A2B1-B8BBF32C1418,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-L5-A4OS-11A-01-TS1.2BE7B126-EFAF-4B54-A2B1-B8BBF32C1418.geojson
+TCGA-LN-A49P-01A-01-TSA.81A0B7FE-5536-45BC-8462-374419DCA856,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-LN-A49P-01A-01-TSA.81A0B7FE-5536-45BC-8462-374419DCA856.geojson
+TCGA-MJ-A68J-01Z-00-DX1.CFC5D195-F78B-4950-BF3F-509222935BCD,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-MJ-A68J-01Z-00-DX1.CFC5D195-F78B-4950-BF3F-509222935BCD.geojson
+TCGA-MQ-A6BL-01Z-00-DX1.739C3B7A-6A6F-4EDA-9DC4-47ABD8634EAA,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-MQ-A6BL-01Z-00-DX1.739C3B7A-6A6F-4EDA-9DC4-47ABD8634EAA.geojson
+TCGA-MT-A51X-01A-01-TSA.966471F1-5594-4392-A52D-51F6E48AF8BF,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-MT-A51X-01A-01-TSA.966471F1-5594-4392-A52D-51F6E48AF8BF.geojson
+TCGA-N6-A4VC-11A-01-TSA.171D64CE-9F49-4619-9249-BCB90EF13DEB,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-N6-A4VC-11A-01-TSA.171D64CE-9F49-4619-9249-BCB90EF13DEB.geojson
+TCGA-N8-A4PN-01Z-00-DX3.910926E1-09EF-47F0-99CA-C5EEEFB18866,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-N8-A4PN-01Z-00-DX3.910926E1-09EF-47F0-99CA-C5EEEFB18866.geojson
+TCGA-N9-A4Q7-01Z-00-DX1.1CFC484F-0B47-4767-9F38-17B174B022AC,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-N9-A4Q7-01Z-00-DX1.1CFC484F-0B47-4767-9F38-17B174B022AC.geojson
+TCGA-NC-A5HR-01Z-00-DX1.B8B85EDD-96A6-40DF-B3BF-C97311A7E552,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-NC-A5HR-01Z-00-DX1.B8B85EDD-96A6-40DF-B3BF-C97311A7E552.geojson
+TCGA-ND-A4W6-01Z-00-DX4.5F16BF71-71E6-46D2-BE61-300268E4B710,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-ND-A4W6-01Z-00-DX4.5F16BF71-71E6-46D2-BE61-300268E4B710.geojson
+TCGA-NP-A5H5-01Z-00-DX1.E6434A29-9182-4476-9E89-62B9C8EABC5B,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-NP-A5H5-01Z-00-DX1.E6434A29-9182-4476-9E89-62B9C8EABC5B.geojson
+TCGA-OR-A5JS-01Z-00-DX1.AE76284D-A640-4716-A96A-93CF02DC7D5D,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-OR-A5JS-01Z-00-DX1.AE76284D-A640-4716-A96A-93CF02DC7D5D.geojson
+TCGA-OR-A5L9-01A-01-TS1.25D15D1C-A5E5-4DBE-AC0C-7DCC5A38BC7F,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-OR-A5L9-01A-01-TS1.25D15D1C-A5E5-4DBE-AC0C-7DCC5A38BC7F.geojson
+TCGA-OU-A5PI-01Z-00-DX4.3FF0C236-5500-47B1-BBB5-83747F5A0ED0,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-OU-A5PI-01Z-00-DX4.3FF0C236-5500-47B1-BBB5-83747F5A0ED0.geojson
+TCGA-P3-A6SX-01Z-00-DX1.AB3C5814-D645-4ED3-B81D-683E9FA0BBA5,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-P3-A6SX-01Z-00-DX1.AB3C5814-D645-4ED3-B81D-683E9FA0BBA5.geojson
+TCGA-P4-A5ED-01Z-00-DX1.A7EA95E0-6B91-40AD-AB13-10A21EC5EF38,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-P4-A5ED-01Z-00-DX1.A7EA95E0-6B91-40AD-AB13-10A21EC5EF38.geojson
+TCGA-P6-A5OG-01Z-00-DX1.DDCFCB98-79F2-46A9-9273-5AB734E02A99,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-P6-A5OG-01Z-00-DX1.DDCFCB98-79F2-46A9-9273-5AB734E02A99.geojson
+TCGA-PK-A5HC-11A-01-TS1.E5691CF0-C485-4C84-9170-FAFD25929621,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-PK-A5HC-11A-01-TS1.E5691CF0-C485-4C84-9170-FAFD25929621.geojson
+TCGA-QK-A6IJ-01Z-00-DX1.D45AABDE-401E-41B0-9F56-BE83421D7038,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-QK-A6IJ-01Z-00-DX1.D45AABDE-401E-41B0-9F56-BE83421D7038.geojson
+TCGA-QK-A6V9-01Z-00-DX1.0D202E91-5205-4888-A40D-381F7534B34A,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-QK-A6V9-01Z-00-DX1.0D202E91-5205-4888-A40D-381F7534B34A.geojson
+TCGA-QM-A5NM-01A-01-TS1.204B8BF4-A1DC-49B0-A55B-D62A1ACBA396,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-QM-A5NM-01A-01-TS1.204B8BF4-A1DC-49B0-A55B-D62A1ACBA396.geojson
+TCGA-QQ-A5VC-01Z-00-DX1.39ADCB1D-40E0-4E56-864C-D8F9E5C0753D,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-QQ-A5VC-01Z-00-DX1.39ADCB1D-40E0-4E56-864C-D8F9E5C0753D.geojson
+TCGA-RB-A7B8-01Z-00-DX1.537D35E6-09F9-43E5-A684-3BA16BAF1C61,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-RB-A7B8-01Z-00-DX1.537D35E6-09F9-43E5-A684-3BA16BAF1C61.geojson
+TCGA-RM-A68T-01A-01-TS1.3EE9CCB2-6DAC-4F89-9CB8-C59D6C92D865,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-RM-A68T-01A-01-TS1.3EE9CCB2-6DAC-4F89-9CB8-C59D6C92D865.geojson
+TCGA-RQ-AAAT-01Z-00-DX1.E6B3D983-E4A3-4E5F-B571-376C18A36F45,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-RQ-AAAT-01Z-00-DX1.E6B3D983-E4A3-4E5F-B571-376C18A36F45.geojson
+TCGA-RR-A6KC-01Z-00-DX1.1D8F656F-9A5D-4143-847F-DD47B79E15E4,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-RR-A6KC-01Z-00-DX1.1D8F656F-9A5D-4143-847F-DD47B79E15E4.geojson
+TCGA-RZ-AB0B-01Z-00-DX1.0DF1A3A6-3030-4988-AC2C-CAA0F2EBAEB2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-RZ-AB0B-01Z-00-DX1.0DF1A3A6-3030-4988-AC2C-CAA0F2EBAEB2.geojson
+TCGA-S7-A7WM-01Z-00-DX1.A7A64E65-ADBC-4D14-96C5-0453A9BCEF72,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-S7-A7WM-01Z-00-DX1.A7A64E65-ADBC-4D14-96C5-0453A9BCEF72.geojson
+TCGA-SC-A6LN-01Z-00-DX1.379BF588-5A65-4BF8-84CF-5136085D8A47,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-SC-A6LN-01Z-00-DX1.379BF588-5A65-4BF8-84CF-5136085D8A47.geojson
+TCGA-SI-AA8B-01Z-00-DX1.8FEF34C6-8C0B-4880-A2C2-F4FAF21831B6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-SI-AA8B-01Z-00-DX1.8FEF34C6-8C0B-4880-A2C2-F4FAF21831B6.geojson
+TCGA-SN-A6IS-01Z-00-DX1.AD591EDE-A427-4DBB-A478-161107F2EE4E,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-SN-A6IS-01Z-00-DX1.AD591EDE-A427-4DBB-A478-161107F2EE4E.geojson
+TCGA-SP-A6QH-11A-01-TS1.25E5CAC4-EB04-4566-9ECE-3BA0FDC8A1AA,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-SP-A6QH-11A-01-TS1.25E5CAC4-EB04-4566-9ECE-3BA0FDC8A1AA.geojson
+TCGA-SR-A6MX-01Z-00-DX1.2642CBB2-65ED-48E9-BC30-D2F3F5D4D8B3,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-SR-A6MX-01Z-00-DX1.2642CBB2-65ED-48E9-BC30-D2F3F5D4D8B3.geojson
+TCGA-SX-A71U-01Z-00-DX1.B9EE44DF-28BC-4F45-9E21-418893A033C9,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-SX-A71U-01Z-00-DX1.B9EE44DF-28BC-4F45-9E21-418893A033C9.geojson
+TCGA-T9-A92H-01Z-00-DX3.1DE7D5ED-60F7-4645-8243-AB0C027B3ED7,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-T9-A92H-01Z-00-DX3.1DE7D5ED-60F7-4645-8243-AB0C027B3ED7.geojson
+TCGA-TS-A7OU-01B-01-TSA.922F9B06-26F0-4EBD-8E45-B9553A1BC177,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-TS-A7OU-01B-01-TSA.922F9B06-26F0-4EBD-8E45-B9553A1BC177.geojson
+TCGA-UW-A7GG-01Z-00-DX1.83625891-206C-4060-924A-166BE9E893A7,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-UW-A7GG-01Z-00-DX1.83625891-206C-4060-924A-166BE9E893A7.geojson
+TCGA-V3-A9ZX-01Z-00-DX1.B4A9BC5E-3AFA-4765-BB79-25F3B0497B09,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-V3-A9ZX-01Z-00-DX1.B4A9BC5E-3AFA-4765-BB79-25F3B0497B09.geojson
+TCGA-V4-A9EF-01Z-00-DX1.3084FABF-8AC4-403A-ADD7-64CFB34CCB95,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-V4-A9EF-01Z-00-DX1.3084FABF-8AC4-403A-ADD7-64CFB34CCB95.geojson
+TCGA-VB-A8QN-01Z-00-DX1.7A114AF2-E4D0-4761-A22A-64D62F5C89CB,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-VB-A8QN-01Z-00-DX1.7A114AF2-E4D0-4761-A22A-64D62F5C89CB.geojson
+TCGA-VD-A8KG-01A-01-TS1.8233B545-0398-4831-AEDE-2724CDE35CAA,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-VD-A8KG-01A-01-TS1.8233B545-0398-4831-AEDE-2724CDE35CAA.geojson
+TCGA-VM-A8CD-01Z-00-DX9.389ED5EC-ECA4-4C4C-ADF8-2458338C807B,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-VM-A8CD-01Z-00-DX9.389ED5EC-ECA4-4C4C-ADF8-2458338C807B.geojson
+TCGA-VQ-A8PJ-01Z-00-DX1.19F00379-C001-49D2-9B22-6AE0791C8488,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-VQ-A8PJ-01Z-00-DX1.19F00379-C001-49D2-9B22-6AE0791C8488.geojson
+TCGA-W5-AA38-01A-01-TSA.87432545-5F32-411B-942A-E4ADF8CC6AC3,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-W5-AA38-01A-01-TSA.87432545-5F32-411B-942A-E4ADF8CC6AC3.geojson
+TCGA-WB-A822-01Z-00-DX1.AEF949D0-F3E5-487C-AC7F-9E3D05F06DBC,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-WB-A822-01Z-00-DX1.AEF949D0-F3E5-487C-AC7F-9E3D05F06DBC.geojson
+TCGA-WC-A888-01Z-00-DX1.61DC04F2-C7D1-4B96-9D39-A348323CF468,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-WC-A888-01Z-00-DX1.61DC04F2-C7D1-4B96-9D39-A348323CF468.geojson
+TCGA-WD-A7RX-01Z-00-DX1.9489CBFD-8D05-46C9-B6A3-55684E29862A,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-WD-A7RX-01Z-00-DX1.9489CBFD-8D05-46C9-B6A3-55684E29862A.geojson
+TCGA-WH-A86K-01A-01-TS1.BB2209B6-13AC-46F5-8F41-DC5EA3F7433F,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-WH-A86K-01A-01-TS1.BB2209B6-13AC-46F5-8F41-DC5EA3F7433F.geojson
+TCGA-WQ-A9G7-01Z-00-DX1.45C6F0D2-3477-410A-B0E7-FF6B2069E7A1,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-WQ-A9G7-01Z-00-DX1.45C6F0D2-3477-410A-B0E7-FF6B2069E7A1.geojson
+TCGA-WR-A838-01Z-00-DX1.5FE22DE4-CEFB-45F6-9299-505023A8F3BA,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-WR-A838-01Z-00-DX1.5FE22DE4-CEFB-45F6-9299-505023A8F3BA.geojson
+TCGA-WY-A85E-01Z-00-DX1.AA7A4C1F-99AA-490D-B6D4-280EAB1EFF56,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-WY-A85E-01Z-00-DX1.AA7A4C1F-99AA-490D-B6D4-280EAB1EFF56.geojson
+TCGA-X9-A971-01A-01-TSA.5E49F702-ACB5-47B1-8BD6-C221B889F006,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-X9-A971-01A-01-TSA.5E49F702-ACB5-47B1-8BD6-C221B889F006.geojson
+TCGA-XE-A8H1-01A-01-TS1.8DB1BF0D-B2DE-4A87-8D9D-B4C9663FC4D7,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-XE-A8H1-01A-01-TS1.8DB1BF0D-B2DE-4A87-8D9D-B4C9663FC4D7.geojson
+TCGA-XF-A9SJ-01Z-00-DX1.AED4FF1B-441D-47EE-B7E5-CC6C595D3D98,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-XF-A9SJ-01Z-00-DX1.AED4FF1B-441D-47EE-B7E5-CC6C595D3D98.geojson
+TCGA-XT-AASU-11A-01-TSA.C37FF230-EA8C-4F8F-AED0-914E482F3DA6,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-XT-AASU-11A-01-TSA.C37FF230-EA8C-4F8F-AED0-914E482F3DA6.geojson
+TCGA-XU-A92O-01Z-00-DX1.DACFDFE8-8573-4639-A9FE-6232F9701EBB,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-XU-A92O-01Z-00-DX1.DACFDFE8-8573-4639-A9FE-6232F9701EBB.geojson
+TCGA-XV-AAZY-01Z-00-DX1.77D5F2CA-1A90-4F8B-86A2-29A9597B7373,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-XV-AAZY-01Z-00-DX1.77D5F2CA-1A90-4F8B-86A2-29A9597B7373.geojson
+TCGA-XY-A8S2-01Z-00-DX1.23F5B54A-D7E9-4749-9334-2A2916D6C2CD,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-XY-A8S2-01Z-00-DX1.23F5B54A-D7E9-4749-9334-2A2916D6C2CD.geojson
+TCGA-YG-AA3N-01Z-00-DX1.21350D99-44EB-42AF-83F8-90A059952FE4,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-YG-AA3N-01Z-00-DX1.21350D99-44EB-42AF-83F8-90A059952FE4.geojson
+TCGA-YL-A9WL-01Z-00-DX1.4EE10C9A-18EA-4DB0-BE29-06F6A75FE5A0,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-YL-A9WL-01Z-00-DX1.4EE10C9A-18EA-4DB0-BE29-06F6A75FE5A0.geojson
+TCGA-Z6-AAPN-01Z-00-DX1.345F7431-CD48-40DB-89D6-A419E5BA1679,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-Z6-AAPN-01Z-00-DX1.345F7431-CD48-40DB-89D6-A419E5BA1679.geojson
+TCGA-Z7-A8R6-01Z-00-DX1.CE4ED818-D762-4324-9DEA-2ACB38B9B0B9,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-Z7-A8R6-01Z-00-DX1.CE4ED818-D762-4324-9DEA-2ACB38B9B0B9.geojson
+TCGA-ZB-A966-01Z-00-DX1.90019BF8-1FC9-4B75-889C-18AE72682616,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-ZB-A966-01Z-00-DX1.90019BF8-1FC9-4B75-889C-18AE72682616.geojson
+TCGA-ZH-A8Y7-01Z-00-DX1.781FF59A-8A68-4A27-AB42-560F4BBAA1CF,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/TCGA-ZH-A8Y7-01Z-00-DX1.781FF59A-8A68-4A27-AB42-560F4BBAA1CF.geojson
+b8fb8b52-0a61-4e2f-bd0b-5cbb9333e46e,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/b8fb8b52-0a61-4e2f-bd0b-5cbb9333e46e.geojson
+bb13ac35-6511-42f7-a118-3790ae950f2e,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/bb13ac35-6511-42f7-a118-3790ae950f2e.geojson
+bc27a859-79a0-4569-9fad-98e1bf1570b2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/bc27a859-79a0-4569-9fad-98e1bf1570b2.geojson
+d72e7b8a-0465-41e1-bf31-1feb04cc09ad,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/d72e7b8a-0465-41e1-bf31-1feb04cc09ad.geojson
+d9e3b66c-2fe8-491e-8d28-13f83e71a969,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/d9e3b66c-2fe8-491e-8d28-13f83e71a969.geojson
+dd3acbe1-ac8f-4387-b54b-8b5e5a8e790e,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/dd3acbe1-ac8f-4387-b54b-8b5e5a8e790e.geojson
+f4bb8291-8671-4c81-b2b3-a58915cfd1f4,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/f4bb8291-8671-4c81-b2b3-a58915cfd1f4.geojson
+f4e44949-10e0-4b12-b2c4-baf950c6670b,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/f4e44949-10e0-4b12-b2c4-baf950c6670b.geojson
+mosaic,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/mosaic.geojson
+slide_CD34 (QBEnd-10)_2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/slide_CD34 (QBEnd-10)_2.geojson
+slide_Helicobacter-Pylori_2,/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/geojsons/slide_Helicobacter-Pylori_2.geojson
