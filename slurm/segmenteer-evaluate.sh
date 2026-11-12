@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-gpu=5
 #SBATCH --gpus=1
-#SBATCH --nodelist=dlc-meowth,dlc-groudon,dlc-slowpoke,dlc-arceus
+#SBATCH --nodelist=dlc-tornadus
 #SBATCH --mem=32G
 #SBATCH --time=8:00:00
 #SBATCH --nodes=1
