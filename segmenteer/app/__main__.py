@@ -7,7 +7,7 @@ from pathlib import Path
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="python -m app",
+        prog="segmenteer app",
         description=(
             "Serve the Segmenteer viewer from runner predictions. Ground truth "
             "and evaluator metrics are optional independent inputs."
@@ -59,7 +59,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             "The viewer needs FastAPI/uvicorn runtime dependencies."
         ) from exc
 
-    from app.server import create_app
+    from segmenteer.app.server import create_app
 
     app = create_app(
         output_dir=str(output),

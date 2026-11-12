@@ -10,7 +10,12 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
-from app.loader import IndexData, _WSI_EXTENSIONS, _find_annotation, load_index
+from segmenteer.app.loader import (
+    IndexData,
+    _WSI_EXTENSIONS,
+    _find_annotation,
+    load_index,
+)
 from segmenteer.io.ground_truth import resolve_ground_truth
 from segmenteer.io.predictions import read_prediction
 
@@ -84,7 +89,7 @@ def create_app(
             if path is None:
                 raise HTTPException(404, f"WSI file not found for '{stem}'")
             try:
-                from app.wsi import WSITileServer
+                from segmenteer.app.wsi import WSITileServer
             except ImportError as exc:
                 raise HTTPException(
                     503, "WSI tile backend is not installed in this viewer package"
@@ -371,13 +376,13 @@ def create_app(
 
         @lru_cache(maxsize=1)
         def _summary_payload_cached() -> dict:
-            from app.summary import summary_payload
+            from segmenteer.app.summary import summary_payload
 
             return summary_payload(index_data)
 
         @lru_cache(maxsize=1)
         def _summary_csv_cached() -> str:
-            from app.summary import summary_csv
+            from segmenteer.app.summary import summary_csv
 
             return summary_csv(index_data)
 

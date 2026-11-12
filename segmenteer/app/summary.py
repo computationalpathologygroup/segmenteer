@@ -9,7 +9,7 @@ import statistics
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from app.loader import IndexData
+from segmenteer.app.loader import IndexData
 
 METRIC_SPECS: tuple[dict[str, str], ...] = (
     {"key": "dice", "label": "Dice", "group": "Evaluation", "source": "supervised"},

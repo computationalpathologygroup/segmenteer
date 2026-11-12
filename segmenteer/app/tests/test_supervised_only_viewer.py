@@ -2,8 +2,8 @@ import csv
 import json
 from pathlib import Path
 
-from app.loader import load_index
-from app.summary import dataset_counts, metric_summary
+from segmenteer.app.loader import load_index
+from segmenteer.app.summary import dataset_counts, metric_summary
 
 
 def test_old_reference_free_csv_not_shown_as_metrics(tmp_path):

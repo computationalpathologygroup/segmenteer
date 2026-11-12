@@ -60,12 +60,14 @@ You need to push your docker build to a repository and reference it in the jobsc
 The optional browser viewer can display WSIs and prediction overlays:
 
 ```bash
-uv run python -m app \
+segmenteer app \
   --output outputs/tissue-masks \
   --data /path/to/slides
 ```
 
-Open `http://127.0.0.1:8765` in your browser. Install the `app` dependency group if the viewer dependencies are not already available.
+Open `http://127.0.0.1:8765` in your browser.
+Install the `app` dependency group if the viewer dependencies are not already available.
+Use `--host 0.0.0.0` if you would like to reach the app from the network (e.g. if the app is hosted by a cluster machine).
 
 ## Model downloads
 

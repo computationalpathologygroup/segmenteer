@@ -207,6 +207,9 @@ def _legacy_main(argv: list[str] | None = None) -> None:
 def main(argv: list[str] | None = None) -> None:
     """Dispatch new method-first commands, or preserve the original flag CLI."""
     actual = list(sys.argv[1:]) if argv is None else list(argv)
+    if actual and actual[0] == "app":
+        from segmenteer.app.__main__ import main as app_main
+        return app_main(actual[1:])
     if actual and actual[0] in ("multi-method", "benchmark"):
         from segmenteer.cli.benchmark import main as benchmark_main
         return benchmark_main(actual[1:], command_name=actual[0])
