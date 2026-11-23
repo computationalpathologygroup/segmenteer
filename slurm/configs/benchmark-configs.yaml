@@ -1,75 +1,77 @@
 methods:
   # Global thresholding
-  - name: li (lowres)
+  - name: li
     params: {mpp: 20, min_area: 1000}
-  - name: li (mediumres)
+  - name: li
     params: {mpp: 10, min_area: 1000}
-  - name: otsu (lowres)
+  - name: otsu
     params: {mpp: 20, min_area: 1000}
-  - name: otsu (mediumres)
+  - name: otsu
     params: {mpp: 10, min_area: 1000}
-  - name: yen (lowres)
+  - name: yen
     params: {mpp: 20, min_area: 1000}
-  - name: yen (mediumres)
+  - name: yen
     params: {mpp: 10, min_area: 1000}
 
   # Morphology and watershed
   - name: morphological
     params: {mpp: 20, disk_size: 3, min_area: 1000}
 
-  - name: watershed (lowres)
+  - name: watershed
     params: {mpp: 20, min_distance_um: 200, min_area: 1000, merge_regions: true}
-  - name: watershed (mediumres)
+  - name: watershed
     params: {mpp: 10, min_distance_um: 200, min_area: 1000, merge_regions: true}
 
   # HSV thresholding
-  - name: hsv-threshold (lowres)
+  - name: hsv-threshold
     params: {mpp: 20, min_area: 1000}
-  - name: hsv-threshold (mediumres)
+  - name: hsv-threshold
     params: {mpp: 10, min_area: 1000}
 
-  - name: hsv-threshold-v2 (lowres)
+  - name: hsv-threshold-v2
     params: {mpp: 20, min_area: 1000}
-  - name: hsv-threshold-v2 (mediumres)
+  - name: hsv-threshold-v2
     params: {mpp: 10, min_area: 1000}
 
   # FESI (improved and original variants)
-  - name: fesi-improved (lowres)
+  - name: fesi
     params: {mpp: 20, improved: true}
-  - name: fesi-improved (mediumres)
+  - name: fesi
     params: {mpp: 10, improved: true}
-  - name: fesi-basic (lowres)
-    params: {mpp: 20}
-  - name: fesi-basic (mediumres)
-    params: {mpp: 10}
+  - name: fesi
+    params: {mpp: 20, improved: false}
+  - name: fesi
+    params: {mpp: 10, improved: false}
 
   # Other classical image processing
-  - name: entropy-masker (lowres)
+  - name: entropy-masker
     params: {mpp: 20}
-  - name: entropy-masker (mediumres)
+  - name: entropy-masker
     params: {mpp: 10}
-  - name: histomicstk (lowres)
+  - name: histomicstk
     params: {mpp: 20}
-  - name: histomicstk (mediumres)
+  - name: histomicstk
     params: {mpp: 10}
-  - name: double-pass (mediumres)
+  - name: double-pass
     params: {mpp: 10}
-  - name: cx-tissue-seg (lowlowres)
-    params: {mpp: 40}
-  - name: canny-foreground (mediumres)
+  - name: canny-foreground
     params: {mpp: 5}
+  - name: entropy-masker
+    params: {mpp: 5}
+  - name: fesi
+    params: {mpp: 5, improved: true}
 
   # Deep learning methods
   - name: atlaspatch-sam2
   - name: grandqc-patchwise
   - name: trident-grandqc
-  - name: nki-all-stains (mediumres)
+  - name: nki-all-stains
     params: {mpp: 12}
-  - name: fastsam (lowres)
+  - name: fastsam
     params: {mpp: 20}
-  - name: bigpicture (mediumres)
+  - name: bigpicture
     params: {mpp: 8, select_largest_tissue_objects: true, apply_hole_filling: false}
-  - name: rtlucassen (mediumres)
+  - name: rtlucassen
     params: {mpp: 7.04}
   - name: trident-rtlucassen
   - name: trident-hest
@@ -82,3 +84,7 @@ methods:
 
   - name: background-subtractor
     params: {mpp: 20}
+
+  # Classical gpu
+  - name: cx-tissue-seg
+    params: {mpp: 40, device: "cuda"}

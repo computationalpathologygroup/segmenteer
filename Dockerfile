@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.9.2-base-ubuntu22.04 AS builder
+FROM nvidia/cuda:12.8.2-base-ubuntu22.04 AS builder
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.5 /uv /uvx /bin/
 
@@ -27,7 +27,7 @@ COPY . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --extra all --no-editable
 
-FROM nvidia/cuda:12.9.2-base-ubuntu22.04
+FROM nvidia/cuda:12.8.2-base-ubuntu22.04
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates git libopenslide0 libvips42 \

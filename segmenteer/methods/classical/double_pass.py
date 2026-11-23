@@ -57,8 +57,20 @@ def _fetch_upstream(destination: Path, revision: str) -> Path:
             "Install git, or provide upstream_dir=... with a checkout."
         )
     destination.parent.mkdir(parents=True, exist_ok=True)
-    temp_root = Path(tempfile.mkdtemp(prefix=".double-pass-", dir=destination.parent))
+    # Git maintains lockfiles in the checkout directory.  Keep those operations
+    # off network-mounted model shares (and use TMPDIR/SEGMENTEER_TEMP_DIR if set).
+    temp_parent = os.environ.get("SEGMENTEER_TEMP_DIR")
+    if temp_parent:
+        temp_path = Path(temp_parent).expanduser()
+        temp_path.mkdir(parents=True, exist_ok=True)
+        temp_parent = str(temp_path)
+    temp_root = Path(tempfile.mkdtemp(prefix=".double-pass-", dir=temp_parent))
     clone = temp_root / "upstream"
+    stage = Path(
+        tempfile.mkdtemp(
+            prefix=".double-pass-stage-", dir=destination.parent
+        )
+    )
     try:
         result = subprocess.run(
             ["git", "clone", "--quiet", "--no-checkout", UPSTREAM_URL, str(clone)],
@@ -84,14 +96,28 @@ def _fetch_upstream(destination: Path, revision: str) -> Path:
                 f"{result.stderr.strip()}"
             )
         try:
-            clone.rename(destination)
+            # Copy rather than rename across filesystems.  copyfile deliberately
+            # avoids preserving or changing file modes on the network destination.
+            shutil.copytree(
+                clone,
+                stage,
+                dirs_exist_ok=True,
+                symlinks=True,
+                copy_function=shutil.copyfile,
+            )
+            os.replace(stage, destination)
         except FileExistsError:
-
             if not (destination / ".git").is_dir():
                 raise
+        except OSError:
+            if (destination / ".git").is_dir():
+                return destination
+            raise
         return destination
     finally:
         shutil.rmtree(temp_root, ignore_errors=True)
+        if stage.exists():
+            shutil.rmtree(stage, ignore_errors=True)
 
 
 def _upstream_candidates(repo: Path) -> list[dict]:

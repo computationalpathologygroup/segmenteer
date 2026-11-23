@@ -37,6 +37,7 @@ overrides.txt
 TODO.md
 xml_output_checked
 benchmark_data_annotation.xlsx
+slurm/logs
 
 # Distribution / packaging
 .Python
