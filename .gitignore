@@ -16,7 +16,8 @@ models
 !uv.lock
 segmentation_results
 trident
-
+metadata
+results
 visualizations
 .DS_Store
 sandbox
@@ -191,6 +192,9 @@ output_*.geojson
 *.json
 *.csv
 !slurm/**/*.csv
+!docs/assets/benchmark-results.json
+
+
 # pixi
 #   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
 #pixi.lock
