@@ -96,20 +96,34 @@ You need to push your docker build to a repository and reference it in the jobsc
 
 We built on many segmentation models and frameworks.
 Below we cite them.
+We are determined to attribute properly.
 Please open an issue to request attribution correction.
 
-| method | url | license | doi |
+| method | url | license | doi/paper      |
 |--------|-----|---------|----------|
-| CPG    |     |         |
+| CPG    |     |         |          |
 | AtlasPatch | [AtlasAnalyticsLab/AtlasPatch](https://github.com/AtlasAnalyticsLab/AtlasPatch/) | [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) | [10.48550/arXiv.2602.03998](https://doi.org/10.48550/arXiv.2602.03998) |
 | GrandQC | [cpath-ukk/grandqc](https://github.com/cpath-ukk/grandqc/) | [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) | [10.1038/s41467-024-54769-y](https://doi.org/10.1038/s41467-024-54769-y) |
 | HEST | [mahmoodlab/hest](https://github.com/mahmoodlab/hest) | [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) | [10.48550/arXiv.2406.16192](https://doi.org/10.48550/arXiv.2406.16192) |
 | PathProfiler | [MaryamHaghighat/PathProfiler](https://github.com/MaryamHaghighat/PathProfiler) | [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) | [10.1038/s41598-022-08351-5](https://doi.org/10.1038/s41598-022-08351-5) |
 | SlideSegmenter | [RTLucassen/slidesegmenter](https://github.com/RTLucassen/slidesegmenter) | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) | [arXiv.2401.13511](https://doi.org/10.48550/arXiv.2401.13511) |
 | TRIDENT | [mahmoodlab/Trident](https://github.com/mahmoodlab/Trident) | [CC BY-NC-ND](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.en) | [10.48550/arXiv.2502.06750](https://doi.org/10.48550/arXiv.2502.06750) |
+| FastSAM | [ultralytics/assets](https://github.com/ultralytics/assets/releases#release-v8.4.0) | [AGPL-v3.0](https://www.gnu.org/licenses/agpl-3.0.txt) |  |
+| NKI all-stains | [huggingface.co/NKI-AI/tissue-bg-all-stains](https://huggingface.co/NKI-AI/tissue-bg-all-stains) | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) |  |
 | Bigpicture | [imi-bigpicture/tissue-segmentation](https://github.com/imi-bigpicture/tissue-segmentation) | [MIT](https://mit-license.org/) | [10.7717/peerj.8242](https://doi.org/10.7717/peerj.8242) |
-| LICENSE | [DigitalSlideArchive/HistomicsTK](https://github.com/DigitalSlideArchive/HistomicsTK) | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) |  |
-| EntropyMasker | [CirculatoryHealth/EntropyMasker](https://github.com/CirculatoryHealth/EntropyMasker) | N/A (reimplementation)  | [10.1101/2022.09.01.22279487](https://doi.org/10.1101/2022.09.01.22279487) |
+| HistomicsTK | [DigitalSlideArchive/HistomicsTK](https://github.com/DigitalSlideArchive/HistomicsTK) | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) |  |
+| icgi | [icgi/Reliable-and-Efficient-Tissue-Segmentation-in-Whole-Slide-Images](https://github.com/icgi/Reliable-and-Efficient-Tissue-Segmentation-in-Whole-Slide-Images) | [CC-BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) | https://openreview.net/forum?id=3gsNUjFi1q |
+| CxTissueSeg | https://huggingface.co/conflux-xyz/cx-tissue-seg | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) | | 
+| FESI | [NKI-AI/dlup](https://github.com/NKI-AI/dlup/blob/52a65d06a4f636b94cb142d00ccfc2f98b6a966b/dlup/background.py) | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) | [10.1007/978-3-662-46224-9_72](https://doi.org/10.1007/978-3-662-46224-9_72) |
+| FESI Improved | [NKI-AI/dlup](https://github.com/NKI-AI/dlup/blob/52a65d06a4f636b94cb142d00ccfc2f98b6a966b/dlup/background.py) | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) | [10.48550/arXiv.2006.06531](https://doi.org/10.48550/arXiv.2006.06531) |
+| EntropyMasker | [CirculatoryHealth/EntropyMasker](https://github.com/CirculatoryHealth/EntropyMasker) | N/A (reimplementation) | [10.1101/2022.09.01.22279487](https://doi.org/10.1101/2022.09.01.22279487) |
+| Canny | [icgi/automatic-tumour-segmentation-in-WSIs](https://github.com/icgi/automatic-tumour-segmentation-in-WSIs) | N/A (reimplementation) | [10.1038/s41698-026-01311-6](https://doi.org/10.1038/s41698-026-01311-6) |
+| Li |  | N/A (reimplementation) | [10.5220/0011803500003414](https://doi.org/10.5220/0011803500003414) |
+| Yen |  | N/A (reimplementation) | [10.1109/83.366472](https://doi.org/10.1109/83.366472)
+| Watershed |  | N/A (reimplementation) | [10.1109/34.87344](https://doi.org/10.1109/34.87344) |
+| Otsu |  | N/A (reimplementation) | [10.1109/TSMC.1979.4310076](https://doi.org/10.1109/TSMC.1979.4310076) |
+| HSV |  | N/A (reimplementation) | [10.48550/arXiv.2408.00738](https://doi.org/10.48550/arXiv.2408.00738)
+| Double-pass (TODO) | | | |
 
 See the `LICENSES` for license copies.
 When publishing results, cite the original publications for the segmentation methods and models used and cite `segmenteer` as
