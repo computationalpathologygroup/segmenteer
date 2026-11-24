@@ -1,16 +1,8 @@
-"""Lazy Trident segmenter adapters.
-
-Importing this module does not import Trident, Torch, torchvision, or a model.
-A concrete model is built only when its public adapter name is accessed.
-"""
-
 from __future__ import annotations
-
 import os
 from importlib import import_module
 from pathlib import Path
 from typing import Any, Callable
-
 from segmenteer.model_cache import get_method_model_dir
 
 _TRIDENT_HOME = get_method_model_dir("trident")
@@ -29,67 +21,87 @@ def _load_trident_model(model_name: str):
         return getattr(models, model_name)
     except (ImportError, AttributeError) as exc:
         raise ImportError(
-            "Trident-based segmenters require the Trident extra. Run: "
-            "uv sync --extra trident"
+            "Trident-based segmenters require the Trident extra. Run: uv sync --extra trident"
+        ) from exc
+
+
+class DeferredTridentModel:
+    def __init__(self, factory: Callable[[], Any]):
+        self._factory = factory
+        self._model = None
+
+    def resolve(self) -> Any:
+        if self._model is None:
+            self._model = self._factory()
+        return self._model
+
+
+def _build_pathprofiler_model() -> Any:
+    try:
+        from segmenteer.methods.dl.pathprofiler import LIBTRIDENTPathProfilerSegmenter
+
+        return LIBTRIDENTPathProfilerSegmenter()
+    except ImportError as exc:
+        raise ImportError(
+            "TRIDENTPathProfilerSegmenter requires Torch, torchvision, and Trident. Run: uv sync --extra pathprofiler"
+        ) from exc
+
+
+def _build_cpg_model() -> Any:
+    try:
+        from segmenteer.methods.dl.cpg import LIBTRIDENTCPGSegmenter
+
+        return LIBTRIDENTCPGSegmenter()
+    except ImportError as exc:
+        raise ImportError(
+            "TRIDENTCPGSegmenter requires Torch, torchvision, ONNX Runtime, and Trident. Run: uv sync --extra cpg"
+        ) from exc
+
+
+def _build_rtlucassen_model() -> Any:
+    try:
+        from segmenteer.methods.dl.rtl_trident import (
+            LIBTRIDENTRTLucassenSlideSegmenterSegmenter,
+        )
+
+        return LIBTRIDENTRTLucassenSlideSegmenterSegmenter()
+    except ImportError as exc:
+        raise ImportError(
+            "TRIDENTRTLucassenSlideSegmenterSegmenter requires Torch, torchvision, and Trident. Run: uv sync --extra rtlucassen"
         ) from exc
 
 
 def _build_trident_hest() -> Any:
     return _trident_segmenter_class()(
-        _load_trident_model("HESTSegmenter")(),
+        DeferredTridentModel(lambda: _load_trident_model("HESTSegmenter")()),
         model_id="HEST",
     )
 
 
 def _build_trident_grandqc() -> Any:
     return _trident_segmenter_class()(
-        _load_trident_model("GrandQCSegmenter")(),
+        DeferredTridentModel(lambda: _load_trident_model("GrandQCSegmenter")()),
         model_id="GrandQC",
     )
 
 
 def _build_trident_pathprofiler() -> Any:
-    try:
-        from segmenteer.methods.dl.pathprofiler import LIBTRIDENTPathProfilerSegmenter
-
-        return _trident_segmenter_class()(
-            LIBTRIDENTPathProfilerSegmenter(),
-            model_id="PathProfiler",
-        )
-    except ImportError as exc:
-        raise ImportError(
-            "TRIDENTPathProfilerSegmenter requires Torch, torchvision, and Trident. "
-            "Run: uv sync --extra pathprofiler"
-        ) from exc
+    return _trident_segmenter_class()(
+        DeferredTridentModel(_build_pathprofiler_model), model_id="PathProfiler"
+    )
 
 
 def _build_trident_cpg() -> Any:
-    try:
-        from segmenteer.methods.dl.cpg import LIBTRIDENTCPGSegmenter
-
-        return _trident_segmenter_class()(
-            LIBTRIDENTCPGSegmenter(),
-            model_id="CPG",
-        )
-    except ImportError as exc:
-        raise ImportError(
-            "TRIDENTCPGSegmenter requires Torch, torchvision, ONNX Runtime, and "
-            "Trident. Run: uv sync --extra cpg"
-        ) from exc
+    return _trident_segmenter_class()(
+        DeferredTridentModel(_build_cpg_model), model_id="CPG"
+    )
 
 
 def _build_trident_rtlucassenslidesegmenter() -> Any:
-    try:
-        from segmenteer.methods.dl.rtlucassen import LIBTRIDENTRTLucassenSlideSegmenterSegmenter
-        return _trident_segmenter_class()(
-            LIBTRIDENTRTLucassenSlideSegmenterSegmenter(),
-            model_id="rtlucassen",
-        )
-    except ImportError as exc:
-        raise ImportError(
-            "TRIDENTRTLucassenSlideSegmenterSegmenter requires Torch, torchvision, and "
-            "Trident. Run: uv sync --extra rtlucassen"
-        ) from exc
+    return _trident_segmenter_class()(
+        DeferredTridentModel(_build_rtlucassen_model), model_id="rtlucassen"
+    )
+
 
 _FACTORIES: dict[str, Callable[[], Any]] = {
     "TRIDENTHESTSegmenter": _build_trident_hest,

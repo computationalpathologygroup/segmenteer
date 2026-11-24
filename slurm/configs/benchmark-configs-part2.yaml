@@ -1,0 +1,13 @@
+methods:
+  # Deep learning methods
+  - name: trident-rtlucassen
+  - name: trident-hest
+  - name: trident-pathprofiler
+  - name: icgi-nnunetv2
+    params: {mpp: 10}
+  - name: icgi-resenc
+    params: {mpp: 10}
+  - name: trident-cpg
+
+  - name: background-subtractor
+    params: {mpp: 20}

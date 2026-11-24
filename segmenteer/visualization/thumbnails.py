@@ -1,16 +1,11 @@
-"""Plain thumbnail creation and saving without pyvips."""
-
 from __future__ import annotations
-
 from pathlib import Path
 from typing import Union
-
 import numpy as np
 from PIL import Image
 
 
 def create_thumbnail(image: np.ndarray, max_size: int = 1024) -> np.ndarray:
-    """Resize an array so that its longest edge is at most *max_size*."""
     height, width = image.shape[:2]
     scale = min(max_size / width, max_size / height)
     if scale >= 1:
@@ -27,12 +22,10 @@ def create_thumbnail(image: np.ndarray, max_size: int = 1024) -> np.ndarray:
 def save_thumbnail(
     image: Path, output_path: Union[str, Path], max_size: int = 1024
 ) -> None:
-    """Read only a low-resolution WSI level and save it as a PNG thumbnail."""
     from segmenteer.core.base import get_wsi_reader
 
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-
     reader = get_wsi_reader()
     wsi = reader.read(str(image))
     width, height = reader.get_size(wsi, 0)
