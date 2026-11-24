@@ -133,3 +133,7 @@ When publishing results, cite the original publications for the segmentation met
   // TODO. Awaiting arXiv publication.
 }
 ```
+
+# License
+This repository is licensed APGLv3 as it depends on APGL code.
+See the commit history for changes.
