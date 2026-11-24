@@ -123,7 +123,7 @@ Please open an issue to request attribution correction.
 | Watershed |  | N/A (reimplementation) | [10.1109/34.87344](https://doi.org/10.1109/34.87344) |
 | Otsu |  | N/A (reimplementation) | [10.1109/TSMC.1979.4310076](https://doi.org/10.1109/TSMC.1979.4310076) |
 | HSV |  | N/A (reimplementation) | [10.48550/arXiv.2408.00738](https://doi.org/10.48550/arXiv.2408.00738)
-| Double-pass (TODO) | | | |
+| Double-pass | [aimas-upb/efficient-tissue-detection-wsi](https://github.com/aimas-upb/efficient-tissue-detection-wsi) | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) | [10.3390/cancers17172918](https://doi.org/10.3390/cancers17172918) |
 
 See the `LICENSES` for license copies.
 When publishing results, cite the original publications for the segmentation methods and models used and cite `segmenteer` as
