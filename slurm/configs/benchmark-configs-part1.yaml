@@ -1,0 +1,18 @@
+methods:
+  # Deep learning methods
+  # - name: atlaspatch-sam2
+  - name: trident-hest
+  # - name: grandqc-patchwise
+  # - name: trident-grandqc
+  # - name: nki-all-stains
+  #   params: {mpp: 12}
+  # - name: fastsam
+  #   params: {mpp: 20}
+  # - name: fastsam
+  #   params: {mpp: 10}
+  # - name: bigpicture
+  #   params: {mpp: 8, select_largest_tissue_objects: true, apply_hole_filling: false}
+  # - name: rtlucassen
+  #   params: {mpp: 7.04}
+  # - name: trident-pathprofiler
+  # - name: trident-rtlucassen

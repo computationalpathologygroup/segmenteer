@@ -1,0 +1,687 @@
+path
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/028c4d99-3c92-44fb-866b-335f9109cf10.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/0495_slide_CD68 (514H12)_3.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/0_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/0_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/0a7bfd65-9c71-4f0c-9dd4-b5f28fb38ee0.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx1A.slide.02.ERG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx1A.slide.03.PIN4.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx1A.slide.10.PTEN.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx3A.slide.02.AR.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx3A.slide.03.PSA.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx3A.slide.10.ERG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx3A.slide.11.PIN4.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx3A.slide.12.Ki67.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx3A.slide.13.GR.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx3A.slide.14.SYP.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx3A.slide.15.P53.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx3A.slide.16.PTEN.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx5A.slide.02.AR.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx5A.slide.03.PSA.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx5A.slide.10.ERG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx5A.slide.12.Ki67.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx5A.slide.13.GR.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1001.Prostate.Bx5A.slide.15.P53.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/101f9fc9-5bd7-4487-b7d9-704385b4b464.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1026.Prostate.Bx16A.slide.03.PSA.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1026.Prostate.Bx16A.slide.11.PIN4.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1026.Prostate.Bx16A.slide.15.P53.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/10_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/10_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/11_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/11_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/12_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/12_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/13_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/13_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1471910635.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_00_11449_B.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_00_1311_B.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_00_2895_B.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_00_8665_B.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_00_8950_B-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_02_2705_C.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_05_1068_B-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_2337-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_2338-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_2457_C.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_2924_E-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_3796_C.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_3902_B.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_3939_B-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_4030_B.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_4238-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_4238.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_7382-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_7656_A-4.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_8240_A-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_8492.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_9120_C.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_9440_A-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_19_9629_B-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_20_170-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_20_170.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_20_2096_A.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_21_2200_B.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_21_2888_C-3.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_21_3659_A-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_21_3726_A.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_21_5552_A.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_21_6336_A.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_21_6665-2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/147_21_6809_G-3.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/14_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/14_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/156b4d1e-d285-4a84-9f6f-6d6969b8bc58.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/15_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/15_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/16_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/16_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/17_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/17_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/18_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/18_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/19_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/19_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1d4c700d-07d1-4553-ac65-820559bf8e94.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/1ee4d067-3842-4722-b14f-a3dffee58095.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/20_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/20_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/21_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/21_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/22_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/22_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/22d51948-0438-43b2-82a5-cc82415b6281.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/23_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/23_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/24_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/24_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/25_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/25_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/26_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/26_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/27258.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/27_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/27_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/27a6fda3-4bf0-4319-b9e0-59b7ae722f7b.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/28071.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/28_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/28_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/29460.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/29_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/29_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/2_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/2_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/30_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/30_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/31854.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/31_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/31_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/32182.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/326364c8-0256-4130-b4fe-68095bc327e0.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/32_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/32_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/33_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/33_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/34_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/34_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/35_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/35_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3690195.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/36_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/36_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3755985.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756001.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756012.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756023.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756036.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756049.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756068.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756072.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756078.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756089.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756102.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756109.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756115.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756121.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756130.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756135.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756140.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756144.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756170.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756192.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756226.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756240.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756249.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756254.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756262.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756275.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756282.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756290.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3756305.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/37_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/37_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/38_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/38_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/398419e4-bb73-4b7b-bc48-b8c93f1fbd30.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/39_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/39_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/3_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/40_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/40_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/41_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/41_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/42_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/42_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/43_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/43_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/44_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/44_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/452af889-5a7d-4b58-a147-7d3370f43518.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/4534.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/453907.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/45_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/45_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/46_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/46_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/47_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/47_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/48_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/48_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/498841f8-77de-4c01-a531-f5c73748d06e.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/49_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/49_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/4_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/4_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/50_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/50_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/51_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/51_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/529911.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/52_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/52_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/53_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/53_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/54_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/54_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/55_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/55_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/56_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/56_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/57_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/57_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/58_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/58_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/59_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/59_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/59d70849-11d8-4870-8565-b0308b31cd79.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/5_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/5_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/60_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/60_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/61_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/61_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/62_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/62_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/63_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/63_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/64458.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/64_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/64_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/65156.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/65_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/65_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/6653f503-e268-46be-93d1-0164a6b7ab70.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/66_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/66_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/67_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/67_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/68_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/68_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/69_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/69_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/6_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/6_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/6c626c0f-a7fb-40fb-917a-ad24e5c96103.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/70356.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/70695.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/70_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/70_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/71_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/71_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/72_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/72_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/73_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/73_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/74_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/74_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/75_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/75_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/76_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/76_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/77_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/77_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/78_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/78_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/791a62ff-6f2c-45a7-90cf-c9ace9e4a3a5.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/79_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/79_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/7_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/7_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/7a456670-e996-4e5b-81c2-500167f8911e.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/7aab5e96-3f66-42af-ad40-bbd5578c0e20.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/7b6e25a9-1722-42b6-806f-ce676ccd8ae8.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/80_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/80_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/81_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/81_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/82_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/82_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/83_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/83_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/8423e553-770a-4ca5-8730-15c0739a9658.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/84_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/84_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/85_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/85_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/86_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/86_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/872fe3b0-905b-44b1-b55d-080340e90c28.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/87_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/88_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/88_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/89_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/89_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/8_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/8_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/8c135f89-22db-4451-b44d-f392b257d4bb.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/8dddf8e2-4bf1-46e0-8902-54f7d70f9c02.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/90_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/90_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/91_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/91_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/92_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/92_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/93_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/93_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/94_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/94_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/95_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/95_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/96_ER_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/96_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/97_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/97_KI67_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/98_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/98_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/99_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/99_PGR_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/9_HER2_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/9_HE_val.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/9ba7801c-7e73-4585-b536-6498eedf6fbf.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000001_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000002_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000003_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000004_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000005_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000007_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000009_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000010_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000011_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000012_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000013_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000014_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000015_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000016_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000017_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000019_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/B_P000020_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000021_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000022_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000023_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000024_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000025_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000026_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000027_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000028_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000029_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000030_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000031_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000032_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000033_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000034_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000035_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000036_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000037_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000038_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000039_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/C_P000040_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000001_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000002_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000003_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000004_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000005_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000006_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000007_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000009_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000010_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000011_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000012_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000013_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000014_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000015_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000016_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000017_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000018_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/D_P000019_PAS_CPG.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB001_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB002_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB002_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB003_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB003_IV-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB004_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB004_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB004_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB005_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB005_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB006_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB006_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB006_IV-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB007_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB007_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB009_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB009_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB009_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB010_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB011_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB011_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB012_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB012_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB013_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB013_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB013_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB014_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB015_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB016_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB016_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB016_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB016_IV-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB017_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB018_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB019_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB019_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB020_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB021_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB022_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB023_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB025_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB026_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB027_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB027_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB029_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB029_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB029_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB030_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB030_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB030_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB032_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB032_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB032_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB032_IV-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB033_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB033_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB033_IV-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB034_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB034_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB034_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB035_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB035_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB035_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB036_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB036_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB036_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB036_IV-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB036_V-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB037_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB037_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB038_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB038_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB039_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB039_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB039_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB040_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB040_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB041_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB041_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB041_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB042_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB042_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB043_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB043_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB043_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB044_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB044_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB044_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB045_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB046_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB046_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB046_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB047_I-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB047_II-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/LTB047_III-1 overview.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA232_BCL2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA232_BCL6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA232_CD10.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA232_HE.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA232_MUM1.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA232_MYC.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA234_BCL2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA234_BCL6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA234_CD10.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA234_HE.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA234_MUM1.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA234_MYC.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA255_BCL2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA255_BCL6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA255_CD10.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA255_HE.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA255_MUM1.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA255_MYC.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA292_BCL2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA292_BCL6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA292_CD10.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA292_HE.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA292_MUM1.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA292_MYC.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA307_BCL2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA307_BCL6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA307_CD10.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA307_HE.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA307_MUM1.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA307_MYC.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA407_BCL2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA407_BCL6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA407_CD10.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA407_HE.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA407_MUM1.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA407_MYC.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA408_BCL2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA408_BCL6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA408_CD10.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA408_HE.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA408_MUM1.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TA408_MYC.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-02-0003-01A-01-TS1.6fc43119-1e2b-4c23-bd58-af026407d094.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-06-0195-01Z-00-DX4.9118166e-d483-455f-ba81-2a0cdfdc6ad7.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-19-5954-01Z-00-DX1.b2e11be4-3f71-4d05-9405-c41dee3fc5b5.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-25-2390-01Z-00-DX1.BC83304E-747C-47EC-BD80-BA0B322C8630.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-29-1710-01A-01-BS1.3c2c042d-eb31-43f1-96e2-206e9ddd3a64.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-2F-A9KP-01A-01-TS1.1BD6FF57-7F82-4444-9918-D8CEBA1D8987.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-2G-AALT-01Z-00-DX1.3B5A357A-5970-4680-9161-1C941E83366E.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-2J-AABH-01Z-00-DX1.EDC36BC9-F6F9-4253-93FB-8B75D8D55BE0.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-2Y-A9H3-01Z-00-DX1.813C14D8-DBBC-43AF-9E3A-9EFC1D1AFC98.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-33-A5GW-01Z-00-DX3.7A1C5169-96C6-4ECB-81E1-1050EFE84B60.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-39-5031-01A-01-TS1.82cd48e6-3c13-4565-bea9-403756cf963b.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-3A-A9IV-01A-01-TS1.C2E5D91C-BCC7-48E2-8ED1-915BE3057A4A.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-3U-A98E-01Z-00-DX1.9A2C6D9A-9753-411E-8E05-22D381312CED.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-3X-AAV9-01Z-00-DX1.308BB261-7A52-434F-94E6-F07379F43A1B.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-43-7656-11A-01-TS1.f89a4a31-1712-4be1-9330-5ee4104e1b28.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-44-6146-01A-03-TSC.4A868B18-F1BA-4035-B6FE-9B9A23E32398.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-4E-A92E-01Z-00-DX1.60ED140E-11EA-49D7-ADF6-6B2150BAE3B9.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-4G-AAZF-11A-01-TS1.C2861329-3F68-4BEF-BA54-ECB5251ACB1A.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-4K-AA1H-01Z-00-DX1.6B633FE7-D33E-472B-BE56-B19698280440.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-4V-A9QM-11A-01-TS1.EF49A1BD-CBE7-4A91-ACE2-DDF50668C1D4.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-4X-A9FD-01Z-00-DX9.5A791C7C-5FD8-4E78-A1AF-C0932C250E3E.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-55-1596-01Z-00-DX1.de65522d-92ab-408e-9b7e-24210d386b97.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-57-1585-01Z-00-DX1.934E0F30-F804-4CFA-92D5-41576DA6C367.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-5U-AB0E-01A-01-TSA.F8F3AADB-173B-4669-87AC-7B688731F28C.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-61-2611-11A-01-BS1.13c59f48-5d1e-426f-a36a-4840672476dd.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-69-7980-01Z-00-DX1.8bbf8cc0-eca7-49e5-a022-c22e3e6ed6dc.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-73-4659-01Z-00-DX1.578400cd-d284-451b-8fdf-9f82c1458276.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-74-6573-11A-01-TS1.ac2fa0fb-2f61-49cd-a05a-6eccf302a162.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-91-6848-11A-01-TS1.0bb06db2-7b3e-4d0a-bb3f-6c03aa315387.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-94-A4VJ-01Z-00-DX1.FBC6E75E-80D8-42EA-9292-181EC4D5D170.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-A6-2676-11A-01-TS1.a2b894be-974e-4031-9b67-9bbe98e37fe4.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-AA-3672-01A-01-BS1.a0ceb6c5-20ba-4a0b-a957-2079ee83adb9.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-AG-A01L-01A-02-BS2.6566737c-e511-4a3a-96ed-4bfb244dbad9.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-AJ-A3NE-11A-01-TS1.DE5980FA-A4FD-43F7-A8CC-E20E18B890B8.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-AR-A250-01Z-00-DX1.572A2F73-6BF5-4932-BFEF-4B8904755ACF.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-B4-5377-01A-01-TS1.c221af25-44df-4d62-9e12-81f6ed529c26.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-B5-A0JV-01Z-00-DX1.820AB1F8-A37E-4882-A895-0C84E423A627.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-B8-5550-01Z-00-DX1.f9c84121-b555-486b-9049-9b87c7268e0a.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-BA-4077-01Z-00-DX1.547A89DF-9628-4594-BEB7-20EA7C5B5A5E.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-BA-A6DJ-01Z-00-DX1.F83A347E-4442-4F06-9715-32E4C4E1A4FA.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-BB-4227-01Z-00-DX1.7475866c-90bb-4f62-b44e-adccc731cad8.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-BC-A10X-11A-01-TS1.a10e3fb3-3138-4be4-88c8-8c9caf6e93df.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-BH-A0BL-11A-01-TSA.2d6b96e2-dbea-44dd-bce3-7ed7197ac04c.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-BK-A0CB-01A-03-BS3.9d100a55-f190-49a0-ba18-0b4cadada132.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-BL-A13I-11A-01-TS1.6f663daa-1b69-4f51-a1e5-fe61e026d700.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-BP-4158-01Z-00-DX1.ac231cfd-4baa-4e4e-80ca-acc51255bd91.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-BQ-7044-11A-01-TS1.88058788-1360-478c-8039-99c733d08345.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-BR-4357-11A-01-BS1.fb40a9fc-898f-4c58-8dc4-562296441c5a.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-BR-8289-01A-01-TS1.b411a46d-4b8a-482e-aad7-2bc9724baea8.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-CC-A3MC-01A-01-TSA.2E393F10-62F2-479A-A8CB-EA52C536A8E1.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-CG-4460-01Z-00-DX1.498845d6-e330-45d7-a5ac-153f2cf9b3c7.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-CH-5751-01Z-00-DX1.6bacc42c-0cc1-4210-80b4-14695e4c6ba2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-CJ-4869-01Z-00-DX1.0963305A-0BA8-4266-A4D7-B37A98FA342F.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-CS-6666-01Z-00-DX1.6F91FE79-CCA6-401C-9C3C-74B2F9C9DF4A.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-CV-7238-11A-01-TS1.f29431c8-23db-4bb2-8ec9-352f18e2848f.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-CZ-4865-11A-01-TS1.79266a8c-caf6-4a3d-834f-0a5ea26710b0.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-D1-A3JP-01Z-00-DX1.1EA8EA61-E887-44DF-9433-D4FA775F64D6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-D6-6827-01Z-00-DX2.C31227BB-6152-47D7-BAF7-66F815AD25CB.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-DB-A4XH-01Z-00-DX1.56D80999-2AB5-40BB-9326-43B6FF71183A.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-DC-5869-01A-01-TS1.9df301f2-5f88-4566-b6ce-c2fe50d811d6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-DD-AACJ-01Z-00-DX1.05506FD0-A106-4A19-929D-162BA04D172A.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-DJ-A4UR-01A-01-TS1.ED889D3D-797C-4D97-B7BE-52D7DBE5E1FE.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-DM-A0X9-01Z-00-DX1.C7FC2C17-12CC-4F10-B54F-7C29379D834E.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-DT-5265-01Z-00-DX1.563f09af-8bbe-45cd-9c6d-85a96255e67f.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-DW-7842-01Z-00-DX1.939166CE-37A9-4906-8D45-E10C2EEE3CA3.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-DX-A8BS-11A-01-TSA.BD79BFD8-44BB-4ABA-AFF5-D12FA83C92B0.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-DY-A1DC-01Z-00-DX1.2DF22B63-011B-4530-ADE4-8245779EDB6F.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-E2-A15E-01A-01-TSA.2b86c3d9-2b3d-4d2b-9f8f-dfef08275677.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-E3-A3E3-01Z-00-DX1.81DD51D2-1888-4BF7-B1F6-B75A132DE424.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-EI-6513-01Z-00-DX1.9d978c83-0ec2-46cc-8be5-9721b6c7cbd3.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-EJ-7315-11A-01-TS1.8cab7b6f-4b6f-4c10-bde0-956e4668fd6f.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-EL-A3TB-11A-01-TS1.6E0966C9-1552-4B30-9008-8ACF737CA8C3.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-ET-A25G-01Z-00-DX1.379CE9E3-B8D5-4685-80F0-CF09389187B5.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-EW-A1P1-01Z-00-DX1.4B670029-4B3B-4D76-8EA4-F4F29EEF9E37.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-FA-A4BB-01A-01-TSA.26EF82D0-8CD2-4C89-ABBC-EBE4DAFF62FD.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-FF-8042-01Z-00-DX1.bf80d981-9209-4933-8f80-e9e689971999.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-FR-A3R1-01A-01-TSA.6FD34AB7-C765-474A-B2E7-A52F553BDFCE.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-FW-A3R5-11A-01-TS1.1819E2F3-2A33-4DEE-A218-EFA64BDB8018.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-FY-A3R6-01Z-00-DX1.B51917D1-3A4C-4374-A22C-03A339C7582C.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-G2-AA3B-01Z-00-DX5.57084980-934B-4A4A-A720-24FA2E9E0CB2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-G4-6298-01Z-00-DX1.83055d52-71f7-46ec-be53-11d86b19b4cf.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-G7-6797-01A-01-BS1.9341f00c-ef4c-4e1b-bbeb-21af388b7e4f.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-G8-6325-01Z-00-DX1.973b0dd6-d701-4224-9395-eab9603488ce.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-G9-7510-01A-01-TS1.b71e2eb0-7bed-4f87-8980-fcedacf1fe51.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-GN-A263-01Z-00-DX1.94D0B4EA-8AF9-415E-9D08-BF1F9903D468.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-H6-A45N-11A-01-TS1.A42C713B-96DF-4972-BF9A-5924FFC34BD4.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-H8-A6C1-01Z-00-DX1.48F49369-4B4A-4B82-B779-52AE4582DE74.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-HD-7229-01Z-00-DX1.9AF59F80-D653-431E-A134-840A961D96C1.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-HQ-A5ND-01Z-00-DX1.EDDFB95C-827E-4533-B49A-56612BC4D9DD.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-HU-A4GJ-01Z-00-DX1.31E71066-5B7B-4866-97A0-0B7B03E6B4B6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-IG-A4QT-01Z-00-DX1.0D12438B-B44B-434B-AFA0-9C22F8DB1EE9.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-JY-A6FH-01Z-00-DX1.4065B89C-528B-4D3A-BBE1-81DFE5BD1F4C.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-KK-A6E2-01Z-00-DX1.6FD46FC9-EE08-41C0-A11E-B4AEF7AA4B38.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-KL-8323-11A-01-TS1.03244a58-76a3-4550-8065-2a7e765f93e6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-KM-8442-01A-01-TS1.dff550c0-c2da-4e6e-85fc-8745b1502baf.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-KN-8434-01Z-00-DX1.EC2C42B5-DB0D-44A3-8224-E982201AE337.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-L5-A4OS-11A-01-TS1.2BE7B126-EFAF-4B54-A2B1-B8BBF32C1418.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-LN-A49P-01A-01-TSA.81A0B7FE-5536-45BC-8462-374419DCA856.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-MJ-A68J-01Z-00-DX1.CFC5D195-F78B-4950-BF3F-509222935BCD.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-MQ-A6BL-01Z-00-DX1.739C3B7A-6A6F-4EDA-9DC4-47ABD8634EAA.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-MT-A51X-01A-01-TSA.966471F1-5594-4392-A52D-51F6E48AF8BF.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-N6-A4VC-11A-01-TSA.171D64CE-9F49-4619-9249-BCB90EF13DEB.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-N8-A4PN-01Z-00-DX3.910926E1-09EF-47F0-99CA-C5EEEFB18866.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-N9-A4Q7-01Z-00-DX1.1CFC484F-0B47-4767-9F38-17B174B022AC.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-NC-A5HR-01Z-00-DX1.B8B85EDD-96A6-40DF-B3BF-C97311A7E552.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-ND-A4W6-01Z-00-DX4.5F16BF71-71E6-46D2-BE61-300268E4B710.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-NP-A5H5-01Z-00-DX1.E6434A29-9182-4476-9E89-62B9C8EABC5B.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-OR-A5JS-01Z-00-DX1.AE76284D-A640-4716-A96A-93CF02DC7D5D.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-OR-A5L9-01A-01-TS1.25D15D1C-A5E5-4DBE-AC0C-7DCC5A38BC7F.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-OU-A5PI-01Z-00-DX4.3FF0C236-5500-47B1-BBB5-83747F5A0ED0.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-P3-A6SX-01Z-00-DX1.AB3C5814-D645-4ED3-B81D-683E9FA0BBA5.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-P4-A5ED-01Z-00-DX1.A7EA95E0-6B91-40AD-AB13-10A21EC5EF38.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-P6-A5OG-01Z-00-DX1.DDCFCB98-79F2-46A9-9273-5AB734E02A99.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-PK-A5HC-11A-01-TS1.E5691CF0-C485-4C84-9170-FAFD25929621.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-QK-A6IJ-01Z-00-DX1.D45AABDE-401E-41B0-9F56-BE83421D7038.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-QK-A6V9-01Z-00-DX1.0D202E91-5205-4888-A40D-381F7534B34A.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-QM-A5NM-01A-01-TS1.204B8BF4-A1DC-49B0-A55B-D62A1ACBA396.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-QQ-A5VC-01Z-00-DX1.39ADCB1D-40E0-4E56-864C-D8F9E5C0753D.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-RB-A7B8-01Z-00-DX1.537D35E6-09F9-43E5-A684-3BA16BAF1C61.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-RM-A68T-01A-01-TS1.3EE9CCB2-6DAC-4F89-9CB8-C59D6C92D865.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-RQ-AAAT-01Z-00-DX1.E6B3D983-E4A3-4E5F-B571-376C18A36F45.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-RR-A6KC-01Z-00-DX1.1D8F656F-9A5D-4143-847F-DD47B79E15E4.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-RZ-AB0B-01Z-00-DX1.0DF1A3A6-3030-4988-AC2C-CAA0F2EBAEB2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-S7-A7WM-01Z-00-DX1.A7A64E65-ADBC-4D14-96C5-0453A9BCEF72.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-SC-A6LN-01Z-00-DX1.379BF588-5A65-4BF8-84CF-5136085D8A47.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-SI-AA8B-01Z-00-DX1.8FEF34C6-8C0B-4880-A2C2-F4FAF21831B6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-SN-A6IS-01Z-00-DX1.AD591EDE-A427-4DBB-A478-161107F2EE4E.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-SP-A6QH-11A-01-TS1.25E5CAC4-EB04-4566-9ECE-3BA0FDC8A1AA.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-SR-A6MX-01Z-00-DX1.2642CBB2-65ED-48E9-BC30-D2F3F5D4D8B3.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-SX-A71U-01Z-00-DX1.B9EE44DF-28BC-4F45-9E21-418893A033C9.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-T9-A92H-01Z-00-DX3.1DE7D5ED-60F7-4645-8243-AB0C027B3ED7.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-TS-A7OU-01B-01-TSA.922F9B06-26F0-4EBD-8E45-B9553A1BC177.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-UW-A7GG-01Z-00-DX1.83625891-206C-4060-924A-166BE9E893A7.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-V3-A9ZX-01Z-00-DX1.B4A9BC5E-3AFA-4765-BB79-25F3B0497B09.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-V4-A9EF-01Z-00-DX1.3084FABF-8AC4-403A-ADD7-64CFB34CCB95.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-VB-A8QN-01Z-00-DX1.7A114AF2-E4D0-4761-A22A-64D62F5C89CB.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-VD-A8KG-01A-01-TS1.8233B545-0398-4831-AEDE-2724CDE35CAA.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-VM-A8CD-01Z-00-DX9.389ED5EC-ECA4-4C4C-ADF8-2458338C807B.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-VQ-A8PJ-01Z-00-DX1.19F00379-C001-49D2-9B22-6AE0791C8488.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-W5-AA38-01A-01-TSA.87432545-5F32-411B-942A-E4ADF8CC6AC3.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-WB-A822-01Z-00-DX1.AEF949D0-F3E5-487C-AC7F-9E3D05F06DBC.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-WC-A888-01Z-00-DX1.61DC04F2-C7D1-4B96-9D39-A348323CF468.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-WD-A7RX-01Z-00-DX1.9489CBFD-8D05-46C9-B6A3-55684E29862A.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-WH-A86K-01A-01-TS1.BB2209B6-13AC-46F5-8F41-DC5EA3F7433F.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-WQ-A9G7-01Z-00-DX1.45C6F0D2-3477-410A-B0E7-FF6B2069E7A1.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-WR-A838-01Z-00-DX1.5FE22DE4-CEFB-45F6-9299-505023A8F3BA.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-WY-A85E-01Z-00-DX1.AA7A4C1F-99AA-490D-B6D4-280EAB1EFF56.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-X9-A971-01A-01-TSA.5E49F702-ACB5-47B1-8BD6-C221B889F006.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-XE-A8H1-01A-01-TS1.8DB1BF0D-B2DE-4A87-8D9D-B4C9663FC4D7.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-XF-A9SJ-01Z-00-DX1.AED4FF1B-441D-47EE-B7E5-CC6C595D3D98.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-XT-AASU-11A-01-TSA.C37FF230-EA8C-4F8F-AED0-914E482F3DA6.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-XU-A92O-01Z-00-DX1.DACFDFE8-8573-4639-A9FE-6232F9701EBB.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-XV-AAZY-01Z-00-DX1.77D5F2CA-1A90-4F8B-86A2-29A9597B7373.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-XY-A8S2-01Z-00-DX1.23F5B54A-D7E9-4749-9334-2A2916D6C2CD.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-YG-AA3N-01Z-00-DX1.21350D99-44EB-42AF-83F8-90A059952FE4.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-YL-A9WL-01Z-00-DX1.4EE10C9A-18EA-4DB0-BE29-06F6A75FE5A0.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-Z6-AAPN-01Z-00-DX1.345F7431-CD48-40DB-89D6-A419E5BA1679.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-Z7-A8R6-01Z-00-DX1.CE4ED818-D762-4324-9DEA-2ACB38B9B0B9.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-ZB-A966-01Z-00-DX1.90019BF8-1FC9-4B75-889C-18AE72682616.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/TCGA-ZH-A8Y7-01Z-00-DX1.781FF59A-8A68-4A27-AB42-560F4BBAA1CF.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/b8fb8b52-0a61-4e2f-bd0b-5cbb9333e46e.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/bb13ac35-6511-42f7-a118-3790ae950f2e.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/bc27a859-79a0-4569-9fad-98e1bf1570b2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/d72e7b8a-0465-41e1-bf31-1feb04cc09ad.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/d9e3b66c-2fe8-491e-8d28-13f83e71a969.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/dd3acbe1-ac8f-4387-b54b-8b5e5a8e790e.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/f4bb8291-8671-4c81-b2b3-a58915cfd1f4.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/f4e44949-10e0-4b12-b2c4-baf950c6670b.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/mosaic.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/slide_CD34 (QBEnd-10)_2.tif
+/pa_cpgarchive/projects/tissue-segmentation/data/benchmark/slides/slide_Helicobacter-Pylori_2.tif

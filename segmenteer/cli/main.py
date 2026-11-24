@@ -1,0 +1,226 @@
+from __future__ import annotations
+import argparse
+import os
+from collections.abc import Callable, Iterable
+from pathlib import Path
+import sys
+
+
+def _parse_segmenter_names(value: str) -> list[str]:
+    return [name.strip() for name in value.split(",") if name.strip()]
+
+
+def _require_segmenter(obj: object, name: str) -> object:
+    if obj is None:
+        raise ImportError(f"{name} is not available")
+    return obj
+
+
+def _instantiate_segmenters(
+    factories: dict[str, Callable[[], object]], names: Iterable[str]
+) -> tuple[list[object], list[str]]:
+    segmenters: list[object] = []
+    skipped: list[str] = []
+    for name in names:
+        factory = factories[name]
+        try:
+            segmenter = factory()
+        except ImportError as exc:
+            skipped.append(f"{name} ({exc})")
+            continue
+        segmenters.append(segmenter)
+    return (segmenters, skipped)
+
+
+def _legacy_main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        prog="segmenteer", description="Tissue segmentation benchmarking CLI"
+    )
+    parser.add_argument(
+        "--wsi-reader",
+        default=None,
+        choices=["openslide", "cucim", "tifffile"],
+        help="MONAI WSI backend to use (overrides WSI_READER env var)",
+    )
+    parser.add_argument(
+        "--segmenters",
+        default="default",
+        metavar="LIST",
+        help="Comma-separated list of segmenters to run, or one of: default, classic, all",
+    )
+    target = parser.add_mutually_exclusive_group(required=True)
+    target.add_argument(
+        "--list-segmenters",
+        action="store_true",
+        help="List available segmenter names and exit",
+    )
+    target.add_argument("--image", metavar="PATH", help="Run on a single image")
+    target.add_argument(
+        "--dataset",
+        metavar="DIR",
+        help="Run on a directory of images (default: dataset/wsis)",
+    )
+    parser.add_argument(
+        "--pattern",
+        default="*.tiff",
+        metavar="GLOB",
+        help="Glob pattern to match images inside --dataset",
+    )
+    parser.add_argument(
+        "--ground-truth", metavar="PATH", help="GeoJSON ground-truth file for --image"
+    )
+    parser.add_argument(
+        "--annotations-dir",
+        metavar="DIR",
+        help="Directory of slide annotations (.geojson/.xml/.json, with or without _gt)",
+    )
+    parser.add_argument(
+        "--annotation-suffix",
+        default=None,
+        metavar="SUFFIX",
+        help="Optional exact annotation suffix, e.g. _gt.geojson or _annotation; by default accept <stem> and <stem>_gt",
+    )
+    parser.add_argument(
+        "--mpp",
+        default=None,
+        help="Override target microns-per-pixel (mpp); GrandQC Patchwise and NKI All-Stains require their trained MPP",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default="output",
+        metavar="DIR",
+        help="Output directory for dataset runs (default: output/)",
+    )
+    if len(sys.argv) == 1:
+        parser.print_help()
+        parser.exit()
+    args = parser.parse_args(argv)
+    if args.wsi_reader:
+        os.environ["WSI_READER"] = args.wsi_reader
+    import segmenteer as seg
+
+    kw: dict = {}
+    factories: dict[str, Callable[[], object]] = {
+        "otsu": lambda: seg.OtsuTissueSegmenter(mpp=args.mpp, min_area=0, **kw),
+        "li": lambda: seg.LiTissueSegmenter(mpp=args.mpp, min_area=0, **kw),
+        "yen": lambda: seg.YenTissueSegmenter(mpp=args.mpp, min_area=0, **kw),
+        "entropy-masker": lambda: seg.EntropyMaskerSegmenter(
+            mpp=args.mpp, min_area=0, **kw
+        ),
+        "morphological": lambda: seg.MorphologicalSegmenter(mpp=args.mpp, **kw),
+        "watershed": lambda: seg.WatershedTissueSegmenter(mpp=args.mpp, **kw),
+        "fesi": lambda: seg.FESISegmenter(mpp=args.mpp, **kw),
+        "fesi-basic": lambda: seg.FESISegmenter(mpp=args.mpp, improved=False, **kw),
+        "background-subtractor": lambda: seg.BackgroundSubtractorMOG2Segmenter(
+            mpp=args.mpp, **kw
+        ),
+        "hsv-threshold": lambda: seg.HSVThresholdSegmenter(mpp=args.mpp, **kw),
+        "hest": lambda: seg.HESTSegmenter(mpp=args.mpp),
+        "grandqc": lambda: seg.GrandQCSegmenter(mpp=args.mpp),
+        "grandqc-patchwise": lambda: seg.GrandQCPatchwiseSegmenter(mpp=args.mpp),
+        "nki-all-stains": lambda: seg.NKIAllStainsSegmenter(mpp=args.mpp),
+        "bigpicture": lambda: seg.BigPictureSegmenter(mpp=args.mpp),
+        "trident-hest": lambda: _require_segmenter(
+            getattr(seg, "TRIDENTHESTSegmenter"), "TRIDENTHESTSegmenter"
+        ),
+        "trident-grandqc": lambda: _require_segmenter(
+            getattr(seg, "TRIDENTGrandQCSegmenter"), "TRIDENTGrandQCSegmenter"
+        ),
+        "trident-pathprofiler": lambda: _require_segmenter(
+            getattr(seg, "TRIDENTPathProfilerSegmenter"), "TRIDENTPathProfilerSegmenter"
+        ),
+        "fastsam": lambda: seg.FastSAMSegmenter(mpp=args.mpp),
+        "rtlucassen": lambda: seg.RTLucassenSlideSegmenter(mpp=args.mpp),
+        "histomicstk": lambda: seg.HistomicsTKTissueSegmenter(mpp=args.mpp, **kw),
+        "trident-cpg": lambda: _require_segmenter(
+            getattr(seg, "TRIDENTCPGSegmenter"), "TRIDENTCPGSegmenter"
+        ),
+    }
+    classic_names = [
+        "otsu",
+        "li",
+        "yen",
+        "entropy-masker",
+        "morphological",
+        "watershed",
+        "fesi",
+        "fesi-basic",
+        "background-subtractor",
+        "hsv-threshold",
+        "histomicstk",
+    ]
+    default_names = classic_names + [
+        "hest",
+        "grandqc",
+        "grandqc-patchwise",
+        "nki-all-stains",
+        "bigpicture",
+        "trident-hest",
+        "trident-grandqc",
+        "trident-pathprofiler",
+        "fastsam",
+        "rtlucassen",
+        "trident-cpg",
+    ]
+    if args.list_segmenters:
+        for name in sorted(factories):
+            print(name)
+        return
+    if args.segmenters == "default":
+        requested = default_names
+    elif args.segmenters == "classic":
+        requested = classic_names
+    elif args.segmenters == "all":
+        requested = list(factories.keys())
+    else:
+        requested = _parse_segmenter_names(args.segmenters)
+    unknown = [name for name in requested if name not in factories]
+    if unknown:
+        raise SystemExit(f"Unknown segmenters: {', '.join(unknown)}")
+    segmenters, skipped = _instantiate_segmenters(factories, requested)
+    if not segmenters:
+        raise SystemExit("No segmenters available. Install optional dependencies.")
+    if skipped:
+        print("Skipped segmenters missing optional dependencies:")
+        for item in skipped:
+            print(f"  - {item}")
+    if args.image:
+        image_path = Path(args.image)
+        ground_truth = None
+        if args.ground_truth:
+            ground_truth = seg.load_geojson(args.ground_truth)
+        seg.run_single_image(segmenters, image_path, ground_truth=ground_truth)
+        return
+    dataset_dir = Path(args.dataset) if args.dataset else Path("dataset/wsis")
+    images = sorted(dataset_dir.glob(args.pattern))
+    if not images:
+        raise SystemExit(
+            f"No images found in {dataset_dir} matching pattern {args.pattern}"
+        )
+    annotations_dir = Path(args.annotations_dir) if args.annotations_dir else None
+    ground_truths = seg.load_ground_truths(
+        images, annotation_dir=annotations_dir, suffix=args.annotation_suffix
+    )
+    seg.run_dataset(segmenters, images, output_dir=Path(args.output_dir))
+
+
+def main(argv: list[str] | None = None) -> None:
+    """Dispatch new method-first commands, or preserve the original flag CLI."""
+    actual = list(sys.argv[1:]) if argv is None else list(argv)
+    if actual and actual[0] == "app":
+        from segmenteer.app.__main__ import main as app_main
+        return app_main(actual[1:])
+    if actual and actual[0] in ("multi-method", "benchmark"):
+        from segmenteer.cli.benchmark import main as benchmark_main
+        return benchmark_main(actual[1:], command_name=actual[0])
+    if actual and actual[0] == "evaluate":
+        from segmenteer.benchmark.evaluation import main as evaluate_main
+        return evaluate_main(actual[1:])
+    if actual and not actual[0].startswith("-"):
+        from segmenteer.cli.commands import main as method_main
+        return method_main(actual)
+    return _legacy_main(actual)
+
+
+if __name__ == "__main__":
+    main()

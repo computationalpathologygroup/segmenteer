@@ -1,11 +1,11 @@
 from __future__ import annotations
-
 from datetime import datetime
 from pathlib import Path
 
+DEFAULT_EXPERIMENT_NAME = "tissue-segmentation"
+
 
 def create_timestamped_output_dir(base_dir: str | Path = "outputs") -> Path:
-    """Create a collision-safe result folder with second-level versioning."""
     root = Path(base_dir)
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     candidate = root / stamp
