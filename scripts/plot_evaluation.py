@@ -15,7 +15,7 @@ DATASETS = {
 }
 TOP = 10
 MIN_COVERAGE = {'twi': 1.0, 'cpg_rumc': 1.0}
-PLOT_DATASETS = ('twi', 'cpg_rumc')
+PLOT_DATASETS = ('twi',)
 EXCLUDE = {'twi': {'trident_cpg'}, 'cpg_rumc': set()}
 REFERENCE_EXCLUSIONS = {'twi': set(), 'cpg_rumc': {'TBS_S01_SLIDE_056', 'TBS_S01_SLIDE_063'}}
 CONFIRMED_FAILURES = {'twi': {('rtlucassen_slidesegmenter', 'slide_Helicobacter-Pylori_2')}, 'cpg_rumc': set()}
@@ -371,12 +371,17 @@ def plot_heatmap(meta, chosen, group, folder):
     cmap = LinearSegmentedColormap.from_list('segmenteer_dice', DICE_COLORS, N=512)
     norm = Normalize(vmin=0, vmax=1, clip=True)
     tile_w, tile_h, x_step, y_step = .90, .73, 1.00, .83
-    fig_h = 8.10 if group == 'Staining' and n == 42 else 2.05 + .153*n
-    fig = plt.figure(figsize=(6.15, fig_h), dpi=160, facecolor='white')
-    if group == 'Staining' and n == 42:
-        ax = fig.add_axes([.295,.190,.695,.800])
-    else:
-        ax = fig.add_axes([.293,1.50/fig_h,.70,(fig_h-1.64)/fig_h])
+    fig_w = 6.75
+    bottom, top = 1.86, .12
+    fig_h = bottom + top + .168*n
+    fig = plt.figure(figsize=(fig_w, fig_h), dpi=160, facecolor='white')
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    from matplotlib.font_manager import FontProperties
+    row_font = FontProperties(family='DejaVu Sans', size=9.5)
+    row_labels = [f'{STAIN_NAMES.get(label,label) if group == "Staining" else label} (N={totals[label]})' for label in labels]
+    left = max(1.9, max(renderer.get_text_width_height_descent(label,row_font,False)[0] for label in row_labels)/fig.dpi+.22)
+    ax = fig.add_axes([left/fig_w,bottom/fig_h,(fig_w-left-.12)/fig_w,(fig_h-bottom-top)/fig_h])
     ax.set_axis_off()
     xs = [j*x_step + (.52 if classical and deep and j >= len(classical) else 0) for j in range(len(order))]
     ys = [i*y_step for i in range(n)]
@@ -389,11 +394,10 @@ def plot_heatmap(meta, chosen, group, folder):
             score = float(np.mean([item['scores'][sid] for sid in ids]))
             x, y = xs[j], ys[i]
             ax.add_patch(Rectangle((x,y),tile_w,tile_h,facecolor=cmap(norm(score)),edgecolor='white',linewidth=.62))
-            ax.text(x+tile_w/2,y+tile_h/2,f'{score:.2f}',ha='center',va='center',fontsize=6.1,color='#1C2931',fontweight='medium')
     for label,y in zip(labels,ys):
         name = STAIN_NAMES.get(label,label) if group == 'Staining' else label
-        ax.text(-.18,y+tile_h/2,f'{name} (N={totals[label]})',ha='right',va='center',fontsize=7.1,color=INK,clip_on=False)
-    texts = [ax.text(x+tile_w/2,last_y+.24,wrapped(item['display']['method']),ha='right',va='top',rotation=60,rotation_mode='anchor',multialignment='right',fontsize=7.25,color=INK,clip_on=False) for item,x in zip(order,xs)]
+        ax.text(-.18,y+tile_h/2,f'{name} (N={totals[label]})',ha='right',va='center',fontsize=9.5,color=INK,clip_on=False)
+    texts = [ax.text(x+tile_w/2,last_y+.24,wrapped(item['display']['method']),ha='right',va='top',rotation=60,rotation_mode='anchor',multialignment='right',fontsize=9.5,color=INK,clip_on=False) for item,x in zip(order,xs)]
     fig.canvas.draw()
     renderer = fig.canvas.get_renderer()
     lowest = min(t.get_window_extent(renderer).y0 for t in texts)
@@ -403,12 +407,12 @@ def plot_heatmap(meta, chosen, group, folder):
             continue
         x1,x2=xs[a]-.05,xs[b]+tile_w+.05
         ax.plot([x1,x1,x2,x2],[bracket_y-.16,bracket_y,bracket_y,bracket_y-.16],color='#73777B',lw=.78,clip_on=False)
-        ax.text((x1+x2)/2,bracket_y+.33,label,ha='center',va='top',fontsize=8,fontweight='semibold',color='#384044',clip_on=False)
+        ax.text((x1+x2)/2,bracket_y+.33,label,ha='center',va='top',fontsize=10.5,fontweight='semibold',color='#384044',clip_on=False)
     canvas_w,canvas_h=fig.canvas.get_width_height()
     pt=fig.dpi/72
-    left,right=canvas_w*.052,canvas_w*.156
-    y=canvas_h*.128 if group=='Staining' and n==42 else fig.dpi*.90
-    h=5.2*pt/2
+    left,right=fig.dpi*.20,fig.dpi*1.25
+    y=fig.dpi*.78
+    h=7*pt/2
     tofig=fig.transFigure.inverted().transform
     quads,colors=[],[]
     for k in range(120):
@@ -418,7 +422,7 @@ def plot_heatmap(meta, chosen, group, folder):
         colors.append(cmap(1-(k+.5)/120))
     fig.add_artist(PolyCollection(quads,facecolors=colors,edgecolors='none',linewidths=0,transform=fig.transFigure,zorder=12,clip_on=False))
     fig.add_artist(Polygon(tofig(np.array(((left,y+h),(right,y+h),(right,y-h),(left,y-h)))),closed=True,facecolor='none',edgecolor='#5D6670',linewidth=.55,transform=fig.transFigure,zorder=13,clip_on=False))
-    for xx,yy,text,ha,va,size,weight in ((left,y+h+10*pt,'Mean Dice','left','bottom',8.5,'semibold'),(left,y-h-10*pt,'1.00','left','top',7.8,'normal'),(right,y-h-10*pt,'0.00','right','top',7.8,'normal')):
+    for xx,yy,text,ha,va,size,weight in ((left,y+h+10*pt,'Mean Dice','left','bottom',11,'semibold'),(left,y-h-10*pt,'1.00','left','top',10,'normal'),(right,y-h-10*pt,'0.00','right','top',10,'normal')):
         fx,fy=tofig((xx,yy))
         fig.text(fx,fy,text,ha=ha,va=va,fontsize=size,fontweight=weight,color=INK,clip_on=False,zorder=15)
     name={'Organ':'organ_dice_top10','Data source':'data_source_dice_top10','Staining':'stain_generalization'}[group]
@@ -434,21 +438,21 @@ def plot_pareto(chosen, timing, public, folder):
     agg = pd.DataFrame([{'name': row['method'], 'dice': row['paired_dice'], 'time': row['seconds'], 'device': ','.join(sorted(set(timing[item['run']].get('device', pd.Series(dtype=str)).dropna().astype(str))))} for item,row in zip(chosen,public)]).sort_values('time').reset_index(drop=True)
     x,y=agg.time.to_numpy(),agg.dice.to_numpy()
     agg['frontier']=[not np.any((x<=xi)&(y>=yi)&((x<xi)|(y>yi))) for xi,yi in zip(x,y)]
-    labels={'Canny foreground':(5,5),'AtlasPatch-SAM2':(-6,9),'SlideSegmenter':(5,-4),'TRIDENT PathProfiler':(5,-7),'Entropy masker (5 MPP)':(4,5),'TRIDENT HEST':(-5,-6),'FESI (10 MPP)':(-5,-6),'BigPicture':(5,5),'CxTissueSeg':(5,6),'NKI All Stains':(5,-7)}
     def setup(ax):
-        ax.set_facecolor('#F9FCFE')
+        ax.set_facecolor('white')
         for side in ('top','right'):
             ax.spines[side].set_visible(False)
         for side in ('left','bottom'):
             ax.spines[side].set_linewidth(.6)
             ax.spines[side].set_color('#30373c')
-        ax.tick_params(labelsize=7.2,length=3,color='#30373c')
+        ax.tick_params(labelsize=10,length=3,color='#30373c',pad=5)
+        ax.tick_params(which='minor',length=1.8,color='#8B969D')
     def draw(ax,small):
         setup(ax)
         ax.set_xscale('log')
-        ax.set_xlim(min(x)*.5,max(x)*(1.8 if not small else 1.45))
-        ax.set_ylim(max(0,min(.66,float(min(y))-.04)),min(1.02,max(.944,float(max(y))+.04)))
-        ax.grid(axis='y',linewidth=.4,color='#dce8ed')
+        ax.set_xlim(min(x)*.46,max(x)*1.85)
+        ax.set_ylim(max(0,min(.65,float(min(y))-.05)),min(1.02,max(.97,float(max(y))+.055)))
+        ax.grid(axis='y',linewidth=.45,color='#E4EAEE')
         ax.xaxis.set_major_locator(LogLocator(base=10,subs=(1,2,5)))
         ax.xaxis.set_major_formatter(FuncFormatter(lambda v,_:f'{v:g}'))
         ax.xaxis.set_minor_formatter(NullFormatter())
@@ -456,36 +460,79 @@ def plot_pareto(chosen, timing, public, folder):
         ax.plot(front.time,front.dice,color=MAGENTA,lw=1.1,zorder=3)
         for r in agg.itertuples():
             ax.scatter(r.time,r.dice,s=38 if small else 47,marker='s' if 'cuda' in r.device.casefold() else 'o',color=MAGENTA if r.frontier else BLUE,edgecolor='#9c235e' if r.frontier else '#168eb3',linewidth=.6,zorder=4)
-        ax.set_ylabel('Mean Dice',fontsize=8.2 if small else 8.6)
-        ax.set_xlabel('Mean processing time per whole-slide image (s)',fontsize=7.5 if small else 8.6)
+        ax.set_ylabel('Mean Dice',fontsize=11)
+        ax.set_xlabel('Mean processing time per WSI (s)',fontsize=10.5 if small else 11)
         from matplotlib.transforms import Bbox
+        from matplotlib.path import Path as MplPath
         fig=ax.figure
         fig.canvas.draw()
         renderer=fig.canvas.get_renderer()
         bounds=ax.get_window_extent(renderer)
-        radius=np.sqrt(38 if small else 47)*fig.dpi/144+1.6
-        markers=[Bbox.from_bounds(px-radius,py-radius,2*radius,2*radius) for px,py in ax.transData.transform(np.column_stack([x,y]))]
-        occupied=[]
-        for r in agg.itertuples():
-            dx,dy=labels.get(r.name,(5,5))
-            options=[(dx,dy)]+[(sx*d,sy*h) for d in (6,12,20,32,46,60) for h in (6,12,20,32,46) for sx,sy in ((1,1),(-1,1),(1,-1),(-1,-1))]
-            for ox,oy in options:
-                t=ax.annotate(r.name,(r.time,r.dice),xytext=(ox,oy),textcoords='offset points',ha='right' if ox<0 else 'left',va='center',fontsize=5.45 if small else 7,color=MAGENTA if r.frontier else '#263238',zorder=5)
-                box=t.get_window_extent(renderer).expanded(1.02,1.06)
-                if bounds.contains(box.x0,box.y0) and bounds.contains(box.x1,box.y1) and not any(box.overlaps(b) for b in occupied+markers):
-                    occupied.append(box)
-                    break
-                t.remove()
-            else:
-                ax.annotate(r.name,(r.time,r.dice),xytext=(dx,dy),textcoords='offset points',fontsize=5.45 if small else 7,color=MAGENTA if r.frontier else '#263238',zorder=5)
-                print(f'{folder.name}: inspect Pareto label placement for {r.name}')
-    fig,ax=plt.subplots(figsize=(6.75,3.55))
-    fig.subplots_adjust(left=.115,right=.965,bottom=.17,top=.965)
+        pt=fig.dpi/72
+        radius=np.sqrt(38 if small else 47)*pt/2+1.5
+        points=ax.transData.transform(np.column_stack([x,y]))
+        markers=[Bbox.from_bounds(px-radius,py-radius,2*radius,2*radius) for px,py in points]
+        frontier_path=MplPath(ax.transData.transform(front[['time','dice']].to_numpy())) if len(front)>1 else None
+        candidates=[]
+        rows=list(agg.itertuples())
+        for r,(px,py) in zip(rows,points):
+            text=wrapped(r.name)
+            t=ax.annotate(text,(r.time,r.dice),xytext=(0,0),textcoords='offset points',ha='left',va='bottom',fontsize=8.5 if small else 10,color=MAGENTA if r.frontier else '#263238',zorder=5)
+            box=t.get_window_extent(renderer)
+            w,h=box.width,box.height
+            t.remove()
+            options=[]
+            for gap in (5,7,9,12,16,22,30,40):
+                for sx,sy in ((1,0),(-1,0),(0,1),(0,-1),(1,1),(-1,1),(1,-1),(-1,-1)):
+                    for shift in ((0,-3,3,-6,6) if sy==0 or sx==0 else (0,)):
+                        ox=sx*gap+(shift if sx==0 else 0)
+                        oy=sy*gap+(shift if sy==0 else 0)
+                        ha='left' if sx>0 else 'right' if sx<0 else 'center'
+                        va='bottom' if sy>0 else 'top' if sy<0 else 'center'
+                        lx=px+ox*pt-(w if ha=='right' else w/2 if ha=='center' else 0)
+                        ly=py+oy*pt-(h if va=='top' else h/2 if va=='center' else 0)
+                        box=Bbox.from_bounds(lx,ly,w,h).padded(1.5)
+                        if not (bounds.contains(box.x0,box.y0) and bounds.contains(box.x1,box.y1)) or any(box.overlaps(m) for m in markers):
+                            continue
+                        if frontier_path is not None and frontier_path.intersects_bbox(box,filled=False):
+                            continue
+                        qx,qy=np.clip(px,box.x0,box.x1),np.clip(py,box.y0,box.y1)
+                        distance=np.hypot(qx-px,qy-py)/pt
+                        cost=distance+(.5 if sx==0 else 0)+.12*abs(shift)
+                        options.append((cost,box,ox,oy,ha,va,distance))
+            candidates.append(sorted(options,key=lambda o:o[0]))
+        placement={}
+        def assign(remaining):
+            if not remaining:
+                return True
+            available={i:[o for o in candidates[i] if not any(o[1].overlaps(p[1]) for p in placement.values())] for i in remaining}
+            i=min(remaining,key=lambda j:len(available[j]))
+            for option in available[i]:
+                placement[i]=option
+                if assign([j for j in remaining if j!=i]):
+                    return True
+                placement.pop(i)
+            return False
+        for limit in (8,12,18,30,50,70):
+            all_candidates=candidates
+            candidates=[[o for o in opts if o[6]<=limit] for opts in all_candidates]
+            if assign(list(range(len(rows)))):
+                break
+            candidates=all_candidates
+        else:
+            raise ValueError(f'{folder.name}: no non-overlapping Pareto label placement; enlarge the figure')
+        for i,r in enumerate(rows):
+            _,_,ox,oy,ha,va,distance=placement[i]
+            text=wrapped(r.name)
+            kwargs={} if distance<=10 else {'arrowprops':dict(arrowstyle='-',color='#73777B',lw=.55,shrinkA=2,shrinkB=4)}
+            ax.annotate(text,(r.time,r.dice),xytext=(ox,oy),textcoords='offset points',ha=ha,va=va,fontsize=8.5 if small else 10,color=MAGENTA if r.frontier else '#263238',zorder=5,**kwargs)
+    fig,ax=plt.subplots(figsize=(7.0,4.65))
+    fig.subplots_adjust(left=.12,right=.965,bottom=.15,top=.95)
     draw(ax,False)
     save(fig,folder,'pareto_top10_single')
     plt.close(fig)
-    fig,(ax,bx)=plt.subplots(1,2,figsize=(6.75,3.30),gridspec_kw={'width_ratios':[1.55,1.0]})
-    fig.subplots_adjust(left=.105,right=.975,bottom=.21,top=.955,wspace=.49)
+    fig,(ax,bx)=plt.subplots(1,2,figsize=(9.0,3.90),gridspec_kw={'width_ratios':[2.1,1.0]})
+    fig.subplots_adjust(left=.078,right=.98,bottom=.155,top=.93,wspace=.55)
     draw(ax,True)
     setup(bx)
     bx.set_xscale('log')
@@ -500,16 +547,16 @@ def plot_pareto(chosen, timing, public, folder):
         bx.plot([p10,p90],[pos,pos],color=c,linewidth=.8,zorder=2)
         bx.plot([p25,p75],[pos,pos],color=c,linewidth=3.3,solid_capstyle='butt',zorder=3)
         bx.scatter([p50],[pos],s=16,marker='o',facecolor='white',edgecolor='#30373c',linewidth=.7,zorder=4)
-    bx.set_yticks(range(len(names)),names[::-1],fontsize=6.4)
-    bx.tick_params(axis='y',length=0,pad=3)
-    bx.set_ylim(-.6,len(names)-.4)
-    bx.set_xlabel('Processing time (s)',fontsize=7.4)
+    bx.set_yticks(range(len(names)),names[::-1],fontsize=9)
+    bx.tick_params(axis='y',length=0,pad=5)
+    bx.set_ylim(-.85,len(names)-.15)
+    bx.set_xlabel('Processing time (s)',fontsize=10.5)
     bx.xaxis.set_major_locator(LogLocator(base=10,subs=(1,)))
     bx.xaxis.set_major_formatter(FuncFormatter(lambda v,_:f'{v:g}'))
     bx.xaxis.set_minor_formatter(NullFormatter())
-    bx.grid(axis='x',linewidth=.4,color='#dce8ed')
-    fig.text(.013,.965,'a',fontsize=10,fontweight='bold',va='top')
-    fig.text(.540,.965,'b',fontsize=10,fontweight='bold',va='top')
+    bx.grid(axis='x',linewidth=.45,color='#E4EAEE')
+    ax.annotate('a',xy=(0,1),xycoords='axes fraction',xytext=(-5,3),textcoords='offset points',fontsize=10,fontweight='semibold',ha='right',va='bottom',color=INK,annotation_clip=False)
+    bx.annotate('b',xy=(0,1),xycoords='axes fraction',xytext=(-5,3),textcoords='offset points',fontsize=10,fontweight='semibold',ha='right',va='bottom',color=INK,annotation_clip=False)
     save(fig,folder,'pareto_top10_two_panel')
     plt.close(fig)
 
